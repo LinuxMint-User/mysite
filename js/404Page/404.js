@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (countdown === 0) {  
             clearInterval(countdownInterval);  
 			countdownElement.textContent = '正在返回首页...';  
-            window.location.href = '/mysite'; // 倒计时结束后跳转到首页  
+            window.location.href = '/mysite/'; // 倒计时结束后跳转到首页  
         }  
     }, 1000);  
 });
