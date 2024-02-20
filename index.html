@@ -1,0 +1,55 @@
+<!DOCTYPE html>  
+<html lang="zh-CN">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>主页</title>  
+	<link rel="stylesheet" href="css/normalize.css">  
+	<link rel="stylesheet" href="css/global-styles.css">  
+    <link rel="stylesheet" href="css/index-styles.css">  
+	<link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
+	<script src="js/markdown/marked.min.js"></script>
+    <script src="js/index-script.js" defer></script>  
+	<style>
+		body {
+			overflow: auto;
+		}
+	</style>
+</head>  
+<body>  
+    <header class="header">  
+        <h1>主页</h1>  
+    </header>  
+  
+    <div class="container" style="display: flex; flex-direction: column; color: wheat;">
+		<p>这里是导航</p>
+		<div class="container" style="display: flex; flex-direction: row; margin: 5px; padding: 30px;">
+        	<a href="/">主页</a>
+        	<a href="2048.html?from=index">2048</a>
+		</div>
+	</div>
+
+    <div class="container" style="color: wheat; min-height: auto;">
+        <h3>简介</h3>
+        <pre><code id="changeLogs" class="language-none" style="white-space: pre-wrap;">ChangeLogs is loading...</code></pre>
+    </div>
+	<script>
+		// 使用fetch加载文件内容  
+    	fetch(`changeLogs.md`)  
+        	.then(response => response.text())  
+        	.then(changeLogs => {  
+        	    // 更新页面上的显示  
+        	    document.getElementById('changeLogs').innerHTML = marked.parse(changeLogs);  
+        	})  
+        	.catch(error => {  
+        	    // 显示错误消息  
+        	    document.getElementById('changeLogs').textContent = 'changeLogs load failed.';  
+        	    console.error('Error fetching the source code:', error);  
+        	});  
+	</script>
+	<script src="js/sourceCode/prism-1.29.0.js"></script>
+    <footer>  
+        <p id="copyright">&copy; 2024 Eric Chan</p>  
+    </footer>  
+</body>  
+</html>

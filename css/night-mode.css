@@ -1,0 +1,17 @@
+/* 白天模式 */  
+body {  
+    background-color: #ffffff;  
+}  
+
+footer {  
+    background-color: none;  
+}  
+
+/* 黑夜模式 */  
+body.night-mode {  
+    background-color: #5555557b;  
+}
+
+footer.night-mode {
+	background-color: #55555530;  
+}
