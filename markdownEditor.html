@@ -6,7 +6,7 @@
     <title>Markdown编辑器</title>
     <link rel="stylesheet" href="css/normalize.css">  
 	<link rel="stylesheet" href="css/global-styles.css">  
-	<link rel="stylesheet" type="text/css" href="css/sourceCode/sourcecode.css">
+	<!-- <link rel="stylesheet" type="text/css" href="css/sourceCode/sourcecode.css"> -->
 	<link rel="stylesheet" type="text/css" href="css/night-mode.css">
 	<link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
     <script src="js/markdown/marked.min.js"></script>
@@ -80,8 +80,26 @@
 </head>
 <body>
     <div class="header">
-        <h2>Markdown编辑器</h2>
+        <div id="button-list" class="button-list" style="flex: 1;">
+            <button type="button" id="backButton" class="back-button">返回</button>
+        </div>
+        <h2 style="flex: 9;">Markdown编辑器</h2>
     </div>
+
+    <script>
+        document.getElementById('backButton').addEventListener('click', function() {  
+            // 从 URL 中获取 'from' 参数  
+            var fromPage = new URLSearchParams(window.location.search).get('from');  
+
+            // 如果 'from' 参数是 'index'，则直接返回  
+            if (fromPage === 'index') {  
+                window.history.back();  
+            } else {  
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html  
+                window.location.href = '/';  
+            }  
+        });  
+    </script>
 
     <div class="container">
         <div style="display: flex; flex-direction: row;">
@@ -93,8 +111,11 @@
             </div>
             <div width="0 auto" style="display: flex; flex-direction: column; flex: 1;">
                 <div style="display: flex; flex-direction: row;">
-                    <h2 style="color: white; flex: 1;">编辑</h2>
-                    <button type="button" style="background: none; flex: 1;" onclick="refresh()">刷新预览</button>
+                    <h2 style="color: white; flex: 3;">编辑</h2>
+                    <div id="button-list" class="button-list">
+                        <button id="refreshButton" type="button" style="flex: 1;" onclick="refresh()">刷新预览</button>
+                    </div>
+                    
                 </div>
                 <textarea id="editor" placeholder="请输入内容..." onkeydown="tab(this)"></textarea>
             </div>
