@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown编辑器</title>
+    <link rel="stylesheet" href="css/normalize.css">  
+	<link rel="stylesheet" href="css/global-styles.css">  
+	<link rel="stylesheet" type="text/css" href="css/sourceCode/sourcecode.css">
+	<link rel="stylesheet" type="text/css" href="css/night-mode.css">
+	<link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
+    <script src="js/markdown/marked.min.js"></script>
+    
+	<script src="js/index-script.js"></script>  
+	<script src="js/sourceCode/prism-1.29.0.js" defer></script>  
+    <style>
+        /* 为textarea设置基本样式 */  
+        textarea {  
+        /* 调整textarea的大小 */  
+        width: 0 auto;
+        min-height: 50vh;
+        max-height: 300px;  
+
+        /* 设置边框和外观 */  
+        border: none;  
+        border-radius: 4px;  
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);  
+
+        /* 设置字体样式 */  
+        font-family: 'Roboto', sans-serif;  
+        font-size: 16px;  
+        line-height: 1.5;  
+
+        /* 设置特殊字符 */
+        tab-size: 4;
+
+        /* 调整内外边距 */  
+        padding: 5px;
+        margin: 5px;  
+
+        /* 调整颜色 */  
+        color: #333;  
+        background-color: wheat;  
+
+        /* 调整缩放 */  
+        resize: none;  
+
+        /* 移除默认的outline样式 */
+        outline: none;  
+
+        /* 过渡效果 */
+        transition: box-shadow 0.3s ease;  
+        }  
+
+        /* 当textarea获得焦点时，改变其样式 */  
+
+        textarea:focus {  
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);  
+        }
+
+        /* 可选的：为textarea添加placeholder的样式 */  
+
+        textarea::placeholder {  
+            color: #999;  
+            font-style: italic;  
+        }
+
+        #preview {
+            height: 100%;
+            min-height: 50vh;
+            width: 0 auto;
+            overflow: hidden;
+            background-color: wheat;
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Markdown编辑器</h2>
+    </div>
+
+    <div class="container">
+        <div style="display: flex; flex-direction: row;">
+            <div width="0 auto" style="display: flex; flex-direction: column; flex: 1;">
+                <h2 style="color: white;">预览</h2>
+                <div id="preview">
+                    <p>预览</p>
+                </div>
+            </div>
+            <div width="0 auto" style="display: flex; flex-direction: column; flex: 1;">
+                <div style="display: flex; flex-direction: row;">
+                    <h2 style="color: white; flex: 1;">编辑</h2>
+                    <button type="button" style="background: none; flex: 1;" onclick="refresh()">刷新预览</button>
+                </div>
+                <textarea id="editor" placeholder="请输入内容..." onkeydown="tab(this)"></textarea>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        function refresh() {
+            var textArea = document.getElementById('editor');
+            document.getElementById('preview').innerHTML = marked.parse(textArea.value);
+        }
+        
+        function tab(obj) {
+            if (event.keyCode == 9) {
+                // 在光标位置插入一个制表符  
+                const start = obj.selectionStart;  
+                const end = obj.selectionEnd;  
+                obj.value = obj.value.slice(0, start) + '\t' + obj.value.slice(end);  
+                // 设置光标位置  
+                obj.selectionStart = obj.selectionEnd = start + 1;  
+                event.returnValue = false;
+            }
+        }
+    </script>
+    <footer>
+        <p id="copyright">&copy; 2024 Eric Chan</p>
+    </footer>
+</body>
+</html>
