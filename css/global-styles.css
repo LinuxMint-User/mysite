@@ -57,6 +57,9 @@
 	padding: 15px;  
 	border-radius: 5px;  
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
+	min-width: fit-content;
+	text-align: center;
+	white-space: nowrap;
 }  
 
 @media (max-width:600px) or (max-height:600px) {
@@ -75,6 +78,9 @@
 		padding: 5px;
 		border-radius: 5px;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		min-width: fit-content;
+		text-align: center;
+		white-space: nowrap;
 	}
 }
 
