@@ -1,5 +1,9 @@
 ## changeLogs
 
+- 2024.02.29
+1. 更新了global-styles.css，使**container**中的**a**标签在移动设备上的显示更加美观
+2. 修复了**md编辑器**在移动设备上**返回**按钮显示不完全的问题
+
 - 2024.02.25
 1. 更新了global-styles.css
 2. 精简了sourcecode.css
