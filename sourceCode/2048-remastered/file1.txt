@@ -1,0 +1,105 @@
+2048-remastered.css
+@charset "UTF-8";
+
+/* height < width */
+@media (min-aspect-ratio: 1 / 1) {
+    #grid-container {
+        width: 50vh;
+        aspect-ratio: 1 / 1;
+        padding: 20px;
+        margin: 40px auto;
+        background: #bbada0;
+        border-radius: 10px;
+        user-select: none;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        gap: 5px;
+        justify-items: center;
+        align-items: center;
+    }
+
+    .grid-item {
+        position: relative;
+    }
+
+    .background-cell {
+        width: calc((50vh - 60px) / 4);
+        aspect-ratio: 1 / 1;
+        border-radius: 6px;
+        background: #ccc0b3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .number-cell {
+        display: flex;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 6px;
+        font: Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        font-size: 3.2vh;
+        text-align: center;
+        user-select: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+}
+
+/* height > width */
+@media (max-aspect-ratio: 1 / 1) {
+    #grid-container {
+        width: 50vw;
+        aspect-ratio: 1 / 1;
+        padding: 10px;
+        margin: 30px auto;
+        background: #bbada0;
+        border-radius: 10px;
+        user-select: none;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        gap: 5px;
+        justify-items: center;
+        align-items: center;
+    }
+
+    .grid-item {
+        position: relative;
+    }
+
+    .background-cell {
+        width: calc((50vw - 40px) / 4);
+        aspect-ratio: 1 / 1;
+        border-radius: 6px;
+        background: #ccc0b3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+    }
+
+    .number-cell {
+        display: flex;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 6px;
+        font: Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        font-size: 3.2vw;
+        text-align: center;
+        user-select: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+}
