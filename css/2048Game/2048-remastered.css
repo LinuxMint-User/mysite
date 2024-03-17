@@ -34,7 +34,7 @@
 
     .number-cell {
         display: flex;
-        width: 100%;
+        width: calc((50vh - 60px) / 4);
         aspect-ratio: 1 / 1;
         position: absolute;
         top: 0;
@@ -86,7 +86,7 @@
 
     .number-cell {
         display: flex;
-        width: 100%;
+        width: calc((50vw - 40px) / 4);
         aspect-ratio: 1 / 1;
         position: absolute;
         top: 0;
