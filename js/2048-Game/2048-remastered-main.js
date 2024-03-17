@@ -192,11 +192,19 @@ function isGameOver(table) {
 // game over
 function gameOver() {
     document.getElementById('status').innerText = "游戏结束";
-    var score = document.getElementById('score').innerText || document.getElementById('status').textContent;
-    var date = new Date();
-    date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
-    var expires = "; expires=" + date.toUTCString();
-    document.cookie = historyRecordCookieName + "=" + score + expires + "; path=/";
+    var score = document.getElementById('score').innerText || document.getElementById('score').textContent;
+    var hisRec = document.getElementById('historyRecord').innerText || document.getElementById('historyRecord').textContent;
+    if (score > hisRec) {
+        var date = new Date();
+        date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toUTCString();
+        document.cookie = historyRecordCookieName + "=" + score + expires + "; path=/";
+    } else {
+        var date = new Date();
+        date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toUTCString();
+        document.cookie = historyRecordCookieName + "=" + hisRec + expires + "; path=/";
+    }
 }
 // set MTT to zero
 function setMergeTagTableToZero() {
