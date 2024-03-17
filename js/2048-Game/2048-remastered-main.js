@@ -144,11 +144,17 @@ function init() {
 }
 // refresh game view
 function refreshGameView(table) {
+    if (window.innerHeight <= window.innerWidth) {
+        var VH = window.innerHeight;
+        var width0 = (0.5 * VH - 60) / 4;
+    } else {
+        var VW =window.innerWidth;
+        var width0 = (0.5 * VW - 40) / 4;
+    }
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             var numberCell = $('#nc-' + i + '-' + j);
-            numberCell.css('background-color', 'transparent');
-            numberCell.text('');
+            numberCell.css('width', width0+'px');
             if (table[i][j] == 0) {
                 numberCell.css('background-color', 'transparent');
                 numberCell.text('');

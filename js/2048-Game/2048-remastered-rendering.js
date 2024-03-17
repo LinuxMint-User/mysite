@@ -44,8 +44,13 @@ function numberCellUpdater(i, j, num) {
     var numberCellID = '#nc-' + i + '-' + j;
     var numberCell = $(numberCellID);
     numberCell.css('width', '0');
-    var VH = window.innerHeight;
-    var width0 = (0.5 * VH - 60) / 4;
+    if (window.innerHeight <= window.innerWidth) {
+        var VH = window.innerHeight;
+        var width0 = (0.5 * VH - 60) / 4;
+    } else {
+        var VW =window.innerWidth;
+        var width0 = (0.5 * VW - 40) / 4;
+    }
     numberCell.css('background-color', renderingBackgroundByNumber(num));
     numberCell.css('color', renderingTextByNumber(num));
     numberCell.animate({
@@ -68,3 +73,9 @@ function moveAnimation(fx, fy, tx, ty) {
     }
     
 }
+
+// resize event
+const throttledResize = function () {
+    refreshGameView(currentNumberTable);
+};
+window.addEventListener('resize', throttledResize);
