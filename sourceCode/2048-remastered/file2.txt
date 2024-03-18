@@ -36,20 +36,23 @@
         });
     </script>
 
-    <div class="container" style="display: flex; flex-direction: row;">
+    <div class="container" style="display: flex; flex-direction: column-reverse;">
         <div class="button-list" style="flex: 1; min-width: fit-content;">
             <button type="button" id="newGameButton" onclick="newGame()">新游戏</button>
             <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
         </div>
-        <h3 style="flex: 1; color: wheat;">
-            当前得分:<span id="score">0</span>
-        </h3>
-        <h3 style="flex: 1; color: wheat;">
-            历史最高分:<span id="historyRecord">0</span>
-        </h3>
-        <h3 style="flex: 1; color: wheat;">
-            游戏状态:<span id="status">进行中</span>
-        </h3>
+        <div class="container" style="flex: 3; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0px; margin: 5px; padding: 0px;">
+            <h3 style="color: wheat; margin: 5px;">
+                当前得分:<span id="score">0</span>
+            </h3>
+            <h3 style="color: wheat; margin: 5px;">
+                历史最高分:<span id="historyRecord">0</span>
+            </h3>
+            <h3 style="color: wheat; margin: 5px;;">
+                游戏状态:<span id="status">进行中</span>
+            </h3>
+        </div>
+        
     </div>
 
     <div class="container" style="display: flex;">
@@ -129,7 +132,7 @@
     </div>
 
     <footer>
-        <p>本页面仅使用cookie存储您的历史最高分。您也可以清除本页面的cookie。cookie会在创建的30天后自动过期。</p>
+        <p>本页面使用cookie存储您的历史最高分。源代码<a href="sourcecode.html?from=2048-remastered" target="_blank"><b>在这里</b></a></p>
         <p id="copyright">&copy; 2024 Eric Chan</p>
     </footer>
 </body>

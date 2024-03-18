@@ -145,11 +145,17 @@ function init() {
 }
 // refresh game view
 function refreshGameView(table) {
+    if (window.innerHeight <= window.innerWidth) {
+        var VH = window.innerHeight;
+        var width0 = (0.5 * VH - 60) / 4;
+    } else {
+        var VW =window.innerWidth;
+        var width0 = (0.5 * VW - 25) / 4;
+    }
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             var numberCell = $('#nc-' + i + '-' + j);
-            numberCell.css('background-color', 'transparent');
-            numberCell.text('');
+            numberCell.css('width', width0+'px');
             if (table[i][j] == 0) {
                 numberCell.css('background-color', 'transparent');
                 numberCell.text('');
@@ -187,11 +193,19 @@ function isGameOver(table) {
 // game over
 function gameOver() {
     document.getElementById('status').innerText = "游戏结束";
-    var score = document.getElementById('score').innerText || document.getElementById('status').textContent;
-    var date = new Date();
-    date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
-    var expires = "; expires=" + date.toUTCString();
-    document.cookie = historyRecordCookieName + "=" + score + expires + "; path=/";
+    var score = document.getElementById('score').innerText || document.getElementById('score').textContent;
+    var hisRec = document.getElementById('historyRecord').innerText || document.getElementById('historyRecord').textContent;
+    if (score > hisRec) {
+        var date = new Date();
+        date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toUTCString();
+        document.cookie = historyRecordCookieName + "=" + score + expires + "; path=/";
+    } else {
+        var date = new Date();
+        date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toUTCString();
+        document.cookie = historyRecordCookieName + "=" + hisRec + expires + "; path=/";
+    }
 }
 // set MTT to zero
 function setMergeTagTableToZero() {
