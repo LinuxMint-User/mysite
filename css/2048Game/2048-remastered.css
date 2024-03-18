@@ -56,8 +56,8 @@
     #grid-container {
         width: 50vw;
         aspect-ratio: 1 / 1;
-        padding: 10px;
-        margin: 30px auto;
+        padding: 5px;
+        margin: 20px auto;
         background: #bbada0;
         border-radius: 10px;
         user-select: none;
@@ -74,7 +74,7 @@
     }
 
     .background-cell {
-        width: calc((50vw - 40px) / 4);
+        width: calc((50vw - 25px) / 4);
         aspect-ratio: 1 / 1;
         border-radius: 6px;
         background: #ccc0b3;
@@ -86,7 +86,7 @@
 
     .number-cell {
         display: flex;
-        width: calc((50vw - 40px) / 4);
+        width: calc((50vw - 25px) / 4);
         aspect-ratio: 1 / 1;
         position: absolute;
         top: 0;
@@ -94,7 +94,7 @@
         border-radius: 6px;
         font: Arial, Helvetica, sans-serif;
         font-weight: bold;
-        font-size: 3.2vw;
+        font-size: 5.0vw;
         text-align: center;
         user-select: none;
         justify-content: center;
