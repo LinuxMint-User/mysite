@@ -49,7 +49,7 @@ function numberCellUpdater(i, j, num) {
         var width0 = (0.5 * VH - 60) / 4;
     } else {
         var VW =window.innerWidth;
-        var width0 = (0.5 * VW - 40) / 4;
+        var width0 = (0.5 * VW - 25) / 4;
     }
     numberCell.css('background-color', renderingBackgroundByNumber(num));
     numberCell.css('color', renderingTextByNumber(num));

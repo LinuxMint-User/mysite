@@ -149,7 +149,7 @@ function refreshGameView(table) {
         var width0 = (0.5 * VH - 60) / 4;
     } else {
         var VW =window.innerWidth;
-        var width0 = (0.5 * VW - 40) / 4;
+        var width0 = (0.5 * VW - 25) / 4;
     }
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
