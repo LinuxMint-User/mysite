@@ -1,56 +1,94 @@
-<!DOCTYPE html>  
-<html lang="zh-CN">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>主页</title>  
-	<link rel="stylesheet" href="css/normalize.css">  
-	<link rel="stylesheet" href="css/global-styles.css">  
-    <link rel="stylesheet" href="css/index-styles.css">  
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>主页</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/global-styles.css">
+	<link rel="stylesheet" href="css/index-styles.css">
 	<link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
 	<script src="js/markdown/marked.min.js"></script>
-    <script src="js/index-script.js" defer></script>  
+	<script src="js/resolvers/changeLogs-resolver.js" defer></script>
+	<script src="js/index-script.js" defer></script>
 	<style>
 		body {
 			overflow: auto;
 		}
+
+		/* 滚动条整体样式 */
+		::-webkit-scrollbar {
+			width: 8px;
+			height: 8px;
+			/* 滚动条的宽度与高度 */
+		}
+
+		/* 滚动条轨道样式 */
+		::-webkit-scrollbar-track {
+			background: #5555557b;
+			/* 滚动条轨道的背景颜色 */
+			border-radius: 3px;
+			/* 滚动条轨道的圆角 */
+		}
+
+		/* 滚动条滑块样式 */
+		::-webkit-scrollbar-thumb {
+			background: #424242;
+			/* 滚动条滑块的颜色 */
+			border-radius: 3px;
+			/* 滚动条滑块的圆角 */
+		}
+
+		/* 鼠标悬停在滚动条滑块上时的样式 */
+		::-webkit-scrollbar-thumb:hover {
+			background: #555;
+			/* 鼠标悬停时的颜色 */
+		}
 	</style>
-</head>  
-<body>  
-    <header class="header">  
-        <h1>主页</h1>  
-    </header>  
-  
-    <div class="container" style="display: flex; flex-direction: column; color: wheat;">
-		<p>这里是导航</p>
-		<div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 15px; padding: 30px;">
-        	<a href="/mysite/">主页</a>
-        	<a href="2048-remastered.html?from=index">2048</a>
+</head>
+
+<body>
+	<header class="header">
+		<h1>主页</h1>
+	</header>
+
+	<div class="container" style="display: flex; flex-direction: column; color: wheat;">
+		<p>导航</p>
+		<div class="container"
+			style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 15px; padding: 30px;">
+			<a href="/mysite/">主页</a>
+			<a href="2048-remastered.html?from=index">2048</a>
 			<a href="markdownEditor.html?from=index">Markdown编辑器</a>
 		</div>
 	</div>
 
-    <div class="container" style="color: wheat; min-height: auto;">
-        <h3>简介</h3>
-        <pre><code id="changeLogs" class="language-none" style="white-space: pre-wrap;">ChangeLogs is loading...</code></pre>
-    </div>
-	<script>
-		// 使用fetch加载文件内容  
-    	fetch(`changeLogs.md`)  
-        	.then(response => response.text())  
-        	.then(changeLogs => {  
-        	    // 更新页面上的显示  
-        	    document.getElementById('changeLogs').innerHTML = marked.parse(changeLogs);  
-        	})  
-        	.catch(error => {  
-        	    // 显示错误消息  
-        	    document.getElementById('changeLogs').textContent = 'changeLogs load failed.';  
-        	    console.error('Error fetching the source code:', error);  
-        	});  
-	</script>
+	<div class="container" style="color: wheat; min-height: auto;">
+		<h3>变更计划</h3>
+		<div id="pre-container-1" class="container">
+			<pre id="pre-1"
+				style="max-height: 40vh; border-radius: 5px; scroll-behavior: smooth;"><code id="changePlans" class="language-none" style="white-space: pre-wrap;">ChangePlans is loading...</code></pre>
+		</div>
+	</div>
+
+	<div class="container" style="color: wheat; min-height: auto;">
+		<h3>变更日志</h3>
+		<div class="container">
+			<div id="button-list-0" class="button-list">
+				<button type="button" date="1970.01.01">----.--.--</button>
+
+			</div>
+		</div>
+		<div id="pre-container-0" class="container">
+			<pre id="pre-0"
+				style="max-height: 40vh; border-radius: 5px; scroll-behavior: smooth;"><code id="changeLogs" class="language-none" style="white-space: pre-wrap;">ChangeLogs is loading...</code></pre>
+		</div>
+	</div>
+
 	<script src="js/sourceCode/prism-1.29.0.js"></script>
-    <footer>  
-        <p id="copyright">&copy; 2024 Eric Chan</p>  
-    </footer>  
-</body>  
+
+	<footer>
+		<p id="copyright">&copy; 2024 Eric Chan</p>
+	</footer>
+</body>
+
 </html>
