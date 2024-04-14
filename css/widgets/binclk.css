@@ -14,7 +14,7 @@
     border-radius: 4px;
 }
 .dot.on {
-    background-color: #ffffff;
+    background-color: #cc8500;
 }
 .dot.off {
     background-color: #000000;
