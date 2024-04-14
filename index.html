@@ -8,7 +8,9 @@
 	<link rel="stylesheet" href="css/global-styles.css">
 	<link rel="stylesheet" href="css/index-styles.css">
 	<link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
+	<link rel="stylesheet" href="css/widgets/binclk.css">
 	<script src="js/markdown/marked.min.js"></script>
+	<script src="js/widgets/binclk.js"></script>
 	<script src="js/resolvers/changeLogs-resolver.js" defer></script>
 	<script src="js/index-script.js" defer></script>
 	<style>
@@ -49,7 +51,36 @@
 
 <body>
 	<header class="header">
-		<h1>主页</h1>
+		<div class="dot-matrix" id="clock" style="flex: 1; margin-right: 20px;">
+			<div id="dot-hr1-3" class="dot"></div>
+			<div id="dot-hr0-3" class="dot"></div>
+			<div id="dot-min1-3" class="dot"></div>
+			<div id="dot-min0-3" class="dot"></div>
+			<div id="dot-sec1-3" class="dot"></div>
+			<div id="dot-sec0-3" class="dot"></div>
+	
+			<div id="dot-hr1-2" class="dot"></div>
+			<div id="dot-hr0-2" class="dot"></div>
+			<div id="dot-min1-2" class="dot"></div>
+			<div id="dot-min0-2" class="dot"></div>
+			<div id="dot-sec1-2" class="dot"></div>
+			<div id="dot-sec0-2" class="dot"></div>
+	
+			<div id="dot-hr1-1" class="dot"></div>
+			<div id="dot-hr0-1" class="dot"></div>
+			<div id="dot-min1-1" class="dot"></div>
+			<div id="dot-min0-1" class="dot"></div>
+			<div id="dot-sec1-1" class="dot"></div>
+			<div id="dot-sec0-1" class="dot"></div>
+			
+			<div id="dot-hr1-0" class="dot"></div>
+			<div id="dot-hr0-0" class="dot"></div>
+			<div id="dot-min1-0" class="dot"></div>
+			<div id="dot-min0-0" class="dot"></div>
+			<div id="dot-sec1-0" class="dot"></div>
+			<div id="dot-sec0-0" class="dot"></div>
+		</div>
+		<h1 style="flex: 9;">主页</h1>
 	</header>
 
 	<div class="container" style="display: flex; flex-direction: column; color: wheat;">
