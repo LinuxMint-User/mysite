@@ -117,14 +117,14 @@ function anyBlockVertical(col, row0, row1, table) {
 // about some main functions
 // initialize the game
 function init() {
-    score = 0;
+    currentScore = 0;
     if (fetchHistoryRecord()) {
         historyRecord = fetchHistoryRecord();
     } else {
         historyRecord = 0;
     }
     // setup the score, history record and game status
-    document.getElementById('score').innerText = score;
+    document.getElementById('score').innerText = currentScore;
     document.getElementById('historyRecord').innerText = historyRecord;
     document.getElementById('status').innerText = "进行中";
     // initialize CNT and MTT
