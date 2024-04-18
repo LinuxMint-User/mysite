@@ -4,7 +4,7 @@
 var currentScore = 0;
 var historyRecord = 0;
 var gameStatus = 1;
-var historyRecordCookieName = 'historyRecord-2048';
+var historyRecordCookieName = 'histRec2048';
 var currentNumberTable = new Array();
 var mergeTagTable = new Array();
 // about score
