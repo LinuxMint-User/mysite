@@ -1,14 +1,14 @@
 .header {
-	width: 0 auto;  
-	max-width: 1000px;  
+	width: 0 auto;
+	max-width: 1000px;
 	color: wheat;
-	margin: 0 auto;  
+	margin: 0 auto;
 	margin-bottom: 5px;
-	background-color: #5555557b;  
-	padding: 15px;  
-	border-radius: 5px;  
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
-	overflow-x: auto;  
+	background-color: #5555557b;
+	padding: 15px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	overflow-x: auto;
 	text-align: center;
 	/* animation: fadeInOut 1s ease-in-out forwards;   */
 	display: flex;
@@ -17,50 +17,61 @@
 	align-items: center;
 }
 
-@keyframes fadeInOut {  
-	0% { opacity: 0; }  
-	50% { opacity: 0.5; }  
-	100% { opacity: 1; }  
+@keyframes fadeInOut {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+
+	100% {
+		opacity: 1;
+	}
 }
 
 .container {
-	width: 0 auto;  
-	max-width: 1000px;  
+	width: 0 auto;
+	max-width: 1000px;
 	overflow-x: auto;
-	margin: 0 auto;  
+	margin: 0 auto;
 	margin-bottom: 5px;
-	background-color: #5555557b;  
-	padding: 15px;  
-	border-radius: 5px;  
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
+	background-color: #5555557b;
+	padding: 15px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 	text-align: center;
 	/* animation: fadeInOut 1s ease-in-out forwards;   */
-	transition: opacity 0.5s ease, transform 0.5s ease;  
-	opacity: 1;  
-	transform: translateX(0);  
+	transition: opacity 0.5s ease, transform 0.5s ease;
+	opacity: 1;
+	transform: translateX(0);
 }
 
-.container.hidden {  
-  	opacity: 0.01;  
-  	transform: translateX(-50px); 
+.container.hidden {
+	opacity: 0.01;
+	transform: translateX(-50px);
 }
 
-.container a {  
-	color: wheat; /* 链接颜色 */  
+.container a {
+	color: wheat;
+	/* 链接颜色 */
 	text-align: center;
 	font-size: 28px;
-	text-decoration: none; /* 去除下划线 */  
-	margin: 0 5px; /* 链接之间的间距 */  
-	flex: 1; 
+	text-decoration: none;
+	/* 去除下划线 */
+	margin: 0 5px;
+	/* 链接之间的间距 */
+	flex: 1;
 	overflow-x: auto;
-	background-color: #5555557b;  
-	padding: 15px;  
-	border-radius: 5px;  
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
+	background-color: #5555557b;
+	padding: 15px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 	min-width: fit-content;
 	text-align: center;
 	white-space: nowrap;
-}  
+}
 
 @media (max-width:600px) or (max-height:600px) {
 	.container a {
@@ -84,84 +95,105 @@
 	}
 }
 
-body {  
+body {
 	/* display: flex;
 	flex-direction: column;
 	justify-content: space-between;  */
-	font-family: 'Courier New', Courier, monospace;  
-	margin: 0;  
-	padding: 20px;  
-	background-color: #f0f0f0;  
+	font-family: 'Courier New', Courier, monospace;
+	margin: 0;
+	padding: 20px;
+	background-color: #f0f0f0;
 	overflow: hidden;
-}  
-  
-.button-list {  
-    margin: 2px auto;
-	display: flex;  
+}
+
+.button-list {
+	margin: 2px auto;
+	display: flex;
 	overflow-x: auto;
-	scroll-snap-type: x mandatory; /* 可选：使用滚动对齐 */  
-	scroll-padding: 50px; /* 可选：增加滚动区域的额外空间 */  
-}  
-  
-.button-list button {  
-    margin: 1px auto;  
+	scroll-snap-type: x mandatory;
+	/* 可选：使用滚动对齐 */
+	scroll-padding: 50px;
+	/* 可选：增加滚动区域的额外空间 */
+}
+
+.button-list button {
+	margin: 1px auto;
 	margin-left: 5px;
-	display: inline-block;  
-	padding: 10px 20px;  
-    background-color: #cc8500; 
-    border: none;  
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: #cc8500;
+	border: none;
 	border-radius: 5px;
-    color: white;  
-    text-align: center;  
-    text-decoration: none;  
-    font-size: 16px;  
-    transition: background-color 0.3s;  
-    cursor: pointer;  
-	flex: 0 0 auto; /* Flex项不伸缩 */  
-	margin-right: 10px; /* 按钮之间的间距 */  
-	/* 可选：为按钮添加滚动对齐 */  
-	scroll-snap-align: start;  
-}  
+	color: white;
+	text-align: center;
+	text-decoration: none;
+	font-size: 16px;
+	transition: background-color 0.3s;
+	cursor: pointer;
+	flex: 0 0 auto;
+	/* Flex项不伸缩 */
+	margin-right: 10px;
+	/* 按钮之间的间距 */
+	/* 可选：为按钮添加滚动对齐 */
+	scroll-snap-align: start;
+}
 
-.button-list button:hover {  
-    background-color: #cc850080; 
-}  
+.button-list button:hover {
+	background-color: #cc850080;
+}
 
-footer {  
+input[type="checkbox"]:disabled {
+	content: " ";
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 1px solid #000;
+	background: #fff;
+	cursor: pointer;
+}
+
+
+footer {
 	/* background-color: #f5f5f5;   */
 	/* width: 0 auto; */
 	width: 100%;
-	padding: 20px;  
-	text-align: center;  
-	font-size: 14px;  
-	color: #666;  
-	margin-top: 30px;  
-	transition: opacity 0.5s ease, transform 0.5s ease;  
+	padding: 20px;
+	text-align: center;
+	font-size: 14px;
+	color: #666;
+	margin-top: 30px;
+	transition: opacity 0.5s ease, transform 0.5s ease;
 	position: fixed;
 	left: 0;
 	bottom: 0;
 	pointer-events: none;
-}  
-
-footer.hidden {
-	opacity: 0;  	
 }
 
-footer a {  
-	color: #333; /* 链接颜色 */  
-	text-decoration: none; /* 去除下划线 */  
-	margin: 0 5px; /* 链接之间的间距 */  
-	pointer-events: auto;
-}  
-  
-footer a:hover {  
-	color: #000; /* 鼠标悬停时的链接颜色 */  
-}  
+footer.hidden {
+	opacity: 0;
+}
 
-.credit {  
-	line-height: 1.6; /* 行高，使文本看起来更舒适 */  
-}  
-  
-.copyright {  
-	font-weight: bold; /* 版权信息加粗 */  
+footer a {
+	color: #333;
+	/* 链接颜色 */
+	text-decoration: none;
+	/* 去除下划线 */
+	margin: 0 5px;
+	/* 链接之间的间距 */
+	pointer-events: auto;
+}
+
+footer a:hover {
+	color: #000;
+	/* 鼠标悬停时的链接颜色 */
+}
+
+.credit {
+	line-height: 1.6;
+	/* 行高，使文本看起来更舒适 */
+}
+
+.copyright {
+	font-weight: bold;
+	/* 版权信息加粗 */
 }
