@@ -7,22 +7,19 @@
     <title>Markdown编辑器</title>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/global-styles.css">
-    <!-- <link rel="stylesheet" type="text/css" href="css/sourceCode/sourcecode.css"> -->
     <link rel="stylesheet" type="text/css" href="css/night-mode.css">
     <link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
+    <link rel="stylesheet" type="text/css" href="css/widgets/window.css">
     <script src="js/markdown/marked.min.js"></script>
+    <script src="js/widgets/window.js" defer></script>
     <script src="js/index-script.js"></script>
     <script src="js/sourceCode/prism-1.29.0.js" defer></script>
     <style>
         #preview {
             height: 100%;
-            /* min-height: 50vh; */
             max-height: 60vh;
             width: 0 auto;
-            /* min-width: 30vw; */
-            /* max-width: 60vw; */
             overflow: auto;
-            /* background-color: wheat; */
             margin: 5px;
             padding: 5px;
             border-radius: 5px;
@@ -35,7 +32,6 @@
             max-height: 300px;
             width: 0 auto;
             overflow: auto;
-            /* background-color: wheat; */
             margin: 5px;
             padding: 5px;
             border-radius: 5px;
@@ -71,59 +67,16 @@
             /* 鼠标悬停时的颜色 */
         }
 
-        .window {
-            position: absolute;
-            top: 150px;
-            left: 120px;
-            width: fit-content;
-            height: fit-content;
-            border: 1px solid #ccc;
-            background-color: #3a3a3a;
-            user-select: none;
-            overflow: hidden;
-            /* 禁止文本选择 */
-        }
-
-        .window-header {
-            cursor: move;
-            /* 鼠标悬停时显示移动光标 */
-            padding: 20px;
-            background-color: #808080;
-        }
-
-        .window-title {
-            font-weight: bold;
-            color: wheat;
-        }
-
-        .window-close-btn {
-            float: right;
-            background-color: #cc8500;
-            border: none;
-            padding: 6px;
-            cursor: pointer;
-            color: wheat;
-        }
-
-        .window-content {
-            padding: 10px;
-            color: wheat;
-            height: fit-content;
-        }
-
-        .window-resizer {
-            position: absolute;
-            bottom: 0;
-            right: 0;
+        input[type="checkbox"]:disabled {
+            content: " ";
+            display: inline-block;
             width: 20px;
-            /* 调整句柄的宽度 */
             height: 20px;
-            /* 调整句柄的高度 */
-            background-color: #636363;
-            cursor: nwse-resize;
-            /* 设置鼠标悬停时的光标样式 */
-            text-align: center;
+            border: 1px solid #000;
+            background: #fff;
+            cursor: pointer;
         }
+
     </style>
 </head>
 
@@ -153,19 +106,18 @@
     <div id="myWindow" class="window" style="display: none; z-index: 10;">
         <div class="window-header">
             <span class="window-title">预览</span>
-            <button class="window-close-btn">关闭</button>
+            <button id="window-close-btn" type="button" class="window-close-btn">关闭</button>
         </div>
         <div class="window-content">
             <!-- 窗口内容 -->
-                <div class="container" id="preview" style="height: fit-content;">
-                    <pre class="line-numbers"><code id="pre" class="language-none">这里将显示预览</code></pre>
-                </div>
-                <div class="window-resizer">R</div>
+            <div class="container" id="preview" style="height: fit-content;">
+                <pre class="line-numbers"><code id="pre" class="language-none">这里将显示预览</code></pre>
+            </div>
+            <div class="window-resizer">R</div>
         </div>
     </div>
     <div class="container" style="overflow: hidden;">
         <div style="display: flex; flex-direction: row;">
-            <!-- <h2 style="color: wheat; flex: 3;">编辑</h2> -->
             <div class="button-list">
                 <button type="button" onclick="oppreview()">打开预览</button>
             </div>
@@ -199,77 +151,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             window.addEventListener('resize', function () {
                 editor.layout();
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const windowElement = document.getElementById('myWindow');
-            const windowHeader = windowElement.querySelector('.window-header');
-            const windowResizer = windowElement.querySelector('.window-resizer');
-
-            let isDragging = false;
-            let isResizing = false;
-            let currentX, currentY, initialX, initialY, offsetX = 0, offsetY = 0;
-            let rsinitialX, rsinitialY, dX, dY, initialHeight, initialWidth;
-
-            function handleMouseDown(e) {
-                e.preventDefault();
-                isDragging = true;
-                initialX = e.clientX - offsetX;
-                initialY = e.clientY - offsetY;
-            }
-
-            function rshandleMouseDown(e) {
-                e.preventDefault();
-                isResizing = true;
-                rsinitialX = e.clientX;
-                rsinitialY = e.clientY;
-                initialHeight = windowElement.offsetHeight;
-                initialWidth = windowElement.offsetWidth;
-            }
-
-            function handleMouseMove(e) {
-                if (!isDragging && !isResizing) { return; }
-                else if (isDragging) {
-                    e.preventDefault();
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
-                    offsetX = currentX;
-                    offsetY = currentY;
-                    setTranslate(currentX, currentY, windowElement);
-                } else if (isResizing) {
-                    e.preventDefault();
-                    dX = e.clientX - rsinitialX;
-                    dY = e.clientY - rsinitialY;
-                    
-                    setResizing(Math.min(Math.max(initialHeight + dY, 170.39), document.getElementById('preview').height), Math.min(Math.max(initialWidth + dX, 228.8), 840.3), windowElement);
-                }
-            }
-
-            function handleMouseUp() {
-                isDragging = false;
-                isResizing = false;
-            }
-
-
-            function setTranslate(xPos, yPos, el) {
-                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
-            }
-
-            function setResizing(h, w, el) {
-                el.style.height = h + 'px';
-                el.style.width = w + 'px';
-            }
-
-            windowHeader.addEventListener('mousedown', handleMouseDown);
-            windowResizer.addEventListener('mousedown', rshandleMouseDown);
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-
-
-            // 关闭窗口功能  
-            windowElement.querySelector('.window-close-btn').addEventListener('click', function () {
-                windowElement.style.display = 'none';
             });
         });
 
