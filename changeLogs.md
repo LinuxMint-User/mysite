@@ -4,6 +4,7 @@
   **下午**
   1. 分离了 *window* 组件，放入了 *widget*
   2. 同时精简了 **markdown编辑器** 页面的代码
+  3. 更新了 *global-styles.css*
 
 - 2024.04.23
   **晚上**
