@@ -1,0 +1,55 @@
+.window {
+    position: absolute;
+    top: 150px;
+    left: 10vw;
+    width: fit-content;
+    height: fit-content;
+    max-width: 80vw;
+    max-height: 86vh;
+    border: 1px solid #ccc;
+    background-color: #3a3a3a;
+    user-select: none;
+    overflow: hidden;
+    /* 禁止文本选择 */
+}
+
+.window-header {
+    cursor: move;
+    /* 鼠标悬停时显示移动光标 */
+    padding: 20px;
+    background-color: #808080;
+}
+
+.window-title {
+    font-weight: bold;
+    color: wheat;
+}
+
+.window-close-btn {
+    float: right;
+    background-color: #cc8500;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: wheat;
+}
+
+.window-content {
+    padding: 10px;
+    color: wheat;
+    height: fit-content;
+}
+
+.window-resizer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    /* 调整句柄的宽度 */
+    height: 20px;
+    /* 调整句柄的高度 */
+    background-color: #636363;
+    cursor: nwse-resize;
+    /* 设置鼠标悬停时的光标样式 */
+    text-align: center;
+}
