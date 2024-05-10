@@ -192,8 +192,8 @@ function isGameOver(table) {
 // game over
 function gameOver() {
     document.getElementById('status').innerText = "游戏结束";
-    var score = document.getElementById('score').innerText || document.getElementById('score').textContent;
-    var hisRec = document.getElementById('historyRecord').innerText || document.getElementById('historyRecord').textContent;
+    var score = Number(document.getElementById('score').innerText) || Number(document.getElementById('score').textContent);
+    var hisRec = Number(document.getElementById('historyRecord').innerText) || Number(document.getElementById('historyRecord').textContent);
     if (score > hisRec) {
         var date = new Date();
         date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
