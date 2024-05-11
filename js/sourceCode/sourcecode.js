@@ -44,7 +44,7 @@ function loadCode(button) {
 	document.getElementById('code').textContent = '加载中...';
 
 	// 更新当前文件提示
-	document.getElementById('currentfile').textContent = "";
+	document.getElementById('currentfile').textContent = '加载中...';
 
 	if (button.dataset.fileContent != '') {
 		// 判断文件格式
