@@ -11,6 +11,7 @@ console.log = function (message) {
 self.addEventListener('message', function (e) {
     if (e.data === 'terminate') {
         self.postMessage({ finished: true, terminated: true }); // 发送终止确认消息
+        self.terminate();
         return; // 终止当前执行的代码
     }
     else if(typeof e.data === 'string') {
