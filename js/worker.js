@@ -11,10 +11,14 @@ console.log = function (message) {
 self.addEventListener('message', function (e) {
     if (e.data === 'terminate') {
         self.postMessage({ finished: true, terminated: true }); // 发送终止确认消息
-        self.terminate();
+        if (self.close) { // 检查 self.close 是否可用
+            self.close(); // 使用 self.close() 来关闭Worker
+        } else if (self.terminate) {
+            self.terminate(); // 使用 self.terminate() 来关闭Worker
+        }
         return; // 终止当前执行的代码
     }
-    else if(typeof e.data === 'string') {
+    else if (typeof e.data === 'string') {
         // 使用 setTimeout 将代码执行安排到下一个事件循环
         setTimeout(() => {
             runCode(e.data);
