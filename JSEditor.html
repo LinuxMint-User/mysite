@@ -158,12 +158,15 @@
             document.getElementById('pre').innerHTML += message + '\n';
         };
 
+        // 全局变量
+        var worker = null;
+
         // 执行用户代码的函数
         function executeCode() {
             // 禁止多次运行
             document.getElementById('execCode').style.display = "none";
             // 创建 Web Worker 实例
-            var worker = new Worker('js/worker.js');
+            worker = new Worker('js/worker.js');
             // 读取用户输入的代码
             var model = editor.getModel();
             var code = model.getValue();
