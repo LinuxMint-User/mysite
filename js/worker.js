@@ -13,10 +13,18 @@ self.addEventListener('message', function (e) {
         self.postMessage({ finished: true, terminated: true }); // 发送终止确认消息
         return; // 终止当前执行的代码
     }
+    else if(typeof e.data === 'string') {
+        // 使用 setTimeout 将代码执行安排到下一个事件循环
+        setTimeout(() => {
+            runCode(e.data);
+        }, 0);
+    }
+});
 
+function runCode(code) {
     try {
         // 执行用户代码
-        let result = eval(e.data);
+        let result = eval(code);
 
         // 检查结果是否为 Promise
         if (result && typeof result.then === 'function') {
@@ -41,4 +49,4 @@ self.addEventListener('message', function (e) {
         self.postMessage({ error: error.message });
         self.postMessage({ finished: true }); // 表示任务完成
     }
-});
+}
