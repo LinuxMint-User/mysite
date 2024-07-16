@@ -4,15 +4,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS 编辑器 - 实验性</title>
+    <title>JS 编辑器</title>
     <link rel="icon" type="image/ico" href="icons/favicon.ico">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/global-styles.css">
     <link rel="stylesheet" type="text/css" href="css/night-mode.css">
     <link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
     <link rel="stylesheet" type="text/css" href="css/widgets/window.css">
+    <link rel="stylesheet" type="text/css" href="css/widgets/banner.css">
     <script src="js/markdown/marked.min.js"></script>
     <script src="js/widgets/window.js" defer></script>
+    <script src="js/widgets/banner.js" defer></script>
     <script src="js/index-script.js"></script>
     <script src="js/sourceCode/prism-1.29.0.js" defer></script>
     <style>
@@ -71,6 +73,11 @@
 </head>
 
 <body>
+
+    <div id="banner" class="banner" style="z-index: 11;">
+        <span>请注意性能开销与循环体</span>
+    </div>
+
     <div class="header">
         <div id="button-list" class="button-list" style="flex: 1; min-width: fit-content;">
             <button type="button" id="backButton" class="back-button">返回</button>
@@ -96,12 +103,19 @@
     <div id="myWindow" class="window" style="display: none; z-index: 10;">
         <div class="window-header">
             <span class="window-title">输出</span>
+            <span class="window-title" style="font-size: smaller;" id="codeStatus"></span>
             <button id="window-close-btn" type="button" class="window-close-btn">关闭</button>
+        </div>
+        <div style="max-height: min-content;">
+            <div class="button-list" style="padding: 2px;">
+                <button id="clearOutput" type="button" onclick="clearOutput()">清除输出窗口</button>
+
+            </div>
         </div>
         <div class="window-content">
             <!-- 窗口内容 -->
-            <div class="container" id="preview" style="height: fit-content; min-width: 100px;">
-                <pre class="line-numbers"><code id="pre" class="language-sh">这里将显示输出</code></pre>
+            <div class="container" id="preview" style="height: fit-content; min-width: 200px;">
+                <pre class="line-numbers"><code id="pre" class="language-sh"></code></pre>
             </div>
             <div class="window-resizer">R</div>
         </div>
@@ -111,13 +125,16 @@
             <div class="button-list">
                 <button type="button" onclick="oppreview()">打开输出</button>
                 <button type="button" id="execCode" onclick="executeCode()">运行代码</button>
-                <button type="button" id="terminateCode" onclick="terminateCode()">终止运行</button>
+                <!-- <button type="button" id="clearOutput" onclick="clearOutput()">清除输出窗口</button> -->
             </div>
         </div>
         <div id="editor"></div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs/loader.js"></script>
+
     <script>
+        // alert("请注意性能开销与难以结束的循环体");
         var editor;
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs' } });
         require(['vs/editor/editor.main'], function () {
@@ -142,17 +159,6 @@
             document.getElementById('myWindow').style.display = '';
         }
 
-        // function refresh() {
-        //     var model = editor.getModel();
-        //     if (model.getValue() != "") {
-        //         document.getElementById('pre').innerHTML = model.getValue();
-        //         loadScript();
-        //     } else {
-        //         document.getElementById('pre').innerHTML = "这里将显示输出";
-        //         loadScript();
-        //     }
-        // }
-
         // 重写console.log以捕获输出
         console.log = function (message) {
             document.getElementById('pre').innerHTML += message + '\n';
@@ -165,21 +171,29 @@
         function executeCode() {
             // 禁止多次运行
             document.getElementById('execCode').style.display = "none";
+            // 更新代码状态提示
+            document.getElementById('codeStatus').innerHTML = "执行中";
             // 创建 Web Worker 实例
             worker = new Worker('js/worker.js');
             // 读取用户输入的代码
             var model = editor.getModel();
             var code = model.getValue();
             if (code.trim() === "") {
-                document.getElementById('pre').innerHTML = "请输入代码";
+                // 释放运行按钮
+                document.getElementById('execCode').style.display = "";
+                // 更新代码状态提示
+                document.getElementById('codeStatus').innerHTML = "请输入代码";
                 return;
             }
-            document.getElementById('pre').innerHTML = "执行中...\n";
+            // document.getElementById('pre').innerHTML = "执行中...\n";
 
             // 处理 Web Worker 发送的消息
             worker.onmessage = function (e) {
                 var resultElement = document.getElementById('pre');
-                resultElement.innerHTML += e.data.log + "\n"; // 显示日志消息
+                setTimeout(() => {
+                    resultElement.innerHTML += e.data.log + "\n";
+                    document.getElementById('preview').scrollTop = document.getElementById('preview').scrollHeight;
+                }, 100); // 显示日志消息
                 callRefresh();
             }
 
@@ -188,10 +202,13 @@
 
             // 释放运行按钮
             document.getElementById('execCode').style.display = "";
+
+            // 更新代码状态提示
+            document.getElementById('codeStatus').innerHTML = "";
         };
 
-        function terminateCode() {
-            worker.postMessage('terminate');
+        function clearOutput() {
+            document.getElementById('pre').innerHTML = "";
         }
 
         function callRefresh() {
@@ -226,9 +243,11 @@
             // console.error('Failed to load Prism script:', error);
         });
     </script>
+
     <footer>
         <p id="copyright">&copy; 2024 Eric Chan</p>
     </footer>
+
 </body>
 
 </html>
