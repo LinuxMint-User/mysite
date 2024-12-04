@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS 编辑器</title>
+    <link rel="icon" type="image/ico" href="icons/favicon.ico">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/global-styles.css">
+    <link rel="stylesheet" type="text/css" href="css/night-mode.css">
+    <link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
+    <link rel="stylesheet" type="text/css" href="css/widgets/window.css">
+    <link rel="stylesheet" type="text/css" href="css/widgets/banner.css">
+    <script src="js/markdown/marked.min.js"></script>
+    <script src="js/widgets/window.js" defer></script>
+    <script src="js/widgets/banner.js" defer></script>
+    <script src="js/index-script.js"></script>
+    <script src="js/sourceCode/prism-1.29.0.js" defer></script>
+    <style>
+        #preview {
+            height: 100%;
+            max-height: 60vh;
+            width: 0 auto;
+            overflow: auto;
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        #editor {
+            height: 100%;
+            min-height: 50vh;
+            max-height: 300px;
+            width: 0 auto;
+            overflow: auto;
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        /* 滚动条整体样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+            /* 滚动条的宽度与高度 */
+        }
+
+        /* 滚动条轨道样式 */
+        ::-webkit-scrollbar-track {
+            background: #333;
+            /* 滚动条轨道的背景颜色 */
+            border-radius: 3px;
+            /* 滚动条轨道的圆角 */
+        }
+
+        /* 滚动条滑块样式 */
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            /* 滚动条滑块的颜色 */
+            border-radius: 3px;
+            /* 滚动条滑块的圆角 */
+        }
+
+        /* 鼠标悬停在滚动条滑块上时的样式 */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #999;
+            /* 鼠标悬停时的颜色 */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="banner" class="banner" style="z-index: 11;">
+        <span>请注意性能开销与循环体</span>
+    </div>
+
+    <div class="header">
+        <div id="button-list" class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="backButton" class="back-button">返回</button>
+        </div>
+        <h2 style="flex: 9;">JS 编辑器</h2>
+    </div>
+
+    <script>
+        document.getElementById('backButton').addEventListener('click', function () {
+            // 从 URL 中获取 'from' 参数  
+            var fromPage = new URLSearchParams(window.location.search).get('from');
+
+            // 如果 'from' 参数是 'index'，则直接返回  
+            if (fromPage === 'index') {
+                window.history.back();
+            } else {
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html  
+                window.location.href = '/mysite/';
+            }
+        });  
+    </script>
+
+    <div id="myWindow" class="window" style="display: none; z-index: 10;">
+        <div class="window-header">
+            <span class="window-title">输出</span>
+            <span class="window-title" style="font-size: smaller;" id="codeStatus"></span>
+            <button id="window-close-btn" type="button" class="window-close-btn">关闭</button>
+        </div>
+        <div style="max-height: min-content;">
+            <div class="button-list" style="padding: 2px;">
+                <button id="clearOutput" type="button" onclick="clearOutput()">清除输出窗口</button>
+
+            </div>
+        </div>
+        <div class="window-content">
+            <!-- 窗口内容 -->
+            <div class="container" id="preview" style="height: fit-content; min-width: 200px;">
+                <pre class="line-numbers"><code id="pre" class="language-sh"></code></pre>
+            </div>
+            <div class="window-resizer">R</div>
+        </div>
+    </div>
+    <div class="container" style="overflow: hidden;">
+        <div style="display: flex; flex-direction: row;">
+            <div class="button-list">
+                <button type="button" onclick="oppreview()">打开输出</button>
+                <button type="button" id="execCode" onclick="executeCode()">运行代码</button>
+                <!-- <button type="button" id="clearOutput" onclick="clearOutput()">清除输出窗口</button> -->
+            </div>
+        </div>
+        <div id="editor"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs/loader.js"></script>
+
+    <script>
+        // alert("请注意性能开销与难以结束的循环体");
+        var editor;
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '',
+                language: 'javascript',
+                theme: 'vs-dark',
+                fontSize: '20px',
+                automaticLayout: true,
+                quickSuggestions: true,
+                quickSuggestionsDelay: 500
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            window.addEventListener('resize', function () {
+                editor.layout();
+            });
+        });
+
+        function oppreview() {
+            document.getElementById('myWindow').style.display = '';
+        }
+
+        // 重写console.log以捕获输出
+        console.log = function (message) {
+            document.getElementById('pre').innerHTML += message + '\n';
+        };
+
+        // 全局变量
+        var worker = null;
+
+        // 执行用户代码的函数
+        function executeCode() {
+            // 禁止多次运行
+            document.getElementById('execCode').style.display = "none";
+            // 更新代码状态提示
+            document.getElementById('codeStatus').innerHTML = "执行中";
+            // 创建 Web Worker 实例
+            worker = new Worker('js/worker.js');
+            // 读取用户输入的代码
+            var model = editor.getModel();
+            var code = model.getValue();
+            if (code.trim() === "") {
+                // 释放运行按钮
+                document.getElementById('execCode').style.display = "";
+                // 更新代码状态提示
+                document.getElementById('codeStatus').innerHTML = "请输入代码";
+                return;
+            }
+            // document.getElementById('pre').innerHTML = "执行中...\n";
+
+            // 处理 Web Worker 发送的消息
+            worker.onmessage = function (e) {
+                var resultElement = document.getElementById('pre');
+                setTimeout(() => {
+                    resultElement.innerHTML += e.data.log + "\n";
+                    document.getElementById('preview').scrollTop = document.getElementById('preview').scrollHeight;
+                }, 100); // 显示日志消息
+                callRefresh();
+            }
+
+            // 将用户代码发送给 Web Worker
+            worker.postMessage(code);
+
+            // 释放运行按钮
+            document.getElementById('execCode').style.display = "";
+
+            // 更新代码状态提示
+            document.getElementById('codeStatus').innerHTML = "";
+        };
+
+        function clearOutput() {
+            document.getElementById('pre').innerHTML = "";
+        }
+
+        function callRefresh() {
+            // 立即清除之前的定时器，如果存在
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
+
+            // 设置一个新的定时器
+            this.timer = setTimeout(function () {
+                loadScript('js/sourceCode/prism-1.29.0.js');
+                // 执行完毕后，清除引用的定时器
+                this.timer = null;
+            }, 1000);
+        };
+
+        // 加载脚本的函数  
+        function loadScript(scriptSrc) {
+            return new Promise((resolve, reject) => {
+                var script = document.createElement('script');
+                script.src = scriptSrc;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+            });
+        };
+
+        // 调用loadScript函数，确保脚本加载完成
+        loadScript('js/sourceCode/prism-1.29.0.js').then(() => {
+            // console.log('Prism script loaded successfully.');
+        }).catch(error => {
+            // console.error('Failed to load Prism script:', error);
+        });
+    </script>
+
+    <footer>
+        <p id="copyright">&copy; 2024 Eric Chan</p>
+    </footer>
+
+</body>
+
+</html>
