@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网页版2048(重制版)</title>
+    <title>2048游戏</title>
 	<link rel="icon" type="image/ico" href="icons/favicon.ico">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/global-styles.css">
@@ -14,6 +14,7 @@
     <script src="js/2048-Game/2048-remastered-main.js"></script>
     <script src="js/2048-Game/2048-remastered-rendering.js"></script>
     <script src="js/index-script.js" defer></script>
+    <script src="js/updateCopyright.js" defer></script>
 </head>
 
 <body>
@@ -38,19 +39,19 @@
         });
     </script>
 
-    <div class="container" style="display: flex; flex-direction: column-reverse;">
+    <div class="container" style="display: flex; flex-direction: row-reverse;">
         <div class="button-list" style="flex: 1; min-width: fit-content;">
             <button type="button" id="newGameButton" onclick="newGame()">新游戏</button>
             <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
         </div>
         <div class="container"
-            style="flex: 3; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0px; margin: 5px; padding: 0px;">
+            style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0px; margin: 5px; padding: 0px;">
             <h3 style="color: wheat; margin: 5px;">
                 当前得分:<span id="score">0</span>
             </h3>
-            <h3 style="color: wheat; margin: 5px;">
+            <!-- <h3 style="color: wheat; margin: 5px;">
                 历史最高分:<span id="historyRecord">0</span>
-            </h3>
+            </h3> -->
             <h3 style="color: wheat; margin: 5px;;">
                 游戏状态:<span id="status">进行中</span>
             </h3>
@@ -135,8 +136,7 @@
     </div>
 
     <footer>
-        <p>本页面使用cookie存储您的历史最高分。源代码<a href="sourcecode.html?from=2048-remastered" target="_blank"><b>在这里</b></a></p>
-        <p id="copyright">&copy; 2024 Eric Chan</p>
+        <p id="copyright">&copy; <span id="currentYearinCopyright">2024</span> Eric Chan · 本页面使用cookie存储您的历史最高分。源代码<a href="sourcecode.html?from=2048-remastered" target="_blank"><b>在这里</b></a></p>
     </footer>
 </body>
 
