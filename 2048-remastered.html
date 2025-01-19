@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2048游戏</title>
-	<link rel="icon" type="image/ico" href="icons/favicon.ico">
+    <link rel="icon" type="image/ico" href="icons/favicon.ico">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/global-styles.css">
     <link rel="stylesheet" href="css/night-mode.css">
@@ -22,16 +22,22 @@
         <div class="button-list" style="flex: 1; min-width: fit-content;">
             <button type="button" id="backButton" class="back-button">返回</button>
         </div>
-        <h2 style="flex: 9;">2048重制版</h2>
+        <h2 style="flex: 9;">2048游戏</h2>
     </header>
 
     <script>
         document.getElementById('backButton').addEventListener('click', function () {
             // 从 URL 中获取 'from' 参数
             var fromPage = new URLSearchParams(window.location.search).get('from');
-            // 如果 'from' 参数是 'index'，则直接返回
+            // 如果 'from' 参数是 'index'
             if (fromPage === 'index') {
-                window.history.back();
+                // 判断浏览器历史记录中是否有可返回的页面
+                if (window.history.length > 1) {
+                    window.history.back(); // 有则直接返回
+                } else {
+                    // 没有则跳转到 index.html
+                    window.location.href = '/mysite/'
+                }
             } else {
                 // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html
                 window.location.href = '/mysite/'
@@ -131,12 +137,9 @@
         </div>
     </div>
 
-    <div>
-
-    </div>
-
     <footer>
-        <p id="copyright">&copy; <span id="currentYearinCopyright">2024</span> Eric Chan · 本页面使用cookie存储您的历史最高分。源代码<a href="sourcecode.html?from=2048-remastered" target="_blank"><b>在这里</b></a></p>
+        <p id="copyright">&copy; <span id="currentYearinCopyright">2024</span> Eric Chan · 本页面源代码<a
+                href="sourcecode.html?from=2048-remastered" target="_blank"><b>在这里</b></a></p>
     </footer>
 </body>
 

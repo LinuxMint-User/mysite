@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown编辑器</title>
-	<link rel="icon" type="image/ico" href="icons/favicon.ico">
+    <link rel="icon" type="image/ico" href="icons/favicon.ico">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/global-styles.css">
     <link rel="stylesheet" type="text/css" href="css/night-mode.css">
@@ -81,17 +81,22 @@
 
     <script>
         document.getElementById('backButton').addEventListener('click', function () {
-            // 从 URL 中获取 'from' 参数  
+            // 从 URL 中获取 'from' 参数
             var fromPage = new URLSearchParams(window.location.search).get('from');
-
-            // 如果 'from' 参数是 'index'，则直接返回  
+            // 如果 'from' 参数是 'index'
             if (fromPage === 'index') {
-                window.history.back();
+                // 判断浏览器历史记录中是否有可返回的页面
+                if (window.history.length > 1) {
+                    window.history.back(); // 有则直接返回
+                } else {
+                    // 没有则跳转到 index.html
+                    window.location.href = '/mysite/'
+                }
             } else {
-                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html  
-                window.location.href = '/mysite/';
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html
+                window.location.href = '/mysite/'
             }
-        });  
+        });
     </script>
 
     <div id="myWindow" class="window" style="display: none; z-index: 10;">

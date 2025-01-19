@@ -88,17 +88,22 @@
 
     <script>
         document.getElementById('backButton').addEventListener('click', function () {
-            // 从 URL 中获取 'from' 参数  
+            // 从 URL 中获取 'from' 参数
             var fromPage = new URLSearchParams(window.location.search).get('from');
-
-            // 如果 'from' 参数是 'index'，则直接返回  
+            // 如果 'from' 参数是 'index'
             if (fromPage === 'index') {
-                window.history.back();
+                // 判断浏览器历史记录中是否有可返回的页面
+                if (window.history.length > 1) {
+                    window.history.back(); // 有则直接返回
+                } else {
+                    // 没有则跳转到 index.html
+                    window.location.href = '/mysite/'
+                }
             } else {
-                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html  
-                window.location.href = '/mysite/';
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html
+                window.location.href = '/mysite/'
             }
-        });  
+        });
     </script>
 
     <div id="myWindow" class="window" style="display: none; z-index: 10;">
