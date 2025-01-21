@@ -196,47 +196,61 @@ document.getElementById('pauseResumeBtn').addEventListener('click', () => {
 });
 
 // 触屏支持
-var startX, startY, moveX, moveY;
-var gameArea = document.getElementById('snakeCanvas'); // 假设你的 Canvas ID 是 "snakeCanvas"
+// var startX, startY, moveX, moveY;
+// var gameArea = document.getElementById('snakeCanvas'); // 假设你的 Canvas ID 是 "snakeCanvas"
 
-// 触摸开始时记录初始位置
-gameArea.addEventListener('touchstart', function(event) {
-    event.preventDefault(); // 防止默认行为（如页面滚动）
-    var touch = event.touches[0];
-    startX = touch.pageX;
-    startY = touch.pageY;
-});
+// // 触摸开始时记录初始位置
+// gameArea.addEventListener('touchstart', function (event) {
+//     event.preventDefault(); // 防止默认行为（如页面滚动）
+//     var touch = event.touches[0];
+//     startX = touch.pageX;
+//     startY = touch.pageY;
+// });
 
-// 触摸移动时记录移动距离
-gameArea.addEventListener('touchmove', function(event) {
-    event.preventDefault(); // 防止默认行为
-    var touch = event.touches[0];
-    moveX = touch.pageX - startX;
-    moveY = touch.pageY - startY;
-});
+// // 触摸移动时记录移动距离
+// gameArea.addEventListener('touchmove', function (event) {
+//     event.preventDefault(); // 防止默认行为
+//     var touch = event.touches[0];
+//     moveX = touch.pageX - startX;
+//     moveY = touch.pageY - startY;
+// });
 
-// 触摸结束时判断滑动方向并更新蛇的方向
-gameArea.addEventListener('touchend', function(event) {
-    event.preventDefault(); // 防止默认行为
+// // 触摸结束时判断滑动方向并更新蛇的方向
+// gameArea.addEventListener('touchend', function (event) {
+//     event.preventDefault(); // 防止默认行为
 
-    // 判断水平滑动还是垂直滑动
-    if (Math.abs(moveX) > Math.abs(moveY)) {
-        // 水平滑动
-        if (moveX < 0) {
-            // 向左滑动
-            changeDirection('left');
-        } else {
-            // 向右滑动
-            changeDirection('right');
-        }
-    } else {
-        // 垂直滑动
-        if (moveY < 0) {
-            // 向上滑动
-            changeDirection('up');
-        } else {
-            // 向下滑动
-            changeDirection('down');
-        }
-    }
-});
+//     // 判断水平滑动还是垂直滑动
+//     if (Math.abs(moveX) > Math.abs(moveY)) {
+//         // 水平滑动
+//         if (moveX < 0) {
+//             // 向左滑动
+//             changeDirection('left');
+//         } else {
+//             // 向右滑动
+//             changeDirection('right');
+//         }
+//     } else {
+//         // 垂直滑动
+//         if (moveY < 0) {
+//             // 向上滑动
+//             changeDirection('up');
+//         } else {
+//             // 向下滑动
+//             changeDirection('down');
+//         }
+//     }
+// });
+
+// 按钮支持
+document.getElementById('upBtn').addEventListener('click', () => changeDirection('up'));
+document.getElementById('leftBtn').addEventListener('click', () => changeDirection('left'));
+document.getElementById('downBtn').addEventListener('click', () => changeDirection('down'));
+document.getElementById('rightBtn').addEventListener('click', () => changeDirection('right'));
+
+// 移动端检测
+const controlButtons = document.querySelector('.control-buttons');
+if (isMobileDevice()) {
+    controlButtons.style.display = 'grid'; // 显示按钮
+} else {
+    controlButtons.style.display = 'none'; // 隐藏按钮
+}
