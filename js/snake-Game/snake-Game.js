@@ -15,9 +15,9 @@ const renderDelay = 200; // 渲染间隔时间，单位毫秒
 let isPlaying = false; // 游戏是否在进行中
 
 // 初加载在canvas上提示操作方法
-let controlsCN = "操作方法：桌面端：⬆⬇⬅➡ 移动端：A B X Y";
-let controlsEN = "control: desktop: ⬆⬇⬅➡ mobile: A B X Y";
-ctx.font = '14px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+let controlsCN = "操作方法：⬆⬇⬅➡";
+let controlsEN = "control:⬆⬇⬅➡";
+ctx.font = '18px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 ctx.fillStyle = 'black';
 ctx.fillText(`${controlsCN}`, 5, 120);
 ctx.fillText(`${controlsEN}`, 5, 140);
