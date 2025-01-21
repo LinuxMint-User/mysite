@@ -19,8 +19,8 @@ let controlsCN = "操作方法：⬆⬇⬅➡";
 let controlsEN = "control:⬆⬇⬅➡";
 ctx.font = '18px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 ctx.fillStyle = 'black';
-ctx.fillText(`${controlsCN}`, 5, 120);
-ctx.fillText(`${controlsEN}`, 5, 140);
+ctx.fillText(`${controlsCN}`, 5, 20);
+ctx.fillText(`${controlsEN}`, 5, 40);
 
 
 function isInSnake(x, y) {
