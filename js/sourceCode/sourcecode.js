@@ -134,6 +134,7 @@ const from = urlParams.get('from');
 
 // 假设有一个映射关系，根据from的值决定要显示的文件数量  
 const fileCounts = {
+	'snake-Game': 2,
 	'2048': 5,
 	'2048-remastered': 4,
 	// 可以添加更多映射关系  

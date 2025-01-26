@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇游戏</title>
+    <base href="/mysite/">
+    <link rel="icon" type="image/ico" href="icons/favicon.ico">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/global-styles.css">
+    <link rel="stylesheet" href="css/night-mode.css">
+    <style>
+        canvas {
+            display: block;
+            margin: auto;
+            background-color: wheat;
+            border: 1px solid black;
+        }
+
+        .control-buttons {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            width: 240px;
+            opacity: 0.8;
+        }
+
+        .control-btn {
+            width: 80px;
+            height: 40px;
+            background-color: #cc8500;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #upBtn {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        #leftBtn {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        #downBtn {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        #rightBtn {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .control-buttons:hover {
+            opacity: 0.6;
+        }
+    </style>
+    <script src="js/isMobileDevice.js"></script>
+    <script src="js/snake-Game/snake-Game.js" defer></script>
+    <script src="js/index-script.js" defer></script>
+    <script src="js/updateCopyright.js" defer></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="backButton" class="back-button">返回</button>
+        </div>
+        <h2 style="flex: 9;">贪吃蛇游戏</h2>
+    </header>
+
+    <script>
+        document.getElementById('backButton').addEventListener('click', function () {
+            // 从 URL 中获取 'from' 参数
+            var fromPage = new URLSearchParams(window.location.search).get('from');
+            // 如果 'from' 参数是 'index'
+            if (fromPage === 'index') {
+                // 判断浏览器历史记录中是否有可返回的页面
+                if (window.history.length > 1) {
+                    window.history.back(); // 有则直接返回
+                } else {
+                    // 没有则跳转到 index.html
+                    window.location.href = '/mysite/'
+                }
+            } else {
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html
+                window.location.href = '/mysite/'
+            }
+        });
+    </script>
+    <div class="container" style="display: flex; flex-direction: row;">
+        <div class="container"
+            style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0px; margin: 5px; padding: 0px; place-items: center;">
+            <h3 style="color: wheat; height: min-content; width: fit-content; margin: 2px; text-align: center;">
+                得分:<span id="score">0</span>
+            </h3>
+            <!-- <h3 style="color: wheat; margin: 5px;">
+                历史最高分:<span id="historyRecord">0</span>
+            </h3> -->
+            <h3 style="color: wheat; height: min-content; width: fit-content; margin: 2px; text-align: center;">
+                状态:<span id="status">准备</span>
+            </h3>
+        </div>
+        <div class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="startRestartBtn">开始</button>
+            <button type="button" id="pauseResumeBtn">暂停</button>
+        </div>
+    </div>
+    <div class="container">
+        <canvas id="snakeCanvas" width="300" height="300"></canvas>
+
+    </div>
+
+    <div class="control-buttons">
+        <button id="upBtn" class="control-btn">↑</button>
+        <button id="leftBtn" class="control-btn">←</button>
+        <button id="downBtn" class="control-btn">↓</button>
+        <button id="rightBtn" class="control-btn">→</button>
+    </div>
+
+    <footer>
+        <p id="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan · 本页面源代码<a
+                href="Subpages/Tools/sourcecode.html?from=snake-Game" target="_blank"><b>在这里</b></a></p>
+    </footer>
+</body>
+
+</html>

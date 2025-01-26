@@ -118,14 +118,14 @@ function anyBlockVertical(col, row0, row1, table) {
 // initialize the game
 function init() {
     currentScore = 0;
-    if (fetchHistoryRecord()) {
-        historyRecord = fetchHistoryRecord();
-    } else {
-        historyRecord = 0;
-    }
+    // if (fetchHistoryRecord()) {
+    //     historyRecord = fetchHistoryRecord();
+    // } else {
+    //     historyRecord = 0;
+    // }
     // setup the score, history record and game status
     document.getElementById('score').innerText = currentScore;
-    document.getElementById('historyRecord').innerText = historyRecord;
+    // document.getElementById('historyRecord').innerText = historyRecord;
     document.getElementById('status').innerText = "进行中";
     // initialize CNT and MTT
     for (var i = 0; i < 4; i++) {
@@ -192,19 +192,19 @@ function isGameOver(table) {
 // game over
 function gameOver() {
     document.getElementById('status').innerText = "游戏结束";
-    var score = Number(document.getElementById('score').innerText) || Number(document.getElementById('score').textContent);
-    var hisRec = Number(document.getElementById('historyRecord').innerText) || Number(document.getElementById('historyRecord').textContent);
-    if (score > hisRec) {
-        var date = new Date();
-        date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
-        var expires = "; expires=" + date.toUTCString();
-        document.cookie = historyRecordCookieName + "=" + score + expires + "; path=/";
-    } else {
-        var date = new Date();
-        date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
-        var expires = "; expires=" + date.toUTCString();
-        document.cookie = historyRecordCookieName + "=" + hisRec + expires + "; path=/";
-    }
+    // var score = Number(document.getElementById('score').innerText) || Number(document.getElementById('score').textContent);
+    // var hisRec = Number(document.getElementById('historyRecord').innerText) || Number(document.getElementById('historyRecord').textContent);
+    // if (score > hisRec) {
+    //     var date = new Date();
+    //     date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+    //     var expires = "; expires=" + date.toUTCString();
+    //     document.cookie = historyRecordCookieName + "=" + score + expires + "; path=/";
+    // } else {
+    //     var date = new Date();
+    //     date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+    //     var expires = "; expires=" + date.toUTCString();
+    //     document.cookie = historyRecordCookieName + "=" + hisRec + expires + "; path=/";
+    // }
 }
 // set MTT to zero
 function setMergeTagTableToZero() {
