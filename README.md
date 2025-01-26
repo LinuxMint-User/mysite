@@ -4,7 +4,7 @@
   2. Remain to be found
 ## NOTICE
 - For specific modifications, please refer to [changeLogs.md](changeLogs.md) (Chinese Only)
-- This is a webpage that I created on a whim while practicing front-end code. Some of the code has been borrowed from others (the copyright agreement used will be indicated in the corresponding webpage's footer as required), and the quality of the code may not be high. Meanwhile, I only accept practical issues.
+- This is a webpage that I created on a whim while practicing front-end code. Some of the code has been borrowed from others (the copyright agreement used will be indicated in the corresponding webpage's footer as required), and the quality of the code may not be high. Meanwhile, I accept practical issues.
   
  
 ## 这是我的网页
