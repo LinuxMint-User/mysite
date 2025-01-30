@@ -66,13 +66,14 @@
 
 		.nav-item {
 			display: block;
-			margin: 10px 0;
-			padding: 10px;
+			margin: 0;
+			padding: 0;
 			background-color: #333;
 			color: wheat;
 			text-decoration: none;
 			border-radius: 5px;
 			transition: background-color 0.3s ease;
+			font-size: 14px;
 			/* 按钮交互效果 */
 		}
 
@@ -119,7 +120,7 @@
 	<div class="container" style="display: flex; flex-direction: column; color: wheat;">
 		<p>导航</p>
 		<div id="nav-container" class="container"
-			style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 5px; padding: 6px;">
+		style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); column-gap: 10px; row-gap: 10px; margin: 5px; padding: 5px;">
 			<!-- 动态内容将在这里显示 -->
 		</div>
 	</div>
@@ -137,7 +138,6 @@
 		<div class="container">
 			<div id="button-list-0" class="button-list">
 				<button type="button" date="1970.01.01">----.--.--</button>
-
 			</div>
 		</div>
 		<div id="pre-container-0" class="container">
@@ -154,9 +154,9 @@
 		function loadTopLevelCategories() {
 			const navContainer = document.getElementById('nav-container');
 			navContainer.innerHTML = `
-        <a href="#" class="nav-item" data-type="category" data-target="games">游戏</a>
-        <a href="#" class="nav-item" data-type="category" data-target="tools">工具</a>
-    `;
+                <a href="#" class="nav-item" data-type="category" data-target="games">游戏</a>
+                <a href="#" class="nav-item" data-type="category" data-target="tools">工具</a>
+            `;
 			navContainer.classList.add('loaded'); // 触发动画
 		}
 
@@ -186,17 +186,18 @@
 				switch (categoryId) {
 					case 'games':
 						navContainer.innerHTML = `
-                    <a class="nav-item" data-type="content" href="Subpages/Games/2048-remastered.html?from=index">2048 游戏</a>
-                    <a class="nav-item" data-type="content" href="Subpages/Games/snake-Game.html?from=index">贪吃蛇 游戏</a>
-                    <a href="#" class="nav-item" data-type="category" data-target="top">返回上级</a>
-                `;
+                            <a class="nav-item" data-type="content" href="Subpages/Games/2048-remastered.html?from=index">2048 游戏</a>
+                            <a class="nav-item" data-type="content" href="Subpages/Games/snake-Game.html?from=index">贪吃蛇 游戏</a>
+                            <a href="#" class="nav-item" data-type="category" data-target="top">返回上级</a>
+                        `;
 						break;
 					case 'tools':
 						navContainer.innerHTML = `
-                    <a class="nav-item" data-type="content" href="Subpages/Tools/Editors/markdownEditor.html?from=index">Markdown 编辑器</a>
-                    <a class="nav-item" data-type="content" href="Subpages/Tools/Editors/JSEditor.html?from=index">JavaScript 编辑器</a>
-                    <a href="#" class="nav-item" data-type="category" data-target="top">返回上级</a>
-                `;
+                            <a class="nav-item" data-type="content" href="Subpages/Tools/Editors/markdownEditor.html?from=index">Markdown 编辑器</a>
+                            <a class="nav-item" data-type="content" href="Subpages/Tools/Editors/JSEditor.html?from=index">JavaScript 编辑器</a>
+                            <a class="nav-item" data-type="content" href="Subpages/Tools/CRCVerify.html?from=index">CRC 校验工具</a>
+                            <a href="#" class="nav-item" data-type="category" data-target="top">返回上级</a>
+                        `;
 						break;
 					case 'top':
 						loadTopLevelCategories(); // 返回顶级分类

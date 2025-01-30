@@ -107,35 +107,37 @@ body {
 }
 
 .button-list {
-	margin: 2px auto;
-	display: flex;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	/* 可选：使用滚动对齐 */
-	scroll-padding: 50px;
-	/* 可选：增加滚动区域的额外空间 */
+    margin: 2px auto;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    /* 可选：使用滚动对齐 */
+    scroll-padding: 50px;
+    /* 可选：增加滚动区域的额外空间 */
+    justify-content: center; /* 新增：使单个按钮居中 */
+    align-items: center; /* 新增：垂直居中 */
 }
 
 .button-list button {
-	margin: 1px auto;
-	margin-left: 5px;
-	display: inline-block;
-	padding: 10px 20px;
-	background-color: #cc8500;
-	border: none;
-	border-radius: 5px;
-	color: white;
-	text-align: center;
-	text-decoration: none;
-	font-size: 16px;
-	transition: background-color 0.3s;
-	cursor: pointer;
-	flex: 0 0 auto;
-	/* Flex项不伸缩 */
-	margin-right: 10px;
-	/* 按钮之间的间距 */
-	/* 可选：为按钮添加滚动对齐 */
-	scroll-snap-align: start;
+    margin: 1px auto;
+    margin-left: 5px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #cc8500;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    flex: 0 0 auto;
+    /* Flex项不伸缩 */
+    margin-right: 10px;
+    /* 按钮之间的间距 */
+    /* 可选：为按钮添加滚动对齐 */
+    scroll-snap-align: start;
 }
 
 .button-list button:hover {
@@ -196,4 +198,56 @@ footer a:hover {
 .copyright {
 	font-weight: bold;
 	/* 版权信息加粗 */
+}
+
+.textbox {
+	width: fit-content;
+	max-width: 300px;
+	padding: 10px;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	resize: none;
+	background-color: #888;
+	caret-color: wheat;
+	color: black;
+}
+
+.textbox:focus {
+	outline: none;
+	border-color: #acacac;
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.textbox::selection {
+	background-color: #888;
+	/* 选中文字的背景颜色 */
+	color: white;
+	/* 选中文字的颜色 */
+}
+
+.custom-select {
+	max-width: 300px;
+	padding: 8px;
+	font-size: 16px;
+	color: wheat;
+	border: 1px solid #acacac;
+	border-radius: 5px;
+	background-color: #888;
+	appearance: auto;
+	cursor: pointer;
+}
+
+.custom-select option {
+	padding: 10px;
+	font-size: 14px;
+	color: wheat;
+	background-color: #888;
+}
+
+.custom-select:focus {
+	outline: none;
+	border-color: #acacac;
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
