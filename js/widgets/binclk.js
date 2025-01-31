@@ -43,4 +43,39 @@ function updateClock() {
         document.getElementById('dot-hr1-' + i).className = 'dot ' + (hr1.charAt(3 - i) == 1 ? 'on' : 'off');
     }
 }
+
+// 获取 header 元素
+const header = document.querySelector('header');
+
+// 创建 dot-matrix 容器
+const clockContainer = document.createElement('div');
+clockContainer.className = 'dot-matrix';
+clockContainer.id = 'clock';
+clockContainer.style.display = 'none';
+clockContainer.style.flex = '1';
+clockContainer.style.marginRight = '20px';
+
+// 定义生成 dot 元素的函数
+function createDotElement(id) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.id = id;
+    return dot;
+}
+
+// 生成所有 dot 元素
+const dotIds = [
+    'dot-hr1-3', 'dot-hr0-3', 'dot-min1-3', 'dot-min0-3', 'dot-sec1-3', 'dot-sec0-3',
+    'dot-hr1-2', 'dot-hr0-2', 'dot-min1-2', 'dot-min0-2', 'dot-sec1-2', 'dot-sec0-2',
+    'dot-hr1-1', 'dot-hr0-1', 'dot-min1-1', 'dot-min0-1', 'dot-sec1-1', 'dot-sec0-1',
+    'dot-hr1-0', 'dot-hr0-0', 'dot-min1-0', 'dot-min0-0', 'dot-sec1-0', 'dot-sec0-0'
+];
+
+dotIds.forEach(id => {
+    clockContainer.appendChild(createDotElement(id));
+});
+
+// 将生成的 dot-matrix 容器插入到 header
+header.insertBefore(clockContainer, header.firstChild);
+document.getElementById('clock').style.display = 'grid';
 setInterval(updateClock, 1000);
