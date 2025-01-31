@@ -58,6 +58,12 @@
 			/* 初始状态透明 */
 			transition: opacity 0.5s ease;
 			/* 平滑过渡 */
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			column-gap: 10px;
+			row-gap: 10px;
+			margin: 5px;
+			padding: 5px;
 		}
 
 		#nav-container.loaded {
@@ -92,8 +98,7 @@
 
 	<div class="container" style="display: flex; flex-direction: column; color: wheat;">
 		<p>导航</p>
-		<nav id="nav-container" class="container"
-		style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); column-gap: 10px; row-gap: 10px; margin: 5px; padding: 5px;">
+		<nav id="nav-container" class="container">
 			<!-- 动态内容将在这里显示 -->
 		</nav>
 	</div>
