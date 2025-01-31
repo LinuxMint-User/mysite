@@ -84,6 +84,7 @@ function main() {
         })
         .catch(error => {
             console.error('Error fetching the source code:', error);
+            document.getElementById('changeLogs').textContent = 'Failed to load change logs. Please try again later.';
         });
     fetch('changePlans.md')
         .then(response => response.text())
@@ -93,6 +94,7 @@ function main() {
         })
         .catch(error => {
             console.error('Error fetching the source code:', error);
+            document.getElementById('changePlans').textContent = 'Failed to load change plans. Please try again later.';
         });
 }
 
