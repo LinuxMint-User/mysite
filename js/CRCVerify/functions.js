@@ -87,6 +87,8 @@ function detectChecksumType(checksum) {
 
 function clearResult() {
     const resultLabel = document.getElementById('result-label');
-    resultLabel.innerText = '校验结果：未校验';
+    resultLabel.innerHTML = '校验结果：未校验<br>计算出的校验值：<span class="selective-text" id="result-label-value" style="overflow-wrap: anywhere;"></span>';
     resultLabel.style.color = 'wheat';
+    const resultLabelValue = document.getElementById('result-label-value');
+    resultLabelValue.innerText = '';
 }

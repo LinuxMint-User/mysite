@@ -77,11 +77,15 @@ document.getElementById('check-button').addEventListener('click', function () {
         clearInterval(interval); // 停止计时器
         msgWindow.style.display = 'none'; // 关闭模态框
         if (calculatedChecksum.toLowerCase() === checksum.toLowerCase()) {
-            resultLabel.innerText = '校验结果：成功';
+            resultLabel.innerHTML = '校验结果：成功<br>计算出的校验值：<span class="selective-text" id="result-label-value" style="overflow-wrap: anywhere;"></span>';
             resultLabel.style.color = 'green';
+            const resultLabelValue = document.getElementById('result-label-value');
+            resultLabelValue.innerText = calculatedChecksum;
         } else {
-            resultLabel.innerText = '校验结果：失败';
+            resultLabel.innerHTML = '校验结果：失败<br>计算出的校验值：<span class="selective-text" id="result-label-value" style="overflow-wrap: anywhere;"></span>';
             resultLabel.style.color = 'red';
+            const resultLabelValue = document.getElementById('result-label-value');
+            resultLabelValue.innerText = calculatedChecksum;
         }
     }).catch(function (err) {
         clearInterval(interval); // 停止计时器
