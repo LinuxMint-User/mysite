@@ -123,19 +123,21 @@
 
 
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
     <script>
+
         var editor, timer;
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs' } });
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs' } });
         require(['vs/editor/editor.main'], function () {
             editor = monaco.editor.create(document.getElementById('editor'), {
                 value: '',
                 language: 'markdown',
                 theme: 'vs-dark',
-                fontSize: '20px',
-                automaticLayout: true,
+                fontSize: 20,
+                automaticLayout: false,
                 quickSuggestions: true,
-                quickSuggestionsDelay: 500
+                quickSuggestionsDelay: 500,
+                fontFamily: "Consolas, 'Courier New', monospace"
             });
             editor.onDidChangeModelContent(() => {
                 if (timer) {
@@ -147,7 +149,11 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             window.addEventListener('resize', function () {
-                editor.layout();
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        editor.layout();
+                    });
+                });
             });
         });
 

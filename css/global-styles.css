@@ -53,11 +53,11 @@
 	transform: translateX(-50px);
 }
 
-.container a {
+.container a.custom-link {
 	color: wheat;
 	/* 链接颜色 */
 	text-align: center;
-	font-size: 28px;
+	font-size: 20px;
 	text-decoration: none;
 	/* 去除下划线 */
 	margin: 0 5px;
@@ -74,11 +74,11 @@
 }
 
 @media (max-width:600px) or (max-height:600px) {
-	.container a {
+	.container a.custom-link {
 		color: wheat;
 		/* 链接颜色 */
 		text-align: center;
-		font-size: 28px;
+		font-size: 16px;
 		text-decoration: none;
 		/* 去除下划线 */
 		margin: 0 5px;
@@ -100,6 +100,7 @@ body {
 	flex-direction: column;
 	justify-content: space-between;  */
 	font-family: 'Courier New', Courier, monospace;
+	font-size: clamp(14px, 2vw, 20px);
 	margin: 0;
 	padding: 20px;
 	background-color: #f0f0f0;
@@ -114,7 +115,6 @@ body {
     /* 可选：使用滚动对齐 */
     scroll-padding: 50px;
     /* 可选：增加滚动区域的额外空间 */
-    justify-content: center; /* 新增：使单个按钮居中 */
     align-items: center; /* 新增：垂直居中 */
 }
 

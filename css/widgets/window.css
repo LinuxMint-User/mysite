@@ -9,6 +9,7 @@
     border: 1px solid #ccc;
     background-color: #3a3a3a;
     user-select: none;
+    -webkit-user-select: none;
     overflow: hidden;
     /* 禁止文本选择 */
 }

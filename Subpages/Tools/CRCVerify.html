@@ -4,18 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件校验值比较工具</title>
+    <title>CRC 校验工具</title>
     <base href="/mysite/">
     <link rel="icon" type="image/ico" href="icons/favicon.ico">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/global-styles.css">
     <link rel="stylesheet" type="text/css" href="css/night-mode.css">
-    <script src="js/index-script.js" defer></script>
-    <script src="js/updateCopyright.js" defer></script>
     <script src="js/CRCVerify/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="js/CRCVerify/functions.js"></script>
     <script src="js/CRCVerify/CRCVerifyDOM.js" defer></script>
-    <!-- <link rel="stylesheet" href="css/styles.css"> -->
+    <script src="js/index-script.js" defer></script>
+    <script src="js/updateCopyright.js" defer></script>
     <style>
         .file-label {
             border: 2px dashed #acacac;
@@ -60,6 +59,16 @@
             color: wheat;
             border-radius: 5px;
         }
+
+        .selective-text {
+            background-color: #444;
+            color: rgb(180, 180, 180);
+        }
+
+        .selective-text::selection {
+            background-color: #444;
+            color: white;
+        }
     </style>
 </head>
 
@@ -94,15 +103,15 @@
     <div class="container">
         <div class="container">
             <div class="file-label" id="file-label">拖入文件或点击选择文件</div>
-            <div class="button-list">
+            <div class="button-list" style="justify-content: center;">
                 <button type="button" id="select-file-button">选择文件</button>
             </div>
-            <input type="file" id="file-input" style="display:none;">
+            <input type="file" id="file-input" style="display:none;" title="file-input">
         </div>
         <div class="container">
             <label for="checksum-input" style="color: wheat;">输入校验值或选择校验文件</label>
             <input type="text" class="textbox" id="checksum-input" placeholder="输入校验值或选择校验文件">
-            <select class="custom-select" id="checksum-type-combo">
+            <select class="custom-select" id="checksum-type-combo" title="select-value-type">
                 <option value="auto">自动检测</option>
                 <option value="MD5">MD5</option>
                 <option value="SHA1">SHA1</option>
@@ -110,13 +119,13 @@
                 <option value="SHA384">SHA384</option>
                 <option value="SHA512">SHA512</option>
             </select>
-            <div class="button-list">
+            <div class="button-list" style="justify-content: center;">
                 <button id="select-checksum-file-button">选择校验文件</button>
                 <button id="check-button">校验</button>
             </div>
         </div>
         <div class="container">
-            <div class="result-label" id="result-label">校验结果：未校验</div>
+            <div class="result-label" id="result-label">校验结果：未校验<br>计算出的校验值：<span class="selective-text" id="result-label-value" style="overflow-wrap: anywhere;"></span></div>
         </div>
     </div>
 
