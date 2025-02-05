@@ -1,8 +1,8 @@
 function loadTopLevelCategories() {
     const navContainer = document.getElementById('nav-container');
     navContainer.innerHTML = `
-        <a href="#" class="nav-item" data-type="category" data-target="games">游戏</a>
-        <a href="#" class="nav-item" data-type="category" data-target="tools">工具</a>
+        <a href="#" class="custom-link nav-item" data-type="category" data-target="games">游戏</a>
+        <a href="#" class="custom-link nav-item" data-type="category" data-target="tools">工具</a>
     `;
     navContainer.classList.add('loaded'); // 触发动画
 }
@@ -33,17 +33,17 @@ function loadCategoryContent(categoryId) {
         switch (categoryId) {
             case 'games':
                 navContainer.innerHTML = `
-                    <a class="nav-item" data-type="content" href="Subpages/Games/2048-remastered.html?from=index">2048 游戏</a>
-                    <a class="nav-item" data-type="content" href="Subpages/Games/snake-Game.html?from=index">贪吃蛇 游戏</a>
-                    <a href="#" class="nav-item" data-type="category" data-target="top">返回上级</a>
+                    <a class="custom-link nav-item" data-type="content" href="Subpages/Games/2048-remastered.html?from=index">2048 游戏</a>
+                    <a class="custom-link nav-item" data-type="content" href="Subpages/Games/snake-Game.html?from=index">贪吃蛇 游戏</a>
+                    <a href="#" class="custom-link nav-item" data-type="category" data-target="top">返回上级</a>
                 `;
                 break;
             case 'tools':
                 navContainer.innerHTML = `
-                    <a class="nav-item" data-type="content" href="Subpages/Tools/Editors/markdownEditor.html?from=index">Markdown 编辑器</a>
-                    <a class="nav-item" data-type="content" href="Subpages/Tools/Editors/JSEditor.html?from=index">JavaScript 编辑器</a>
-                    <a class="nav-item" data-type="content" href="Subpages/Tools/CRCVerify.html?from=index">CRC 校验工具</a>
-                    <a href="#" class="nav-item" data-type="category" data-target="top">返回上级</a>
+                    <a class="custom-link nav-item" data-type="content" href="Subpages/Tools/Editors/markdownEditor.html?from=index">Markdown 编辑器</a>
+                    <a class="custom-link nav-item" data-type="content" href="Subpages/Tools/Editors/JSEditor.html?from=index">JavaScript 编辑器</a>
+                    <a class="custom-link nav-item" data-type="content" href="Subpages/Tools/CRCVerify.html?from=index">CRC 校验工具</a>
+                    <a href="#" class="custom-link nav-item" data-type="category" data-target="top">返回上级</a>
                 `;
                 break;
             case 'top':
