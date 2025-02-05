@@ -142,6 +142,7 @@ document.addEventListener('keydown', ({ key }) => {
 
 const startRestartBtn = document.getElementById('startRestartBtn');
 startRestartBtn.addEventListener('click', () => {
+    document.getElementById('pauseResumeBtn').style.display = 'none';
     if (!isPlaying) {
         // 重置游戏状态
         snake = [{ x: 9, y: 9 }];
@@ -169,13 +170,13 @@ startRestartBtn.addEventListener('click', () => {
                 document.getElementById('status').innerText = '进行';
                 isPlaying = true; // 开始游戏
                 requestAnimationFrame(gameLoop); // 启动游戏循环
+                document.getElementById('pauseResumeBtn').style.display = 'block'; // 显示暂停按钮
             }
         }, 1000); // 每秒更新一次倒计时
 
         // 更新按钮状态
         startRestartBtn.innerText = '重来';
         document.getElementById('pauseResumeBtn').innerText = '暂停';
-        document.getElementById('pauseResumeBtn').style.display = 'block'; // 显示暂停按钮
         document.getElementById('startRestartBtn').style.display = 'none';
     }
 });
