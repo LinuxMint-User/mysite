@@ -29,20 +29,20 @@ function runCode(code) {
                 res => {
                     // 发送成功结果之前，发送所有日志
                     self.postMessage({ success: res });
-                    // self.postMessage({ finished: true }); // 表示任务完成
+                    self.postMessage({ finished: true }); // 表示任务完成
                 },
                 err => {
                     self.postMessage({ error: err });
-                    // self.postMessage({ finished: true }); // 表示任务完成
+                    self.postMessage({ finished: true }); // 表示任务完成
                 }
             );
         } else {
             // 如果不是 Promise，直接发送结果
             self.postMessage({ success: result });
-            // self.postMessage({ finished: true }); // 表示任务完成
+            self.postMessage({ finished: true }); // 表示任务完成
         }
     } catch (error) {
         self.postMessage({ error: error.message });
-        // self.postMessage({ finished: true }); // 表示任务完成
+        self.postMessage({ finished: true }); // 表示任务完成
     }
 }
