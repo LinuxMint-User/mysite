@@ -13,12 +13,12 @@
     <link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
     <link rel="stylesheet" type="text/css" href="css/widgets/window.css">
     <link rel="stylesheet" type="text/css" href="css/widgets/banner.css">
-    <script src="js/markdown/marked.min.js"></script>
-    <script src="js/widgets/window.js" defer></script>
-    <script src="js/widgets/banner.js" defer></script>
-    <script src="js/index-script.js"></script>
+    <script src="js/markdown/marked.min.js" async></script>
+    <script src="js/index-script.js" defer></script>
     <script src="js/updateCopyright.js" defer></script>
     <script src="js/sourceCode/prism-1.29.0.js" defer></script>
+    <script src="js/widgets/window.js" defer></script>
+    <script src="js/widgets/banner.js" defer></script>
     <style>
         #preview {
             height: 100%;
@@ -41,7 +41,6 @@
             padding: 5px;
             border-radius: 5px;
             text-align: left;
-            z-index: 2;
         }
 
         /* 滚动条整体样式 */
@@ -71,6 +70,45 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #999;
             /* 鼠标悬停时的颜色 */
+        }
+
+        .output-tabs {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .tab-list {
+            display: flex;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            overflow-x: auto;
+            border-bottom: 1px solid #555;
+        }
+
+        .tab-item {
+            flex-shrink: 0;
+            /* 防止子项被压缩 */
+            flex-basis: 100px;
+            /* 设置子项的初始宽度 */
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+            background-color: #333;
+            color: #fff;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-item.active {
+            background-color: #555;
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #555;
+            border-top: none;
         }
     </style>
 </head>
@@ -116,14 +154,19 @@
         </div>
         <div style="max-height: min-content;">
             <div class="button-list" style="padding: 2px;">
-                <button id="clearOutput" type="button" onclick="clearOutput()">清除输出窗口</button>
+                <!-- <button id="clearOutput" type="button" onclick="clearOutput()">清除输出窗口</button> -->
 
             </div>
         </div>
         <div class="window-content">
             <!-- 窗口内容 -->
-            <div class="container" id="preview" style="height: fit-content; min-width: 200px;">
-                <pre class="line-numbers"><code id="pre" class="language-sh"></code></pre>
+            <div id="output-tabs" class="output-tabs">
+                <div id="tab-list" class="tab-list"></div>
+                <div id="tab-content" class="tab-content">
+                    <div id="preview" class="container" style="height: fit-content; min-width: 200px;">
+                        <pre class="line-numbers"><code id="pre" class="language-sh"></code></pre>
+                    </div>
+                </div>
             </div>
             <div class="window-resizer">R</div>
         </div>
@@ -133,7 +176,6 @@
             <div class="button-list">
                 <button type="button" onclick="oppreview()">打开输出</button>
                 <button type="button" id="execCode" onclick="executeCode()">运行代码</button>
-                <!-- <button type="button" id="clearOutput" onclick="clearOutput()">清除输出窗口</button> -->
             </div>
         </div>
         <div id="editor"></div>
@@ -173,89 +215,191 @@
             document.getElementById('myWindow').style.display = '';
         }
 
+
+        let tabCount = 0; // 标签页计数器
+        let currentTabId = null; // 当前激活的标签页 ID
+
+        function createTab() {
+            tabCount++;
+            const tabId = `tab-${tabCount}`;
+            const tabList = document.getElementById('tab-list');
+
+            // 创建新的标签页
+            const tabItem = document.createElement('div');
+            tabItem.classList.add('tab-item');
+            tabItem.id = tabId;
+            tabItem.textContent = `输出 ${tabCount}`;
+            tabItem.addEventListener('click', () => switchTab(tabId));
+            tabList.appendChild(tabItem);
+
+            // 创建隐藏的存储元素，用于保存该标签页的输出内容
+            const storageDiv = document.createElement('div');
+            storageDiv.id = `storage-${tabId}`;
+            storageDiv.style.display = 'none'; // 隐藏存储元素
+            document.body.appendChild(storageDiv);
+
+            // 添加关闭按钮
+            const closeButton = document.createElement('button');
+            closeButton.textContent = 'X';
+            closeButton.style.marginLeft = '5px';
+            closeButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // 阻止事件冒泡
+                closeTab(tabId);
+            });
+            tabItem.appendChild(closeButton);
+
+            // 切换到新创建的标签页
+            switchTab(tabId);
+            tabList.scrollLeft = tabList.scrollWidth;
+        }
+
+        function switchTab(tabId) {
+            const tabList = document.getElementById('tab-list').children;
+            for (let i = 0; i < tabList.length; i++) {
+                const tabItem = tabList[i];
+                if (tabItem.id === tabId) {
+                    tabItem.classList.add('active');
+                    currentTabId = tabId;
+                } else {
+                    tabItem.classList.remove('active');
+                }
+            }
+
+            // 从对应的存储元素中读取内容并更新到 preview 元素
+            const storageDiv = document.getElementById(`storage-${tabId}`);
+            if (storageDiv) {
+                const resultElement = document.getElementById('pre');
+                resultElement.textContent = storageDiv.textContent;
+                Prism.highlightAll(); // 高亮显示代码
+            }
+        }
+
+        function closeTab(tabId) {
+            const tabList = document.getElementById('tab-list');
+            const tabItem = document.getElementById(tabId);
+            const storageDiv = document.getElementById(`storage-${tabId}`);
+
+            if (tabItem && storageDiv) {
+                tabList.removeChild(tabItem);
+                document.body.removeChild(storageDiv);
+
+                if (tabId === currentTabId) {
+                    const remainingTabs = Array.from(tabList.children);
+                    if (remainingTabs.length > 0) {
+                        const nextTab = remainingTabs.find(tab => tab.id > tabId) || remainingTabs[remainingTabs.length - 1];
+                        switchTab(nextTab.id);
+                    } else {
+                        document.getElementById('pre').textContent = '';
+                        currentTabId = null;
+                    }
+                }
+                // 删除 else 块，不需要手动维护 active
+            }
+        }
+
+
         // 重写console.log以捕获输出
+        let logQueue = []; // 用于存储日志的队列
+        const resultElement = document.getElementById('pre');
+        const LINE_INTERVAL = 500; // 每行输出的间隔时间（毫秒）
+
+        function flushLogs() {
+            if (logQueue.length === 0) return;
+
+            const message = logQueue.shift(); // 从队列中取出一行
+            resultElement.textContent += message + '\n';
+
+            // 滚动到页面底部
+            document.getElementById('preview').scrollTop = document.getElementById('preview').scrollHeight;
+
+            // 如果队列中还有内容，继续输出
+            if (logQueue.length > 0) {
+                setTimeout(flushLogs, LINE_INTERVAL);
+            }
+        }
+
         console.log = function (message) {
-            document.getElementById('pre').innerHTML += message + '\n';
+            logQueue.push(message); // 将消息加入队列
+            if (logQueue.length === 1) {
+                // 如果队列中只有这一条消息，立即开始输出
+                flushLogs();
+            }
         };
+
+        function highlightWithAnimationFrame() {
+            // 第一次 requestAnimationFrame
+            requestAnimationFrame(() => {
+                // 第二次 requestAnimationFrame
+                requestAnimationFrame(() => {
+                    // 在这里调用 Prism.highlightAll() 来渲染行号等
+                    Prism.highlightAll();
+                });
+            });
+        }
 
         // 全局变量
         var worker = null;
 
         // 执行用户代码的函数
         function executeCode() {
+            // 创建新的标签页
+            createTab();
+
+            // 获取当前标签页的存储元素
+            const storageDiv = document.getElementById(`storage-${currentTabId}`);
+            const resultElement = document.getElementById('pre');
+
             // 禁止多次运行
             document.getElementById('execCode').style.display = "none";
-            // 更新代码状态提示
             document.getElementById('codeStatus').innerHTML = "执行中";
-            // 创建 Web Worker 实例
-            worker = new Worker('js/worker.js');
+
+            // 如果已经存在一个 Web Worker 实例，清理旧的消息监听器
+            if (worker) {
+                worker.onmessage = null;
+            }
+
+            // 创建新的 Web Worker 实例（如果尚未创建）
+            if (!worker) {
+                worker = new Worker('js/worker.js');
+            }
+
             // 读取用户输入的代码
-            var model = editor.getModel();
-            var code = model.getValue();
+            const model = editor.getModel();
+            const code = model.getValue();
             if (code.trim() === "") {
-                // 释放运行按钮
                 document.getElementById('execCode').style.display = "";
-                // 更新代码状态提示
                 document.getElementById('codeStatus').innerHTML = "请输入代码";
                 return;
             }
-            // document.getElementById('pre').innerHTML = "执行中...\n";
 
             // 处理 Web Worker 发送的消息
             worker.onmessage = function (e) {
-                var resultElement = document.getElementById('pre');
-                setTimeout(() => {
-                    resultElement.innerHTML += e.data.log + "\n";
-                    document.getElementById('preview').scrollTop = document.getElementById('preview').scrollHeight;
-                }, 100); // 显示日志消息
-                callRefresh();
-            }
+                if (e.data.log !== undefined) {
+                    storageDiv.textContent += e.data.log + "\n";
+                    resultElement.textContent = storageDiv.textContent; // 更新显示
+                } else if (e.data.success !== undefined) {
+                    storageDiv.textContent += "Success: " + e.data.success + "\n";
+                    resultElement.textContent = storageDiv.textContent; // 更新显示
+                } else if (e.data.error !== undefined) {
+                    storageDiv.textContent += "Error: " + e.data.error + "\n";
+                    resultElement.textContent = storageDiv.textContent; // 更新显示
+                } else if (e.data.finished !== undefined) {
+                    storageDiv.textContent += "Task finished.\n";
+                    resultElement.textContent = storageDiv.textContent; // 更新显示
+                    document.getElementById('execCode').style.display = "";
+                    document.getElementById('codeStatus').innerHTML = "";
+                    Prism.highlightAll(); // 高亮显示代码
+                }
+                document.getElementById('preview').scrollTop = document.getElementById('preview').scrollHeight;
+            };
 
             // 将用户代码发送给 Web Worker
             worker.postMessage(code);
-
-            // 释放运行按钮
-            document.getElementById('execCode').style.display = "";
-
-            // 更新代码状态提示
-            document.getElementById('codeStatus').innerHTML = "";
-        };
+        }
 
         function clearOutput() {
             document.getElementById('pre').innerHTML = "";
         }
-
-        function callRefresh() {
-            // 立即清除之前的定时器，如果存在
-            if (this.timer) {
-                clearTimeout(this.timer);
-            }
-
-            // 设置一个新的定时器
-            this.timer = setTimeout(function () {
-                loadScript('js/sourceCode/prism-1.29.0.js');
-                // 执行完毕后，清除引用的定时器
-                this.timer = null;
-            }, 1000);
-        };
-
-        // 加载脚本的函数  
-        function loadScript(scriptSrc) {
-            return new Promise((resolve, reject) => {
-                var script = document.createElement('script');
-                script.src = scriptSrc;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.body.appendChild(script);
-            });
-        };
-
-        // 调用loadScript函数，确保脚本加载完成
-        loadScript('js/sourceCode/prism-1.29.0.js').then(() => {
-            // console.log('Prism script loaded successfully.');
-        }).catch(error => {
-            // console.error('Failed to load Prism script:', error);
-        });
     </script>
 
     <footer>
