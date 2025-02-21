@@ -42,7 +42,7 @@ function anySpaceLeft(table) {
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             if (table[i][j] != 0 && j != 0) {
-                if (table[i][j-1] == 0 || table[i][j-1] == table[i][j]) {
+                if (table[i][j - 1] == 0 || table[i][j - 1] == table[i][j]) {
                     return true;
                 }
             }
@@ -55,7 +55,7 @@ function anySpaceRight(table) {
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             if (table[i][j] != 0 && j != 3) {
-                if (table[i][j+1] == 0 || table[i][j+1] == table[i][j]) {
+                if (table[i][j + 1] == 0 || table[i][j + 1] == table[i][j]) {
                     return true;
                 }
             }
@@ -68,7 +68,7 @@ function anySpaceAbove(table) {
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             if (table[i][j] != 0 && i != 0) {
-                if (table[i-1][j] == 0 || table[i-1][j] == table[i][j]) {
+                if (table[i - 1][j] == 0 || table[i - 1][j] == table[i][j]) {
                     return true;
                 }
             }
@@ -81,7 +81,7 @@ function anySpaceBelow(table) {
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             if (table[i][j] != 0 && i != 3) {
-                if (table[i+1][j] == 0 || table[i+1][j] == table[i][j]) {
+                if (table[i + 1][j] == 0 || table[i + 1][j] == table[i][j]) {
                     return true;
                 }
             }
@@ -148,13 +148,13 @@ function refreshGameView(table) {
         var VH = window.innerHeight;
         var width0 = (0.5 * VH - 60) / 4;
     } else {
-        var VW =window.innerWidth;
+        var VW = window.innerWidth;
         var width0 = (0.5 * VW - 25) / 4;
     }
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             var numberCell = $('#nc-' + i + '-' + j);
-            numberCell.css('width', width0+'px');
+            numberCell.css('width', width0 + 'px');
             if (table[i][j] == 0) {
                 numberCell.css('background-color', 'transparent');
                 numberCell.text('');
@@ -173,8 +173,8 @@ function generateOneNumber() {
     }
     // choose a block randomly
     do {
-        var rx = Math.floor(Math.random()*4);
-        var ry = Math.floor(Math.random()*4);
+        var rx = Math.floor(Math.random() * 4);
+        var ry = Math.floor(Math.random() * 4);
     } while (currentNumberTable[rx][ry] != 0);
     // choose 2 or 4 randomly
     var rn = Math.random() < 0.5 ? 2 : 4;
@@ -241,7 +241,7 @@ function mvL(table, tag) {
                     else if (table[i][k] == table[i][j] && !anyBlockHorizontal(i, k, j, currentNumberTable)) {
                         moveAnimation(i, j, i, k);
                         if (tag[i][k] != 0) {
-                            table[i][k+1] = table[i][j];
+                            table[i][k + 1] = table[i][j];
                             table[i][j] = 0;
                         } else {
                             table[i][k] += table[i][j];
@@ -255,7 +255,7 @@ function mvL(table, tag) {
             }
         }
     }
-    setTimeout(function () {refreshGameView(currentNumberTable)}, 201);
+    setTimeout(function () { refreshGameView(currentNumberTable) }, 201);
     return true;
 }
 // move right
@@ -278,7 +278,7 @@ function mvR(table, tag) {
                     else if (table[i][k] == table[i][j] && !anyBlockHorizontal(i, j, k, currentNumberTable)) {
                         moveAnimation(i, j, i, k);
                         if (tag[i][k] != 0) {
-                            table[i][k-1] = table[i][j];
+                            table[i][k - 1] = table[i][j];
                             table[i][j] = 0;
                         } else {
                             table[i][k] += table[i][j];
@@ -292,7 +292,7 @@ function mvR(table, tag) {
             }
         }
     }
-    setTimeout(function () {refreshGameView(currentNumberTable)}, 201);
+    setTimeout(function () { refreshGameView(currentNumberTable) }, 201);
     return true;
 }
 // move up
@@ -315,7 +315,7 @@ function mvU(table, tag) {
                     else if (table[k][j] == table[i][j] && !anyBlockVertical(j, k, i, currentNumberTable)) {
                         moveAnimation(i, j, k, j);
                         if (tag[k][j] != 0) {
-                            table[k+1][j] = table[i][j];
+                            table[k + 1][j] = table[i][j];
                             table[i][j] = 0;
                         } else {
                             table[k][j] += table[i][j];
@@ -329,7 +329,7 @@ function mvU(table, tag) {
             }
         }
     }
-    setTimeout(function () {refreshGameView(currentNumberTable)}, 201);
+    setTimeout(function () { refreshGameView(currentNumberTable) }, 201);
     return true;
 }
 // move down
@@ -349,10 +349,10 @@ function mvD(table, tag) {
                         table[i][j] = 0;
                         continue;
                     }
-                    else if (table[k][j] == table[i][j] && !anyBlockVertical(j, i, k,currentNumberTable)) {
+                    else if (table[k][j] == table[i][j] && !anyBlockVertical(j, i, k, currentNumberTable)) {
                         moveAnimation(i, j, k, j);
                         if (tag[k][j] != 0) {
-                            table[k-1][j] = table[i][j];
+                            table[k - 1][j] = table[i][j];
                             table[i][j] = 0;
                         } else {
                             table[k][j] += table[i][j];
@@ -366,92 +366,130 @@ function mvD(table, tag) {
             }
         }
     }
-    setTimeout(function () {refreshGameView(currentNumberTable)}, 201);
+    setTimeout(function () { refreshGameView(currentNumberTable) }, 201);
     return true;
 }
 
 // game actions part
 // keyboard events
-$(document).keydown(function(event) {
+$(document).keydown(function (event) {
     switch (event.keyCode) {
         case 37:
-            if (mvL(currentNumberTable,mergeTagTable)) {
+            if (mvL(currentNumberTable, mergeTagTable)) {
                 fetchCurrentScore();
                 setTimeout(generateOneNumber, 201);
-                setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                setTimeout(function () { isGameOver(currentNumberTable); }, 400);
             }
             break;
         case 38:
-            if (mvU(currentNumberTable,mergeTagTable)) {
+            if (mvU(currentNumberTable, mergeTagTable)) {
                 fetchCurrentScore();
                 setTimeout(generateOneNumber, 201);
-                setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                setTimeout(function () { isGameOver(currentNumberTable); }, 400);
             }
             break;
         case 39:
-            if (mvR(currentNumberTable,mergeTagTable)) {
+            if (mvR(currentNumberTable, mergeTagTable)) {
                 fetchCurrentScore();
                 setTimeout(generateOneNumber, 201);
-                setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                setTimeout(function () { isGameOver(currentNumberTable); }, 400);
             }
             break;
         case 40:
-            if (mvD(currentNumberTable,mergeTagTable)) {
+            if (mvD(currentNumberTable, mergeTagTable)) {
                 fetchCurrentScore();
                 setTimeout(generateOneNumber, 201);
-                setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                setTimeout(function () { isGameOver(currentNumberTable); }, 400);
             }
             break;
     }
 });
 // touchScreen event
-$(document).ready(function() {
+$(document).ready(function () {
     var startX, startY, moveX, moveY;
     var gameArea = $('.gameArea');
-    gameArea.on('touchstart', function(event) {
+    gameArea.on('touchstart', function (event) {
         var touch = event.touches[0];
         startX = touch.pageX;
         startY = touch.pageY;
     });
-    gameArea.on('touchmove', function(event) {
+    gameArea.on('touchmove', function (event) {
         var touch = event.touches[0];
         moveX = touch.pageX - startX;
         moveY = touch.pageY - startY;
     });
-    gameArea.on('touchend', function(event) {
+    gameArea.on('touchend', function (event) {
         if (Math.abs(moveX) > Math.abs(moveY)) {
             if (moveX < 0) {
-                if (mvL(currentNumberTable,mergeTagTable)) {
+                if (mvL(currentNumberTable, mergeTagTable)) {
                     fetchCurrentScore();
                     setTimeout(generateOneNumber, 201);
-                    setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
                 }
             } else {
-                if (mvR(currentNumberTable,mergeTagTable)) {
+                if (mvR(currentNumberTable, mergeTagTable)) {
                     fetchCurrentScore();
                     setTimeout(generateOneNumber, 201);
-                    setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
                 }
             }
         } else {
             if (moveY < 0) {
-                if (mvU(currentNumberTable,mergeTagTable)) {
+                if (mvU(currentNumberTable, mergeTagTable)) {
                     fetchCurrentScore();
                     setTimeout(generateOneNumber, 201);
-                    setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
                 }
             } else {
-                if (mvD(currentNumberTable,mergeTagTable)) {
+                if (mvD(currentNumberTable, mergeTagTable)) {
                     fetchCurrentScore();
                     setTimeout(generateOneNumber, 201);
-                    setTimeout(function() {isGameOver(currentNumberTable);}, 400);
+                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
                 }
             }
         }
     });
 });
 
+// 按钮支持
+document.getElementById('upBtn').addEventListener('click', () => {
+    if (mvU(currentNumberTable, mergeTagTable)) {
+        fetchCurrentScore();
+        setTimeout(generateOneNumber, 5);
+        setTimeout(function () { isGameOver(currentNumberTable); }, 10);
+    }
+});
+document.getElementById('leftBtn').addEventListener('click', () => {
+    if (mvL(currentNumberTable, mergeTagTable)) {
+        fetchCurrentScore();
+        setTimeout(generateOneNumber, 5);
+        setTimeout(function () { isGameOver(currentNumberTable); }, 10);
+    }
+});
+document.getElementById('downBtn').addEventListener('click', () => {
+    if (mvD(currentNumberTable, mergeTagTable)) {
+        fetchCurrentScore();
+        setTimeout(generateOneNumber, 5);
+        setTimeout(function () { isGameOver(currentNumberTable); }, 10);
+    }
+});
+document.getElementById('rightBtn').addEventListener('click', () => {
+    if (mvR(currentNumberTable, mergeTagTable)) {
+        fetchCurrentScore();
+        setTimeout(generateOneNumber, 5);
+        setTimeout(function () { isGameOver(currentNumberTable); }, 10);
+    }
+});
+
+// 移动端检测
+const controlButtons = document.querySelector('.control-buttons');
+if (isMobileDevice()) {
+    controlButtons.style.display = 'grid'; // 显示按钮
+} else {
+    controlButtons.style.display = 'none'; // 隐藏按钮
+}
+
 // activate the game
-$(document).ready(function(e) {
+$(document).ready(function (e) {
     newGame();
 });

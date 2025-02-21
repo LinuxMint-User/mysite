@@ -11,7 +11,63 @@
     <link rel="stylesheet" href="css/global-styles.css">
     <link rel="stylesheet" href="css/night-mode.css">
     <link rel="stylesheet" href="css/2048Game/2048-remastered.css">
+    <style>
+        .control-buttons {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            width: 240px;
+            opacity: 0.8;
+        }
+
+        .control-btn {
+            width: 80px;
+            height: 40px;
+            background-color: #cc8500;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #upBtn {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        #leftBtn {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        #downBtn {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        #rightBtn {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .control-buttons:hover {
+            opacity: 0.6;
+        }
+    </style>
     <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js/isMobileDevice.js"></script>
     <script src="js/2048-Game/2048-remastered-main.js" defer></script>
     <script src="js/2048-Game/2048-remastered-rendering.js" defer></script>
     <script src="js/index-script.js" defer></script>
@@ -136,6 +192,13 @@
                 <div class="number-cell" id="nc-3-3"></div>
             </div>
         </div>
+    </div>
+
+    <div class="control-buttons">
+        <button id="upBtn" class="control-btn">↑</button>
+        <button id="leftBtn" class="control-btn">←</button>
+        <button id="downBtn" class="control-btn">↓</button>
+        <button id="rightBtn" class="control-btn">→</button>
     </div>
 
     <footer>
