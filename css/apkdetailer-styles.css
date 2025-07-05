@@ -1,0 +1,193 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    display: flex;
+    max-height: 60vh;
+    flex-direction: row; /* 默认横向排列 */
+}
+
+@media (max-width: 780px) {
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+    .container {
+        flex-direction: column; /* 小于780px时改为垂直排列 */
+        align-items: center;
+    }
+    
+    .left-panel, .right-panel {
+        width: 80vw; /* 让左右面板占据全部宽度 */
+        padding: 10vw; /* 调整内边距 */
+        min-height: fit-content;
+    }
+    
+    .drop-area {
+        height: 30vh; /* 调整拖放区域高度 */
+        aspect-ratio: 1;;
+    }
+
+    .permission-item {
+        color: #c0392b;
+        margin: 3px 0;
+        padding: 2px 5px;
+        background: #555;
+        border-radius: 3px;
+        word-break: break-word;
+        text-align: start;
+        font-size: 12px;
+    }
+}
+
+.left-panel {
+    flex: 1;
+    padding: 20px;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #555;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.right-panel {
+    flex: 2;
+    padding: 20px;
+    margin: 5px;
+    background-color: #555;
+    overflow-y: auto;
+}
+
+.drop-area {
+    width: 100%;
+    min-height: 300px;
+    border: 3px dashed #95a5a6;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 14px;
+    padding: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.drop-area.highlight {
+    border-color: #2ecc71;
+    color: #27ae60;
+}
+
+.select-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.select-btn:hover {
+    background: #2980b9;
+}
+
+.info-group {
+    margin-bottom: 20px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #555;
+}
+
+.info-group h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.info-field {
+    display: flex;
+    margin: 10px 0;
+}
+
+.field-label {
+    font-weight: bold;
+    color: #2c3e50;
+    min-width: 100px;
+}
+
+.field-value {
+    flex: 1;
+    word-break: break-word;
+}
+
+.arch-content {
+    color: #27ae60;
+    line-height: 1.6;
+}
+
+.signature-content {
+    font-family: 'Courier New', monospace;
+    color: #ff00ee;
+    background-color: #555;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 30vh;
+    overflow-y: auto;
+}
+
+.copy-btn {
+    background: #8e44ad;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.copy-btn:hover {
+    background: #9b59b6;
+}
+
+.permission-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.permission-item {
+    color: #c0392b;
+    margin: 3px 0;
+    padding: 2px 5px;
+    background: #555;
+    border-radius: 3px;
+    word-break: break-word;
+    font-size: 16px;
+}
+
+.no-permissions {
+    color: #95a5a6;
+    padding: 5px;
+}

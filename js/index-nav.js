@@ -40,10 +40,23 @@ function loadCategoryContent(categoryId) {
                 break;
             case 'tools':
                 navContainer.innerHTML = `
+                    <a href="#" class="custom-link nav-item" data-type="category" data-target="editors">编辑器</a>
+                    <a href="#" class="custom-link nav-item" data-type="category" data-target="resolvers">解析器</a>
+                    <a href="#" class="custom-link nav-item" data-type="category" data-target="top">返回上级</a>
+                `;
+                break;
+            case 'editors':
+                navContainer.innerHTML = `
                     <a class="custom-link nav-item" data-type="content" href="Subpages/Tools/Editors/markdownEditor.html?from=index">Markdown 编辑器</a>
                     <a class="custom-link nav-item" data-type="content" href="Subpages/Tools/Editors/JSEditor.html?from=index">JavaScript 编辑器</a>
+                    <a href="#" class="custom-link nav-item" data-type="category" data-target="tools">返回上级</a>
+                `;
+                break;
+            case 'resolvers':
+                navContainer.innerHTML = `
                     <a class="custom-link nav-item" data-type="content" href="Subpages/Tools/CRCVerify.html?from=index">CRC 校验工具</a>
-                    <a href="#" class="custom-link nav-item" data-type="category" data-target="top">返回上级</a>
+                    <a class="custom-link nav-item" data-type="content" href="Subpages/Tools/APKDetailer.html?from=index">APK 解析器</a>
+                    <a href="#" class="custom-link nav-item" data-type="category" data-target="tools">返回上级</a>
                 `;
                 break;
             case 'top':

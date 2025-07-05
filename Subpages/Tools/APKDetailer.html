@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK 信息解析工具</title>
+    <base href="/mysite/">
+    <link rel="icon" type="image/ico" href="icons/favicon.ico">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/global-styles.css">
+    <link rel="stylesheet" href="css/night-mode.css">
+    <link rel="stylesheet" type="text/css" href="css/widgets/banner.css">
+    <link rel="stylesheet" href="css/apkdetailer-styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://unpkg.com/app-info-parser@1.1.6/dist/app-info-parser.min.js"></script>
+    <script src="js/apk-extra-info.js" defer></script>
+    <script src="js/resolvers/apkdetailer-resolver.js" defer></script>
+    <script src="js/index-script.js" defer></script>
+	<script src="js/updateCopyright.js" defer></script>
+</head>
+<body>
+
+    <div id="banner" class="banner" style="z-index: 11;">
+        <span id="banner-content"></span>
+    </div>
+
+    <div class="header">
+        <div id="button-list" class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="backButton" class="back-button">返回</button>
+        </div>
+        <h2 style="flex: 9;">APK 解析器</h2>
+    </div>
+
+    <script>
+        document.getElementById('backButton').addEventListener('click', function () {
+            // 从 URL 中获取 'from' 参数
+            var fromPage = new URLSearchParams(window.location.search).get('from');
+            // 如果 'from' 参数是 'index'
+            if (fromPage === 'index') {
+                // 判断浏览器历史记录中是否有可返回的页面
+                if (window.history.length > 1) {
+                    window.history.back(); // 有则直接返回
+                } else {
+                    // 没有则跳转到 index.html
+                    window.location.href = '/mysite/'
+                }
+            } else {
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html
+                window.location.href = '/mysite/'
+            }
+        });
+    </script>
+
+    <div class="container">
+        <div class="left-panel">
+            <div id="dropArea" class="drop-area" dropzone="copy">
+                <p>拖放APK文件到此区域<br>或点击下方按钮选择文件</p>
+            </div>
+            <button type="button" id="selectBtn" class="select-btn">选择APK文件</button>
+        </div>
+        
+        <div class="right-panel">
+            <!-- <div class="scroll-area"> -->
+                <!-- 基本信息 -->
+                <div class="info-group">
+                    <h3>基本信息</h3>
+                    <div class="info-field">
+                        <span class="field-label">包名:</span>
+                        <span id="package" class="field-value">未解析</span>
+                    </div>
+                    <hr>
+                    <div class="info-field">
+                        <span class="field-label">版本名称:</span>
+                        <span id="version" class="field-value">未解析</span>
+                    </div>
+                    <hr>
+                    <div class="info-field">
+                        <span class="field-label">版本代码:</span>
+                        <span id="version_code" class="field-value">未解析</span>
+                    </div>
+                </div>
+                
+                <!-- SDK信息 -->
+                <div class="info-group">
+                    <h3>SDK信息</h3>
+                    <div class="info-field">
+                        <span class="field-label">最小SDK:</span>
+                        <span id="min_sdk" class="field-value">未解析</span>
+                    </div>
+                    <hr>
+                    <div class="info-field">
+                        <span class="field-label">目标SDK:</span>
+                        <span id="target_sdk" class="field-value">未解析</span>
+                    </div>
+                </div>
+                
+                <!-- 架构信息 -->
+                <div class="info-group">
+                    <h3>支持的架构</h3>
+                    <div id="archContent" class="arch-content">等待解析...</div>
+                </div>
+                
+                <!-- 签名信息 -->
+                <div class="info-group">
+                    <h3>签名信息</h3>
+                    <pre id="signatureContent" class="signature-content">等待解析...</pre>
+                    <button id="copySignature" class="copy-btn">复制全部</button>
+                </div>
+                
+                <!-- 权限列表 -->
+                <div class="info-group">
+                    <h3>权限列表</h3>
+                    <div id="permissionContent" class="permission-content">
+                        <div class="no-permissions">未检测到特殊权限</div>
+                    </div>
+                </div>
+            <!-- </div> -->
+        </div>
+    </div>
+
+    
+    <!-- <script>
+        // 添加加载检查
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof AppInfoParser === 'undefined') {
+                console.error('AppInfoParser 未加载成功');
+                // 备用加载方案
+                const script = document.createElement('script');
+                script.src = 'js/app-info-parser.min.js';
+                script.onload = function() {
+                    console.log('AppInfoParser 已成功加载');
+                };
+                script.onerror = function() {
+                    alert('无法加载APK解析库，请检查网络连接');
+                };
+                document.head.appendChild(script);
+            }
+        });
+    </script> -->
+
+    <footer>
+        <p id="copyright">&copy; <span id="currentYearinCopyright">2024</span> Eric Chan</p>
+    </footer>
+
+</body>
+
+</html>
