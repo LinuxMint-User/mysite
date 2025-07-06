@@ -360,7 +360,7 @@
 
             // 创建新的 Web Worker 实例（如果尚未创建）
             if (!worker) {
-                worker = new Worker('js/worker.js');
+                worker = new Worker('js/workers/JSEditor-worker.js');
             }
 
             // 读取用户输入的代码
