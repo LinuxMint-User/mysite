@@ -79,10 +79,8 @@ class APKExtraInfoParser {
                 if (file.dir) continue;
                 
                 const ext = relativePath.split('.').pop().toUpperCase();
-                if (['RSA', 'DSA', 'EC', 'SF'].includes(ext)) {
+                if (['RSA', 'DSA', 'EC'].includes(ext)) {
                     signatureFiles.push(relativePath);
-                    
-                    // 异步处理签名文件
                     signatureHex += await this._processSignatureFile(file, relativePath);
                 }
             }
@@ -92,7 +90,19 @@ class APKExtraInfoParser {
                     signatureFiles,
                     signatureHex: signatureHex || '无法解析签名内容'
                 };
+            } else {
+                // 没有找到签名文件的情况
+                extraInfo.signatureDetails = {
+                    signatureFiles: [],
+                    signatureHex: '未找到签名文件'
+                };
             }
+        } else {
+            // 没有META-INF目录的情况
+            extraInfo.signatureDetails = {
+                signatureFiles: [],
+                signatureHex: '未找到签名目录(META-INF)'
+            };
         }
     }
 
@@ -100,28 +110,15 @@ class APKExtraInfoParser {
         try {
             const content = await file.async('uint8array');
             let hexStr = '';
-            let chunkSize = 1024;
+            const chunkSize = 1024;
             
             // 分块处理签名内容
             for (let i = 0; i < content.length; i += chunkSize) {
                 const chunk = content.slice(i, i + chunkSize);
-                
-                // 使用requestIdleCallback避免阻塞主线程
-                await new Promise(resolve => {
-                    requestIdleCallback(() => {
-                        for (let j = 0; j < chunk.length; j++) {
-                            hexStr += chunk[j].toString(16).padStart(2, '0');
-                            if ((j + 1) % 16 === 0) hexStr += '\n';
-                            else hexStr += ' ';
-                        }
-                        resolve();
-                    });
-                });
-                
-                // 如果内容很大，先显示已处理的部分
-                if (i + chunkSize < content.length) {
-                    document.getElementById('signatureContent').textContent = hexStr.toUpperCase();
-                    await new Promise(resolve => setTimeout(resolve, 0)); // 让UI有机会更新
+                for (let j = 0; j < chunk.length; j++) {
+                    hexStr += chunk[j].toString(16).padStart(2, '0');
+                    if ((j + 1) % 16 === 0) hexStr += '\n';
+                    else hexStr += ' ';
                 }
             }
             
