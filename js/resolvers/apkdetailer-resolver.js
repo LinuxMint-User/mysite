@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    const apkWorker = new Worker('js/workers/apk-parser-worker.js');
+
     const dropArea = document.getElementById('dropArea');
     const selectBtn = document.getElementById('selectBtn');
     const copySignatureBtn = document.getElementById('copySignature');
@@ -59,100 +62,126 @@ document.addEventListener('DOMContentLoaded', () => {
         dropArea.querySelector('p').textContent = file.name;
         dropArea.classList.add('highlight');
         
+        call_banner("正在解析 APK 文件");
+        
         try {
-            // 添加检查确保库已加载
-            if (typeof AppInfoParser === 'undefined') {
-                throw new Error('APK解析库未加载，请刷新页面重试');
-            }
+            // 读取文件为ArrayBuffer
+            const arrayBuffer = await file.arrayBuffer();
+            // 传输ArrayBuffer和文件名
+            apkWorker.postMessage({
+                buffer: arrayBuffer,
+                fileName: file.name
+            }, [arrayBuffer]);
+        } catch (e) {
+            console.error('文件读取失败:', e);
+            alert('文件读取失败: ' + e.message);
+            resetUI();
+        }
+    }
+    
+    // 添加Worker消息处理
+    apkWorker.onmessage = function(e) {
+        // console.log('Worker返回结果:', e.data);
+        
+        if (e.data.error) {
+            console.error('Worker解析错误:', e.data.error);
+            call_banner('解析失败: ' + e.data.error);
+            resetUI();
+            return;
+        }
 
-            // 调用横幅函数
-            call_banner("正在解析 APK 文件"); 
+        const { result, extraInfo } = e.data;
+        updateUIWithResult(result, extraInfo);
+        call_banner("APK 文件解析完成");
+    };
 
-            const parser = new AppInfoParser(file);
-            const result = await parser.parse();
-            // console.log('解析结果:', result); // 添加调试日志
+    apkWorker.onerror = function(e) {
+        console.error('Worker解析错误:', e);
+        call_banner('解析失败: ' + e.message);
+        resetUI();
+    };
 
-            const extraParser = new APKExtraInfoParser(file);
-            const extraInfo = await extraParser.parse();
-            // console.log('额外架构信息:', extraInfo.architectures);
-            // console.log('签名文件:', extraInfo.signatureDetails);
+    function updateUIWithResult(result, extraInfo) {
 
-            // 合并架构信息
-            const allArchitectures = [
-                ...(result.nativeCode || []),
-                ...extraInfo.architectures
-            ].filter((v, i, a) => a.indexOf(v) === i); // 去重
+        // 确保result和extraInfo存在
+        if (!result || !extraInfo) {
+            throw new Error('解析结果数据不完整');
+        }
+
+        // 合并架构信息
+        const allArchitectures = [
+            ...(result.nativeCode || []),
+            ...extraInfo.architectures
+        ].filter((v, i, a) => a.indexOf(v) === i); // 去重
             
-            // 更新基本信息 - 确保字段名正确
-            updateField('package', result.package);
-            updateField('version', result.versionName);
-            updateField('version_code', result.versionCode);
+        // 更新基本信息 - 确保字段名正确
+        updateField('package', result.package);
+        updateField('version', result.versionName);
+        updateField('version_code', result.versionCode);
+        
+        // 更新SDK信息 - 添加备用字段名检查
+        updateField('min_sdk', result.usesSdk.minSdkVersion);
+        updateField('target_sdk', result.usesSdk.targetSdkVersion);
+        
+        // 更新架构显示
+        const archContent = document.getElementById('archContent');
+        if (allArchitectures.length > 0) {
+            archContent.innerHTML = allArchitectures
+                .map(arch => `• ${arch}`)
+                .join('<br>');
+        } else {
+            archContent.textContent = '未检测到原生库';
+        }
+        
+        // 更新签名信息
+        const signatureContent = document.getElementById('signatureContent');
+        if (extraInfo.signatureDetails && extraInfo.signatureDetails.signatureHex) {
+            signatureContent.textContent = extraInfo.signatureDetails.signatureHex.toUpperCase();
+        } else {
+            signatureContent.textContent = '未检测到签名';
+        }
+        
+        // 更新权限列表 - 检查不同可能的权限字段
+        // 更新权限列表 - 修改为处理 usesPermissions 数组
+        const permissionContent = document.getElementById('permissionContent');
+        const permissions = result.usesPermissions || result.permissions || result.manifest?.usesPermissions;
+        permissionContent.innerHTML = '';
+        
+        if (permissions && permissions.length > 0) {
+            // 先过滤掉空白权限项，然后排序
+            const validPermissions = permissions.filter(perm => {
+                const name = typeof perm === 'string' ? perm : perm.name;
+                return name && name.trim() !== '';
+            });
             
-            // 更新SDK信息 - 添加备用字段名检查
-            updateField('min_sdk', result.usesSdk.minSdkVersion);
-            updateField('target_sdk', result.usesSdk.targetSdkVersion);
-            
-            // 更新架构显示
-            const archContent = document.getElementById('archContent');
-            if (allArchitectures.length > 0) {
-                archContent.innerHTML = allArchitectures
-                    .map(arch => `• ${arch}`)
-                    .join('<br>');
-            } else {
-                archContent.textContent = '未检测到原生库';
-            }
-            
-            
-            // 更新权限列表 - 检查不同可能的权限字段
-            // 更新权限列表 - 修改为处理 usesPermissions 数组
-            const permissionContent = document.getElementById('permissionContent');
-            const permissions = result.usesPermissions || result.permissions || result.manifest?.usesPermissions;
-            permissionContent.innerHTML = '';
-            
-            if (permissions && permissions.length > 0) {
-                // 先过滤掉空白权限项，然后排序
-                const validPermissions = permissions.filter(perm => {
-                    const name = typeof perm === 'string' ? perm : perm.name;
-                    return name && name.trim() !== '';
-                });
-                
-                validPermissions.sort((a, b) => {
-                    const nameA = typeof a === 'string' ? a : a.name;
-                    const nameB = typeof b === 'string' ? b : b.name;
-                    return nameA.localeCompare(nameB);
-                });
-            
-                validPermissions.forEach(perm => {
-                    const permEl = document.createElement('div');
-                    permEl.className = 'permission-item';
-                    // 处理带 maxSdkVersion 的权限
-                    const permText = perm.maxSdkVersion 
-                        ? `• ${perm.name} (maxSdkVersion: ${perm.maxSdkVersion})`
-                        : `• ${perm.name}`;
-                    permEl.textContent = permText;
-                    permissionContent.appendChild(permEl);
-                });
-            
-                if (validPermissions.length === 0) {
-                    const noPerms = document.createElement('div');
-                    noPerms.className = 'no-permissions';
-                    noPerms.textContent = '未检测到特殊权限';
-                    permissionContent.appendChild(noPerms);
-                }
-            } else {
+            validPermissions.sort((a, b) => {
+                const nameA = typeof a === 'string' ? a : a.name;
+                const nameB = typeof b === 'string' ? b : b.name;
+                return nameA.localeCompare(nameB);
+            });
+        
+            validPermissions.forEach(perm => {
+                const permEl = document.createElement('div');
+                permEl.className = 'permission-item';
+                // 处理带 maxSdkVersion 的权限
+                const permText = perm.maxSdkVersion 
+                    ? `• ${perm.name} (maxSdkVersion: ${perm.maxSdkVersion})`
+                    : `• ${perm.name}`;
+                permEl.textContent = permText;
+                permissionContent.appendChild(permEl);
+            });
+        
+            if (validPermissions.length === 0) {
                 const noPerms = document.createElement('div');
                 noPerms.className = 'no-permissions';
                 noPerms.textContent = '未检测到特殊权限';
                 permissionContent.appendChild(noPerms);
             }
-
-            // 调用横幅函数
-            call_banner("APK 文件解析完成");
-
-        } catch (e) {
-            console.error('解析错误:', e); // 更详细的错误日志
-            alert(`解析失败: ${e.message}`);
-            resetUI();
+        } else {
+            const noPerms = document.createElement('div');
+            noPerms.className = 'no-permissions';
+            noPerms.textContent = '未检测到特殊权限';
+            permissionContent.appendChild(noPerms);
         }
     }
 
