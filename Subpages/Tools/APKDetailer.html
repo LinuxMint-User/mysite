@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APK 信息解析工具</title>
+    <title>APK 解析器</title>
     <base href="/mysite/">
     <link rel="icon" type="image/ico" href="icons/favicon.ico">
     <link rel="stylesheet" href="css/normalize.css">
@@ -12,9 +12,6 @@
     <link rel="stylesheet" href="css/night-mode.css">
     <link rel="stylesheet" type="text/css" href="css/widgets/banner.css">
     <link rel="stylesheet" href="css/apkdetailer-styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://unpkg.com/app-info-parser@1.1.6/dist/app-info-parser.min.js"></script>
-    <script src="js/apk-extra-info.js" defer></script>
     <script src="js/resolvers/apkdetailer-resolver.js" defer></script>
     <script src="js/index-script.js" defer></script>
 	<script src="js/updateCopyright.js" defer></script>
@@ -103,7 +100,7 @@
                 
                 <!-- 签名信息 -->
                 <div class="info-group">
-                    <h3>签名信息</h3>
+                    <h3>签名信息（V1 签名）</h3>
                     <pre id="signatureContent" class="signature-content">等待解析...</pre>
                     <button id="copySignature" class="copy-btn">复制全部</button>
                 </div>
@@ -140,7 +137,7 @@
     </script> -->
 
     <footer>
-        <p id="copyright">&copy; <span id="currentYearinCopyright">2024</span> Eric Chan</p>
+        <p id="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan</p>
     </footer>
 
 </body>
