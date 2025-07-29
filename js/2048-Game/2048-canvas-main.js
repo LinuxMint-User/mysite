@@ -451,21 +451,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var gameArea = document.querySelector('.gameArea');
 
     gameArea.addEventListener('touchstart', function (event) {
-        e.preventDefault();
+        event.preventDefault();
         var touch = event.touches[0];
         startX = touch.pageX;
         startY = touch.pageY;
     }, { passive: false });
 
     gameArea.addEventListener('touchmove', function (event) {
-        e.preventDefault();
+        event.preventDefault();
         var touch = event.touches[0];
         moveX = touch.pageX - startX;
         moveY = touch.pageY - startY;
     }, { passive: false });
 
     gameArea.addEventListener('touchend', function (event) {
-        e.preventDefault();
+        event.preventDefault();
         if (Math.abs(moveX) > Math.abs(moveY)) {
             if (moveX < 0) {
                 if (mvL(currentNumberTable, mergeTagTable)) {
