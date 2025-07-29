@@ -192,6 +192,7 @@ function isGameOver(table) {
 
 function gameOver() {
     document.getElementById('status').innerText = "游戏结束";
+    document.getElementById('newGameButton').innerText = "新游戏";
 }
 
 function setMergeTagTableToZero() {
@@ -219,10 +220,10 @@ function mvL(table, tag) {
     if (!anySpaceLeft(table)) {
         return false;
     }
-    
+
     // 重置合并标记数组
     setMergeTagTableToZero();
-    
+
     // 遍历每一列（从第二列开始）
     for (var y = 0; y < 4; y++) {
         for (var x = 1; x < 4; x++) {
@@ -306,10 +307,10 @@ function mvU(table, tag) {
     if (!anySpaceAbove(table)) {
         return false;
     }
-    
+
     // 重置合并标记数组
     setMergeTagTableToZero();
-    
+
     // 遍历每一行（从第二行开始）
     for (var x = 0; x < 4; x++) {
         for (var y = 1; y < 4; y++) {
@@ -491,7 +492,28 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // 初次加载激活游戏
-document.addEventListener('DOMContentLoaded', function() {
-    newGame();
+document.addEventListener('DOMContentLoaded', function () {
+    multiKey();
     resizeCanvas();
 });
+
+function multiKey() {
+    if (document.getElementById('newGameButton').innerText == "新游戏") {
+        newGame();
+        const controlButtons = document.querySelector('.control-buttons');
+        if (controlButtons.style.display == 'none') {
+            document.getElementById('newGameButton').innerText = "要用按键";
+        }
+        else if (controlButtons.style.display == 'grid') {
+            document.getElementById('newGameButton').innerText = "要用触摸";
+        }
+    }
+    else if (document.getElementById('newGameButton').innerText == "要用按键") {
+        controlButtons.style.display = 'grid';
+        document.getElementById('newGameButton').innerText = "要用触摸";
+    }
+    else if (document.getElementById('newGameButton').innerText == "要用触摸") {
+        controlButtons.style.display = 'none';
+        document.getElementById('newGameButton').innerText = "要用按键";
+    }
+}
