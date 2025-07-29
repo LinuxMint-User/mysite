@@ -451,18 +451,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var gameArea = document.querySelector('.gameArea');
 
     gameArea.addEventListener('touchstart', function (event) {
+        e.preventDefault();
         var touch = event.touches[0];
         startX = touch.pageX;
         startY = touch.pageY;
-    }, { passive: true });
+    }, { passive: false });
 
     gameArea.addEventListener('touchmove', function (event) {
+        e.preventDefault();
         var touch = event.touches[0];
         moveX = touch.pageX - startX;
         moveY = touch.pageY - startY;
-    }, { passive: true });
+    }, { passive: false });
 
     gameArea.addEventListener('touchend', function (event) {
+        e.preventDefault();
         if (Math.abs(moveX) > Math.abs(moveY)) {
             if (moveX < 0) {
                 if (mvL(currentNumberTable, mergeTagTable)) {
@@ -491,16 +494,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: false });
 });
 
-function hideToolbar() {
-  window.scrollTo(0, 1);
-  setTimeout(() => window.scrollTo(0, 0), 50);
-}
-
 // 初次加载激活游戏
 document.addEventListener('DOMContentLoaded', function () {
     multiKey();
     resizeCanvas();
-    hideToolbar();
 });
 
 function multiKey() {
