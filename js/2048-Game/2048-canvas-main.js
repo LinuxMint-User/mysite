@@ -488,13 +488,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         }
-    }, { passive: true });
+    }, { passive: false });
 });
+
+function hideToolbar() {
+  window.scrollTo(0, 1);
+  setTimeout(() => window.scrollTo(0, 0), 50);
+}
 
 // 初次加载激活游戏
 document.addEventListener('DOMContentLoaded', function () {
     multiKey();
     resizeCanvas();
+    hideToolbar();
 });
 
 function multiKey() {
