@@ -505,14 +505,14 @@ function multiKey() {
             document.getElementById('newGameButton').innerText = "要用按键";
         }
         else if (controlButtons.style.display == 'grid') {
-            document.getElementById('newGameButton').innerText = "要用触摸";
+            document.getElementById('newGameButton').innerText = "不用按键";
         }
     }
     else if (document.getElementById('newGameButton').innerText == "要用按键") {
         controlButtons.style.display = 'grid';
-        document.getElementById('newGameButton').innerText = "要用触摸";
+        document.getElementById('newGameButton').innerText = "不用按键";
     }
-    else if (document.getElementById('newGameButton').innerText == "要用触摸") {
+    else if (document.getElementById('newGameButton').innerText == "不用按键") {
         controlButtons.style.display = 'none';
         document.getElementById('newGameButton').innerText = "要用按键";
     }
