@@ -47,7 +47,7 @@
 
     <div class="container" style="display: flex; flex-direction: row-reverse;">
         <div class="button-list" style="flex: 1; min-width: fit-content;">
-            <button type="button" id="newGameButton" onclick="newGame()">新游戏</button>
+            <button type="button" id="newGameButton" onclick="multiKey()">新游戏</button>
             <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
         </div>
         <div class="container"
@@ -67,9 +67,9 @@
     </div>
 
     <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
-        <div class="gameArea" id="canvas-container">
-            <canvas class="gameCanvas" id="gameCanvas"></canvas>
-        </div>
+        <!-- <div class="gameArea" id="canvas-container"> -->
+            <canvas class="gameCanvas gameArea" id="gameCanvas"></canvas>
+        <!-- </div> -->
     </div>
 
     <div class="control-buttons" style="display: none;">
