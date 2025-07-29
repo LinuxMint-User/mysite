@@ -11,16 +11,22 @@ let food = {
 };
 let score = 0;
 let lastRenderTime = 0; // 用于控制渲染时间
-const renderDelay = 200; // 渲染间隔时间，单位毫秒
+const renderDelay = 500; // 渲染间隔时间，单位毫秒
+var speedUp = 300; // 加速削减的时间
+let speeding = 0; // 是否加速
 let isPlaying = false; // 游戏是否在进行中
 
 // 初加载在canvas上提示操作方法
-let controlsCN = "操作方法：⬆⬇⬅➡";
-let controlsEN = "control:⬆⬇⬅➡";
+let controlsCN0 = "两次按下相同方向键加速移动，";
+let controlsCN1 = "按下其他方向键解除加速。";
+let controlsEN0 = "Press the key twice to speedup,";
+let controlsEN1 = "Press other keys to reset speed.";
 ctx.font = '18px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 ctx.fillStyle = 'black';
-ctx.fillText(`${controlsCN}`, 5, 20);
-ctx.fillText(`${controlsEN}`, 5, 40);
+ctx.fillText(`${controlsCN0}`, 5, 20);
+ctx.fillText(`${controlsCN1}`, 5, 40);
+ctx.fillText(`${controlsEN0}`, 5, 60);
+ctx.fillText(`${controlsEN1}`, 5, 80);
 
 
 function isInSnake(x, y) {
@@ -83,7 +89,16 @@ function changeDirection(newDirection) {
         newDirection === 'down' && direction === 'up' ||
         newDirection === 'left' && direction === 'right' ||
         newDirection === 'right' && direction === 'left') {
-        return;
+            return;
+    }
+    else if (newDirection === 'up' && direction === 'up' ||
+        newDirection === 'down' && direction === 'down' ||
+        newDirection === 'left' && direction === 'left' ||
+        newDirection === 'right' && direction === 'right') {
+            speeding = 1;
+    }
+    else {
+        speeding = 0;
     }
     direction = newDirection;
 }
@@ -103,7 +118,7 @@ function draw() {
 }
 
 function gameLoop(timestamp) {
-    if (!lastRenderTime || timestamp - lastRenderTime >= renderDelay) {
+    if (!lastRenderTime || timestamp - lastRenderTime >= renderDelay - (speedUp * speeding)) {
         if (!updateSnake()) {
             isPlaying = false;
             //alert('游戏结束！');
@@ -195,52 +210,6 @@ document.getElementById('pauseResumeBtn').addEventListener('click', () => {
         document.getElementById('startRestartBtn').style.display = 'none';
     }
 });
-
-// 触屏支持
-// var startX, startY, moveX, moveY;
-// var gameArea = document.getElementById('snakeCanvas'); // 假设你的 Canvas ID 是 "snakeCanvas"
-
-// // 触摸开始时记录初始位置
-// gameArea.addEventListener('touchstart', function (event) {
-//     event.preventDefault(); // 防止默认行为（如页面滚动）
-//     var touch = event.touches[0];
-//     startX = touch.pageX;
-//     startY = touch.pageY;
-// });
-
-// // 触摸移动时记录移动距离
-// gameArea.addEventListener('touchmove', function (event) {
-//     event.preventDefault(); // 防止默认行为
-//     var touch = event.touches[0];
-//     moveX = touch.pageX - startX;
-//     moveY = touch.pageY - startY;
-// });
-
-// // 触摸结束时判断滑动方向并更新蛇的方向
-// gameArea.addEventListener('touchend', function (event) {
-//     event.preventDefault(); // 防止默认行为
-
-//     // 判断水平滑动还是垂直滑动
-//     if (Math.abs(moveX) > Math.abs(moveY)) {
-//         // 水平滑动
-//         if (moveX < 0) {
-//             // 向左滑动
-//             changeDirection('left');
-//         } else {
-//             // 向右滑动
-//             changeDirection('right');
-//         }
-//     } else {
-//         // 垂直滑动
-//         if (moveY < 0) {
-//             // 向上滑动
-//             changeDirection('up');
-//         } else {
-//             // 向下滑动
-//             changeDirection('down');
-//         }
-//     }
-// });
 
 // 按钮支持
 document.getElementById('upBtn').addEventListener('click', () => changeDirection('up'));

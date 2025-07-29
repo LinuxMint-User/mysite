@@ -1,7 +1,7 @@
 .control-buttons {
     position: fixed;
-    top: max(560px, 84vh);
-    left: 47.2%;
+    bottom: 60px;
+    left: 60%;
     transform: translateX(-50%);
     z-index: 100;
     display: grid;
