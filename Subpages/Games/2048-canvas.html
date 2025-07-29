@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 游戏</title>
+    <base href="/mysite/">
+    <link rel="icon" type="image/ico" href="icons/favicon.ico">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/global-styles.css">
+    <link rel="stylesheet" href="css/night-mode.css">
+    <link rel="stylesheet" href="css/2048Game/2048-canvas.css">
+    <script src="js/isMobileDevice.js"></script>
+    <script src="js/2048-Game/2048-canvas-rendering.js" defer></script>
+    <script src="js/2048-Game/2048-canvas-main.js" defer></script>
+    <script src="js/updateCopyright.js" defer></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="backButton" class="back-button">返回</button>
+        </div>
+        <h2 style="flex: 9;">2048 游戏</h2>
+    </header>
+
+    <script>
+        document.getElementById('backButton').addEventListener('click', function () {
+            // 从 URL 中获取 'from' 参数
+            var fromPage = new URLSearchParams(window.location.search).get('from');
+            // 如果 'from' 参数是 'index'
+            if (fromPage === 'index') {
+                // 判断浏览器历史记录中是否有可返回的页面
+                if (window.history.length > 1) {
+                    window.history.back(); // 有则直接返回
+                } else {
+                    // 没有则跳转到 index.html
+                    window.location.href = '/mysite/'
+                }
+            } else {
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html
+                window.location.href = '/mysite/'
+            }
+        });
+    </script>
+
+    <div class="container" style="display: flex; flex-direction: row-reverse;">
+        <div class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="newGameButton" onclick="newGame()">新游戏</button>
+            <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
+        </div>
+        <div class="container"
+            style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 0px; margin: 5px; padding: 5px; overflow: hidden;">
+            <h3 style="color: wheat; margin: 5px;">
+                当前得分:<span id="score">0</span>
+            </h3>
+            <!-- <h3 style="color: wheat; margin: 5px;">
+                历史最高分:<span id="historyRecord">0</span>
+            </h3> -->
+            <h3 style="color: wheat; margin: 5px;;">
+                游戏状态:<span id="status">进行中</span>
+            </h3>
+        </div>
+
+    </div>
+
+    <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
+        <div class="gameArea" id="canvas-container">
+            <canvas class="gameCanvas" id="gameCanvas"></canvas>
+        </div>
+    </div>
+
+    <div class="control-buttons" style="display: none;">
+        <button id="upBtn" class="control-btn">↑</button>
+        <button id="leftBtn" class="control-btn">←</button>
+        <button id="downBtn" class="control-btn">↓</button>
+        <button id="rightBtn" class="control-btn">→</button>
+    </div>
+
+    <footer>
+        <p id="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan 
+            <!--· 本页面源代码<a 
+                href="Subpages/Tools/sourcecode.html?from=2048-canvas" target="_blank">
+                <b>在这里</b>
+            </a>-->
+        </p>
+    </footer>
+</body>
+
+</html>
