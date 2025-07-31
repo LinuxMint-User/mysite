@@ -1,10 +1,12 @@
 function loadTopLevelCategories() {
     const navContainer = document.getElementById('nav-container');
+    const navContainer0 = document.getElementById('nav-container-0');
     navContainer.innerHTML = `
         <a href="#" class="custom-link nav-item" data-type="category" data-target="games">游戏</a>
         <a href="#" class="custom-link nav-item" data-type="category" data-target="tools">工具</a>
     `;
     navContainer.classList.add('loaded'); // 触发动画
+    navContainer0.classList.add('loaded');
 }
 
 document.addEventListener('DOMContentLoaded', loadTopLevelCategories);
@@ -28,7 +30,9 @@ document.getElementById('nav-container').addEventListener('click', (event) => {
 
 function loadCategoryContent(categoryId) {
     const navContainer = document.getElementById('nav-container');
+    const navContainer0 = document.getElementById('nav-container-0');
     navContainer.classList.remove('loaded'); // 先移除loaded类，让内容隐藏
+    navContainer0.classList.remove('loaded');
     setTimeout(() => { // 等待动画完成
         switch (categoryId) {
             case 'games':
@@ -64,5 +68,6 @@ function loadCategoryContent(categoryId) {
                 break;
         }
         navContainer.classList.add('loaded'); // 再次添加loaded类，触发动画
+        navContainer0.classList.add('loaded');
     }, 210); // 等待动画完成
 }

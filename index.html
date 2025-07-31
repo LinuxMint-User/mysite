@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/global-styles.css">
 	<link rel="stylesheet" href="css/index-styles.css">
+	<link rel="stylesheet" href="css/index-main-styles.css">
 	<link rel="stylesheet" type="text/css" href="css/sourceCode/prism-1.29.0.css">
 	<link rel="stylesheet" href="css/widgets/binclk.css">
 	<script src="js/markdown/marked.min.js" async></script>
@@ -17,75 +18,15 @@
 	<script src="js/widgets/binclk.js" defer></script>
 	<script src="js/index-nav.js" defer></script>
 	<script src="js/index-script.js" defer></script>
+	<script src="js/index-main-script.js" defer></script>
 	<script src="js/updateCopyright.js" defer></script>
 	<script src="js/resolvers/changeLogs-resolver.js" defer></script>
 	<style>
-		body {
-			overflow: auto;
-		}
-
-		/* 滚动条整体样式 */
-		::-webkit-scrollbar {
-			width: 8px;
-			height: 8px;
-			/* 滚动条的宽度与高度 */
-		}
-
-		/* 滚动条轨道样式 */
-		::-webkit-scrollbar-track {
-			background: #5555557b;
-			/* 滚动条轨道的背景颜色 */
-			border-radius: 3px;
-			/* 滚动条轨道的圆角 */
-		}
-
-		/* 滚动条滑块样式 */
-		::-webkit-scrollbar-thumb {
-			background: #555;
-			/* 滚动条滑块的颜色 */
-			border-radius: 3px;
-			/* 滚动条滑块的圆角 */
-		}
-
-		/* 鼠标悬停在滚动条滑块上时的样式 */
-		::-webkit-scrollbar-thumb:hover {
-			background: #424242;
-			/* 鼠标悬停时的颜色 */
-		}
-
-		#nav-container {
-			opacity: 0;
-			/* 初始状态透明 */
-			transition: opacity 0.5s ease;
-			/* 平滑过渡 */
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-			column-gap: 10px;
-			row-gap: 10px;
-			margin: 5px;
-			padding: 5px;
-		}
-
-		#nav-container.loaded {
-			opacity: 1;
-			/* 加载完成后显示 */
-		}
-
-		.nav-item {
-			display: block;
-			margin: 0;
-			padding: 0;
-			background-color: #333;
-			color: wheat;
-			text-decoration: none;
-			border-radius: 5px;
-			transition: background-color 0.3s ease;
-			font-size: 14px;
-			/* 按钮交互效果 */
-		}
-
-		.nav-item:hover {
-			background-color: #555;
+		:root {
+			/* reminder: these are global-styles.css default values, change if needed. */
+			--folded-container-expanded-max-height: 50vh;
+			--folded-container-expanded-transition-time-max-height: 0.5s;
+			--folded-container-expanded-transition-time-padding-top-bottom: 0.6s;
 		}
 	</style>
 </head>
@@ -96,36 +37,51 @@
 		<h1 style="flex: 9;">主页</h1>
 	</header>
 
-	<div class="container" style="display: flex; flex-direction: column; color: wheat;">
-		<p>导航</p>
+	<div id="nav-container-0" class="container animation-container" style="display: flex; flex-direction: column; color: wheat;">
 		<nav id="nav-container" class="container">
 			<!-- 动态内容将在这里显示 -->
 		</nav>
 	</div>
 
-	<div class="container" style="color: wheat; min-height: auto;">
-		<h3>变更计划</h3>
-		<div id="pre-container-1" class="container">
-			<pre id="pre-1"
-				style="max-height: 40vh; border-radius: 5px; scroll-behavior: smooth;"><code id="changePlans" class="language-none" style="white-space: pre-wrap;">ChangePlans is loading...</code></pre>
+	<div id="changeplan-container" class="container" style="color: wheat; min-height: auto;">
+		<div class="container" style="display: flex; flex-direction: row-reverse;">
+			<h3 style="flex: 9;">变更计划</h3>
+			<div class="button-list" style="flex: 1; min-width: fit-content;">
+				<button type="button" id="hide-changeplan-button" onclick="hideChangePlan()">展开</button>
+			</div>
+		</div>
+
+		<div id="pre-container-1" class="container folded-container">
+			<pre id="pre-1" style="max-height: max(26vh, 8vw); border-radius: 5px; scroll-behavior: smooth;">
+				<code id="changePlans" class="language-none" style="white-space: pre-wrap;">ChangePlans is loading...</code>
+			</pre>
 		</div>
 	</div>
 
-	<div class="container" style="color: wheat; min-height: auto;">
-		<h3>变更日志</h3>
-		<div class="container">
-			<div id="button-list-0" class="button-list">
-				<button type="button" date="1970.01.01">----.--.--</button>
+	<div id="changelog-container" class="container" style="color: wheat; min-height: auto;">
+		<div class="container" style="display: flex; flex-direction: row-reverse;">
+			<h3 style="flex: 9;">变更日志</h3>
+			<div class="button-list" style="flex: 1; min-width: fit-content;">
+				<button type="button" id="hide-changelog-button" onclick="hideChangeLog()">展开</button>
 			</div>
 		</div>
-		<div id="pre-container-0" class="container">
-			<pre id="pre-0"
-				style="max-height: 40vh; border-radius: 5px; scroll-behavior: smooth;"><code id="changeLogs" class="language-none" style="white-space: pre-wrap;">ChangeLogs is loading...</code></pre>
+		<div id="changelog-content-container" class="container folded-container responsive-container">
+			<div id="button-list-0-container" class="container folded-container" style="display: flex; flex-direction: row;">
+				<div id="button-list-0" class="button-list  responsive-button-list">
+					<button type="button" date="1970.01.01">----.--.--</button>
+				</div>
+			</div>
+			<div id="pre-container-0" class="container folded-container">
+				<pre id="pre-0" style="max-height: max(26vh, 8vw); border-radius: 5px; scroll-behavior: smooth;">
+					<code id="changeLogs" class="language-none" style="white-space: pre-wrap;">ChangeLogs is loading...</code>
+				</pre>
+			</div>
 		</div>
+
 	</div>
 
 	<footer>
-		<p id="copyright">&copy; <span id="currentYearinCopyright">2024</span> Eric Chan</p>
+		<p id="copyright" class="copyright">&copy; <span id="currentYearinCopyright">2024</span> Eric Chan</p>
 	</footer>
 </body>
 

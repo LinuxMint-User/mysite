@@ -35,16 +35,31 @@ function createButton(log) {
     button.dataset.date = log.date; // 存储日期到自定义数据属性
     button.onclick = function () {
         const container = document.getElementById('pre-container-0');
-        container.classList.add('hidden');
-        container.addEventListener('transitionend', function handler() {  
-    		// 移除隐藏类和过渡结束事件监听器  
-    		container.classList.remove('hidden');  
-    		container.removeEventListener('transitionend', handler);  
-    		// 添加新内容
+        container.classList.remove('expanded');
+        container.addEventListener('transitionend', function handler() {
+            // 移除隐藏类和过渡结束事件监听器  
+            container.classList.add('expanded');
+            container.removeEventListener('transitionend', handler);
+            // 添加新内容
             displayLog(log);
-    					
-  		}, { once: true });
-        
+
+        }, { once: true });
+        setTimeout(() => {
+            const targetElement0 = document.getElementById("pre-0");
+            targetElement0.scrollTo({
+                top: 0,
+                behavior: 'smooth' // 可选平滑滚动
+            });
+        }, 300);
+        setTimeout(() => {
+            const targetElement1 = document.getElementById("changelog-container");
+            targetElement1.scrollIntoView({
+                behavior: "smooth", // 平滑滚动
+                block: "start",     // 控件顶部对齐视口顶部（关键参数）
+                inline: "nearest"   // 水平方向保持自然
+            });
+        }, 800);
+
     };
     return button;
 }
