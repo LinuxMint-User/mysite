@@ -1,0 +1,71 @@
+body {
+    overflow: scroll;
+}
+
+#nav-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    column-gap: 10px;
+    row-gap: 10px;
+    margin: 5px;
+    padding: 5px;
+    overflow: hidden;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.5s cubic-bezier(0.68, 0, 0.32, 1.8);
+}
+
+#nav-container.loaded {
+    display: grid;
+    transform: scaleY(1);
+}
+
+.animation-container {
+    max-height: 0;
+    transition: max-height 0.6s ease;
+    overflow: hidden;
+}
+
+.animation-container.loaded {
+    max-height: 200px;
+}
+
+.nav-item {
+    display: block;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    color: wheat;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+.nav-item:hover {
+    background-color: #555;
+}
+
+@media (min-width: 768px) {
+    .responsive-container {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: 220px 1fr;
+        /* 左侧按钮列 + 右侧内容 */
+        align-items: start;
+    }
+
+    .responsive-button-list {
+        display: flex;
+        flex-direction: column;
+        /* 按钮纵向排列 */
+        gap: 8px;
+        overflow-y: auto;
+        /* 允许按钮列表滚动 */
+        max-height: 40vh;
+        position: sticky;
+        top: 20px;
+        /* 固定位置 */
+    }
+}
