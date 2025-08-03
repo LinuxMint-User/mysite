@@ -7,8 +7,13 @@ const fontSize = 30 * dpr + 'px';
 
 let lastTimestamp = null;
 
+/**
+ * 调整Canvas分辨率以适应高分屏
+ * @param {boolean} [render=false] - 是否在调整大小后立即重新渲染内容（默认不渲染）
+ * @returns {void}
+ */
 // 调整 Canvas 分辨率以适应高分屏
-function resizeCanvas() {
+function resizeCanvas(render = false) {
     // 获取 CSS 计算后的显示尺寸
     const displayWidth = canvas.clientWidth;
     const displayHeight = canvas.clientHeight;
@@ -18,7 +23,9 @@ function resizeCanvas() {
     canvas.height = displayHeight * dpr;
 
     // 重新绘制内容
-    renderAllBlock(currentNumberTable);
+    if (render) {
+        renderAllBlock(currentNumberTable);
+    }
 }
 
 /**
@@ -264,5 +271,7 @@ function animateBlocks(timestamp) {
 }
 
 window.addEventListener('resize', function () {
-    resizeCanvas();
+    if (gameStatus == 1) {
+        resizeCanvas(1);
+    }
 });

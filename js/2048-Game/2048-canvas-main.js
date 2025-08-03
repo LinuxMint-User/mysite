@@ -1,10 +1,12 @@
 // 全局变量
 var currentScore = 0;
 var historyRecord = 0;
-var gameStatus = 1;
-var historyRecordCookieName = 'histRec2048';
+var gameStatus = 0;
+// var historyRecordCookieName = 'histRec2048';
 var currentNumberTable = new Array();
 var mergeTagTable = new Array();
+var gameLevelSelector = document.getElementById('game-level');
+var gameLevel = gameLevelSelector.value;
 
 /**
  * 更新页面显示的当前分数
@@ -155,6 +157,8 @@ function init() {
     currentScore = 0;
     document.getElementById('score').innerText = currentScore;
     document.getElementById('status').innerText = "进行中";
+    gameLevelSelector.disabled = true;
+    gameStatus = 1;
     for (var i = 0; i < 4; i++) {
         currentNumberTable[i] = new Array();
         for (var j = 0; j < 4; j++) {
@@ -167,6 +171,7 @@ function init() {
             mergeTagTable[i][j] = 0;
         }
     }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     renderAllBlock(currentNumberTable);
 }
 
@@ -178,7 +183,8 @@ function generateOneNumber() {
         var rx = Math.floor(Math.random() * 4);
         var ry = Math.floor(Math.random() * 4);
     } while (currentNumberTable[rx][ry] != 0);
-    var rn = Math.random() < 0.5 ? 2 : 4;
+    // 调整这里的值以改变难度
+    var rn = Math.random() < gameLevel ? 2 : 4;
     currentNumberTable[rx][ry] = rn;
     renderBlock(rx, ry, renderingBackgroundByNumber(rn), renderingTextByNumber(rn), rn);
     return true;
@@ -191,8 +197,10 @@ function isGameOver(table) {
 }
 
 function gameOver() {
+    gameStatus = 0;
     document.getElementById('status').innerText = "游戏结束";
     document.getElementById('newGameButton').innerText = "新游戏";
+    gameLevelSelector.disabled = false;
 }
 
 function setMergeTagTableToZero() {
@@ -496,12 +504,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // 初次加载激活游戏
 document.addEventListener('DOMContentLoaded', function () {
-    multiKey();
+    // multiKey();
     resizeCanvas();
+    ctx.font = '28px Arial, Helvetica, sans-serif';
+    ctx.fillText('点击右上角多选框切换难度', 5, 30);
+    ctx.fillText('点击“新游戏”开始游戏', 5, 60);
 });
 
 function multiKey() {
-    if (document.getElementById('newGameButton').innerText == "新游戏") {
+    if (document.getElementById('newGameButton').innerText == "新游戏" && !gameStatus) {
         newGame();
         const controlButtons = document.querySelector('.control-buttons');
         if (controlButtons.style.display == 'none') {
