@@ -233,6 +233,18 @@ footer a {
 	background-color: #888;
 	appearance: auto;
 	cursor: pointer;
+	transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.custom-select:hover {
+	border-color: #cacaca;
+	background-color: #999;
+}
+
+.custom-select:focus {
+	outline: none;
+	border-color: #acacac;
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 .custom-select option {
@@ -242,11 +254,7 @@ footer a {
 	background-color: #888;
 }
 
-.custom-select:focus {
-	outline: none;
-	border-color: #acacac;
-	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
-}
+
 
 /* 滚动条整体样式 */
 ::-webkit-scrollbar {
