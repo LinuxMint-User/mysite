@@ -56,14 +56,31 @@
 	min-width: fit-content;
 	text-align: center;
 	white-space: nowrap;
+	transition: background-color 0.3s ease;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
+	-webkit-user-select: none;
+
 }
 
-@media (max-width:600px) or (max-height:600px) {
+@media (hover: hover) {
+	.container a.custom-link:hover {
+		background-color: #3535357b;
+	}
+}
+
+
+.container a.custom-link:active {
+	background-color: #8f8f8f7b;
+	transform: translateY(5px);
+}
+
+/* @media (max-width:600px) or (max-height:600px) {
 	.container a.custom-link {
 		font-size: 16px;
 		padding: 5px;
 	}
-}
+} */
 
 body {
 	/* display: flex;
@@ -101,9 +118,9 @@ body {
 	text-align: center;
 	text-decoration: none;
 	font-size: 16px;
-	text-shadow: 
-    0 0 2px rgba(0,0,0,0.7),
-    0 0 4px rgba(0,0,0,0.5);
+	text-shadow:
+		0 0 2px rgba(0, 0, 0, 0.7),
+		0 0 4px rgba(0, 0, 0, 0.5);
 	transition: background-color 0.3s;
 	cursor: pointer;
 	flex: 0 0 auto;
@@ -112,10 +129,20 @@ body {
 	/* 按钮之间的间距 */
 	/* 可选：为按钮添加滚动对齐 */
 	scroll-snap-align: start;
+	transition: background-color 0.3s ease;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
-.button-list button:hover {
-	background-color: #cc850080;
+@media (hover: hover) {
+	.button-list button:hover {
+		background-color: #ac7000;
+	}
+}
+
+.button-list button:active {
+	background-color: #ffa600;
 }
 
 input[type="checkbox"]:disabled {
@@ -156,19 +183,18 @@ footer a {
 	pointer-events: auto;
 }
 
-footer a:hover {
-	color: #000;
-	/* 鼠标悬停时的链接颜色 */
-}
-
-.credit {
-	line-height: 1.6;
-	/* 行高，使文本看起来更舒适 */
+@media (hover: hover) {
+	footer a:hover {
+		color: #000;
+		/* 鼠标悬停时的链接颜色 */
+	}
 }
 
 .copyright {
 	font-weight: bold;
-	/* 版权信息加粗 */
+	line-height: 1.5;
+	margin: 0;
+	opacity: 0.9;
 }
 
 .textbox {
