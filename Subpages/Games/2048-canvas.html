@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="css/global-styles.css">
     <link rel="stylesheet" href="css/night-mode.css">
     <link rel="stylesheet" href="css/2048Game/2048-canvas.css">
+    <link rel="stylesheet" href="css/widgets/control-buttons.css">
+    <script src="js/index-script.js" defer></script>
     <script src="js/isMobileDevice.js"></script>
     <script src="js/2048-Game/2048-canvas-rendering.js" defer></script>
     <script src="js/2048-Game/2048-canvas-main.js" defer></script>
@@ -22,7 +24,15 @@
         <div class="button-list" style="flex: 1; min-width: fit-content;">
             <button type="button" id="backButton" class="back-button">返回</button>
         </div>
-        <h2 style="flex: 9;">2048 游戏</h2>
+        <h2 style="flex: 8;">2048 游戏</h2>
+        <div class="select-wrapper" style="flex: 1; min-width: fit-content;">
+            <select id="game-level" class="custom-select">
+                <option value="0.9">简单</option>
+                <option value="0.8">中等</option>
+                <option value="0.5">极难</option>
+                <option value="0.3">地狱</option>
+            </select>
+        </div>
     </header>
 
     <script>
@@ -51,19 +61,18 @@
             <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
         </div>
         <div class="container"
-            style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 0px; margin: 5px; padding: 5px; overflow: hidden;">
-            <h3 style="color: wheat; margin: 5px;">
+            style="flex: 8; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+            gap: 0px; margin: 5px; padding: 5px; overflow: hidden; justify-items: center; align-items: center;">
+            <h3 style="color: wheat; margin: 5px; width: max-content;">
                 当前得分:<span id="score">0</span>
             </h3>
             <!-- <h3 style="color: wheat; margin: 5px;">
                 历史最高分:<span id="historyRecord">0</span>
             </h3> -->
-            <h3 style="color: wheat; margin: 5px;;">
-                游戏状态:<span id="status">进行中</span>
+            <h3 style="color: wheat; margin: 5px; width: max-content;">
+                游戏状态:<span id="status">准备中</span>
             </h3>
         </div>
-
     </div>
 
     <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
@@ -72,20 +81,17 @@
         <!-- </div> -->
     </div>
 
-    <div class="control-buttons" style="display: none;">
+    <div id="control-buttons" class="control-buttons" style="display: none;">
+        <button id="LeftHanded" class="control-btn accessbility" onclick="document.getElementById('control-buttons').style.left = '30%';">🫱</button>
         <button id="upBtn" class="control-btn">↑</button>
+        <button id="RightHanded" class="control-btn accessbility" onclick="document.getElementById('control-buttons').style.left = '70%';">🫲</button>
         <button id="leftBtn" class="control-btn">←</button>
         <button id="downBtn" class="control-btn">↓</button>
         <button id="rightBtn" class="control-btn">→</button>
     </div>
 
     <footer>
-        <p id="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan 
-            <!--· 本页面源代码<a 
-                href="Subpages/Tools/sourcecode.html?from=2048-canvas" target="_blank">
-                <b>在这里</b>
-            </a>-->
-        </p>
+        <p id="copyright" class="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan</p>
     </footer>
 </body>
 

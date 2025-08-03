@@ -1,14 +1,14 @@
 body {
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 #nav-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     column-gap: 10px;
     row-gap: 10px;
     margin: 5px;
-    padding: 5px;
+    /* padding: 5px; */
     overflow: hidden;
     transform: scaleY(0);
     transform-origin: top;
@@ -27,7 +27,7 @@ body {
 }
 
 .animation-container.loaded {
-    max-height: 200px;
+    max-height: 250px;
 }
 
 .nav-item {
@@ -43,9 +43,9 @@ body {
     overflow: hidden;
 }
 
-.nav-item:hover {
+/* .nav-item:hover {
     background-color: #555;
-}
+} */
 
 @media (min-width: 768px) {
     .responsive-container {
