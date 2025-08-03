@@ -1,0 +1,66 @@
+.control-buttons {
+    position: fixed;
+    bottom: 60px;
+    left: 70%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px;
+    width: fit-content;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    background-color: #cc8500;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.control-btn.accessbility {
+    background-color: #cc850030;
+}
+
+#upBtn {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+#leftBtn {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#downBtn {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#rightBtn {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+@media (hover: hover) {
+    .control-btn:hover {
+        opacity: 0.6;
+    }
+}
+
+.control-btn:active {
+    opacity: 1.0;
+}
