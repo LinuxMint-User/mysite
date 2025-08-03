@@ -59,6 +59,7 @@
 	transition: background-color 0.3s ease;
 	-webkit-tap-highlight-color: transparent;
 	user-select: none;
+	-webkit-user-select: none;
 }
 
 @media (hover: hover) {
@@ -130,6 +131,7 @@ body {
 	transition: background-color 0.3s ease;
 	-webkit-tap-highlight-color: transparent;
 	user-select: none;
+	-webkit-user-select: none;
 }
 
 @media (hover: hover) {
