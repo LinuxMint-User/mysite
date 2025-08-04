@@ -506,9 +506,9 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     // multiKey();
     resizeCanvas();
-    ctx.font = '28px Arial, Helvetica, sans-serif';
-    ctx.fillText('点击右上角多选框切换难度', 5, 30);
-    ctx.fillText('点击“新游戏”开始游戏', 5, 60);
+    ctx.font = fontSize + ' Arial, Helvetica, sans-serif';
+    ctx.fillText('点击右上多选框切换难度', 5, 50);
+    ctx.fillText('点击“新游戏”开始游戏', 5, 100);
 });
 
 function multiKey() {

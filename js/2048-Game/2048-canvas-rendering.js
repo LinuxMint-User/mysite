@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 const marginX = 5;
 const marginY = 3;
 const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
-const fontSize = 30 * dpr + 'px';
+const fontSize = 20 * dpr + 'px';
 
 let lastTimestamp = null;
 
