@@ -35,8 +35,8 @@ let controlsCN1 = "再次按下相反键解除加速。";
 // let controlsEN1 = "Press other keys to reset speed.";
 ctx.font = fontSize + ' system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 ctx.fillStyle = 'black';
-ctx.fillText(`${controlsCN0}`, 5, 50);
-ctx.fillText(`${controlsCN1}`, 5, 100);
+ctx.fillText(`${controlsCN0}`, 5, canvasHeight * cellSize * 0.1);
+ctx.fillText(`${controlsCN1}`, 5, canvasHeight * cellSize * 0.2);
 // ctx.fillText(`${controlsEN0}`, 5, 90);
 // ctx.fillText(`${controlsEN1}`, 5, 120);
 
@@ -184,7 +184,7 @@ startRestartBtn.addEventListener('click', () => {
         isPlaying = false; // 确保游戏尚未开始
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.font = '28px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+        ctx.font = fontSize + ' system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
         ctx.fillStyle = 'black';
         ctx.fillText(`READY...3`, canvas.width / 2 - 64, canvas.height / 2);
         // 显示倒计时状态
