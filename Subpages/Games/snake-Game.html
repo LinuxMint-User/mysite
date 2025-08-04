@@ -10,72 +10,19 @@
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/global-styles.css">
     <link rel="stylesheet" href="css/night-mode.css">
-    <style>
-        canvas {
-            display: block;
-            margin: auto;
-            background-color: wheat;
-            border: 1px solid black;
-        }
-
-        .control-buttons {
-            position: fixed;
-            bottom: 60px;
-            left: 60%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            width: 240px;
-            opacity: 0.8;
-        }
-
-        .control-btn {
-            width: 80px;
-            height: 40px;
-            background-color: #cc8500;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #upBtn {
-            grid-column: 2;
-            grid-row: 1;
-        }
-
-        #leftBtn {
-            grid-column: 1;
-            grid-row: 2;
-        }
-
-        #downBtn {
-            grid-column: 2;
-            grid-row: 2;
-        }
-
-        #rightBtn {
-            grid-column: 3;
-            grid-row: 2;
-        }
-
-        .control-buttons:hover {
-            opacity: 0.6;
-        }
-    </style>
+    <link rel="stylesheet" href="css/widgets/control-buttons.css">
     <script src="js/isMobileDevice.js"></script>
     <script src="js/snake-Game/snake-Game.js" defer></script>
     <script src="js/index-script.js" defer></script>
     <script src="js/updateCopyright.js" defer></script>
+    <style>
+        .gameCanvas {
+            background-color: wheat;
+            width: min(80vw, 45vh);
+            aspect-ratio: 1 / 1;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body>
@@ -105,9 +52,10 @@
             }
         });
     </script>
+
     <div class="container" style="display: flex; flex-direction: row;">
-        <div class="container"
-            style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0px; margin: 5px; padding: 0px; place-items: center;">
+        <div class="container" style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+            gap: 0px; margin: 5px; padding: 5px; place-items: center;">
             <h3 style="color: wheat; height: min-content; width: fit-content; margin: 2px; text-align: center;">
                 得分:<span id="score">0</span>
             </h3>
@@ -123,20 +71,23 @@
             <button type="button" id="pauseResumeBtn" style="display: none;">暂停</button>
         </div>
     </div>
-    <div class="container">
-        <canvas id="snakeCanvas" width="300" height="300"></canvas>
+
+    <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
+        <canvas id="snakeCanvas" class="gameCanvas"></canvas>
 
     </div>
 
-    <div class="control-buttons">
+    <div id="control-buttons" class="control-buttons" style="display: none;">
+        <button id="LeftHanded" class="control-btn accessbility" onclick="document.getElementById('control-buttons').style.left = '30%';">🫱</button>
         <button id="upBtn" class="control-btn">↑</button>
+        <button id="RightHanded" class="control-btn accessbility" onclick="document.getElementById('control-buttons').style.left = '70%';">🫲</button>
         <button id="leftBtn" class="control-btn">←</button>
         <button id="downBtn" class="control-btn">↓</button>
         <button id="rightBtn" class="control-btn">→</button>
     </div>
 
     <footer>
-        <p id="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan</p>
+        <p id="copyright" class="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan</p>
     </footer>
 </body>
 
