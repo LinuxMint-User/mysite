@@ -1,7 +1,7 @@
 const canvas = document.getElementById('snakeCanvas');
 const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
-const fontSize = 30 * dpr + 'px';
+const fontSize = 20 * dpr + 'px';
 
 var cellSize = 15;
 var canvasWidth;
@@ -29,14 +29,14 @@ var isPlaying = false; // 游戏是否在进行中
 
 resizeCanvas();
 // 初加载在canvas上提示操作方法
-let controlsCN0 = "两次按下相同方向键加速移动，";
-let controlsCN1 = "再次按下相反方向键解除加速。";
+let controlsCN0 = "两次按下相同键加速移动，";
+let controlsCN1 = "再次按下相反键解除加速。";
 // let controlsEN0 = "Press the key twice to speedup,";
 // let controlsEN1 = "Press other keys to reset speed.";
-ctx.font = '28px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+ctx.font = fontSize + ' system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 ctx.fillStyle = 'black';
-ctx.fillText(`${controlsCN0}`, 5, 30);
-ctx.fillText(`${controlsCN1}`, 5, 60);
+ctx.fillText(`${controlsCN0}`, 5, 50);
+ctx.fillText(`${controlsCN1}`, 5, 100);
 // ctx.fillText(`${controlsEN0}`, 5, 90);
 // ctx.fillText(`${controlsEN1}`, 5, 120);
 
