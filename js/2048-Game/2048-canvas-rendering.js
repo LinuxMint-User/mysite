@@ -5,6 +5,10 @@ const marginY = 3;
 const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
 const fontSize = 20 * dpr + 'px';
 
+var canvasWidth;
+var canvasHeight;
+var cellSize = Math.floor((canvas.width - marginX * 2) / 4);
+
 let lastTimestamp = null;
 
 /**
@@ -21,6 +25,9 @@ function resizeCanvas(render = false) {
     // 设置实际像素尺寸（放大 dpr 倍）
     canvas.width = displayWidth * dpr;
     canvas.height = displayHeight * dpr;
+
+    canvasWidth = Math.floor(canvas.width / cellSize);
+    canvasHeight = Math.floor(canvas.height / cellSize);
 
     // 重新绘制内容
     if (render) {
