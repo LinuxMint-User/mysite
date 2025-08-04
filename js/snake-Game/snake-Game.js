@@ -3,13 +3,13 @@ const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
 const fontSize = 20 * dpr + 'px';
 
-var cellSize = 15;
+var cellSize = 15 * dpr;
 var canvasWidth;
 var canvasHeight;
 var marginX = 0;
 var marginY = 0;
 
-const renderDelay = 500; // 渲染间隔时间，单位毫秒
+const renderDelay = isMobileDevice() ? 700 : 500; // 渲染间隔时间，单位毫秒
 
 const startRestartBtn = document.getElementById('startRestartBtn');
 const pauseResumeBtn = document.getElementById('pauseResumeBtn');
