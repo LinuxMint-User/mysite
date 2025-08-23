@@ -39,6 +39,7 @@ function loadCategoryContent(categoryId) {
                 navContainer.innerHTML = `
                     <a class="custom-link nav-item" data-type="content" href="Subpages/Games/2048-canvas.html?from=index">2048 游戏</a>
                     <a class="custom-link nav-item" data-type="content" href="Subpages/Games/snake-Game.html?from=index">贪吃蛇 游戏</a>
+                    <a class="custom-link nav-item" data-type="content" href="Subpages/Games/sudoku-canvas.html?from=index">数独 游戏</a>
                     <a href="#" class="custom-link nav-item" data-type="category" data-target="top">返回上级</a>
                 `;
                 break;
