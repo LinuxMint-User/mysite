@@ -531,3 +531,8 @@ function multiKey() {
         document.getElementById('newGameButton').innerText = "要用按键";
     }
 }
+
+// 监听下拉菜单变化
+document.getElementById("game-level").addEventListener("change", function () {
+    gameLevel = this.value; // 更新gameLevel变量
+});
