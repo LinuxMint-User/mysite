@@ -194,12 +194,14 @@ function checkPuzzleTable() {
 }
 
 function handleSudokuNumInput(num) {
-    if (num || num === 0) {
-        puzzleTable[selectedBlock.col][selectedBlock.row] = Number(num);
-        markTable[selectedBlock.col][selectedBlock.row] = 3;
-        renderAllBlock(puzzleTable);
-        markTable[selectedBlock.col][selectedBlock.row] = 0;
-        updateRemainedBlockNum();
+    if (gameStatus) {
+        if (num || num === 0) {
+            puzzleTable[selectedBlock.col][selectedBlock.row] = Number(num);
+            markTable[selectedBlock.col][selectedBlock.row] = 3;
+            renderAllBlock(puzzleTable);
+            markTable[selectedBlock.col][selectedBlock.row] = 0;
+            updateRemainedBlockNum();
+        }
     }
 }
 
