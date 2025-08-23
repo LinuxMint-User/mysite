@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数独</title>
+    <base href="/mysite/">
+    <link rel="icon" type="image/ico" href="icons/favicon.ico">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/global-styles.css">
+    <link rel="stylesheet" href="css/night-mode.css">
+    <link rel="stylesheet" href="css/sudoku/sudoku-canvas.css">
+    <script src="js/isMobileDevice.js"></script>
+    <script src="js/sudoku/sudoku-canvas-rendering.js" defer></script>
+    <script src="js/sudoku/sudoku-canvas-main.js" defer></script>
+    <script src="js/index-script.js" defer></script>
+    <script src="js/updateCopyright.js" defer></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="backButton" class="back-button">返回</button>
+        </div>
+        <h2 style="flex: 8;">数独</h2>
+        <div class="select-wrapper" style="flex: 1; min-width: fit-content;">
+            <select id="game-level" class="custom-select">
+                <option value="40">入门</option>
+                <option value="45">初级</option>
+                <option value="50">中级</option>
+                <option value="55">高级</option>
+                <option value="58">专家</option>
+                <option value="64">地狱</option>
+            </select>
+        </div>
+    </header>
+
+    <script>
+        document.getElementById('backButton').addEventListener('click', function () {
+            // 从 URL 中获取 'from' 参数
+            var fromPage = new URLSearchParams(window.location.search).get('from');
+            // 如果 'from' 参数是 'index'
+            if (fromPage === 'index') {
+                // 判断浏览器历史记录中是否有可返回的页面
+                if (window.history.length > 1) {
+                    window.history.back(); // 有则直接返回
+                } else {
+                    // 没有则跳转到 index.html
+                    window.location.href = '/mysite/'
+                }
+            } else {
+                // 如果没有 'from' 参数或者不是 'index'，则跳转到 index.html
+                window.location.href = '/mysite/'
+            }
+        });
+    </script>
+
+    <div class="container" style="display: flex; flex-direction: row-reverse;">
+        <div class="button-list" style="flex: 1; min-width: fit-content;">
+            <button type="button" id="newGameButton" onclick="init()">新游戏</button>
+            <button type="button" id="sudokuCheck" onclick="checkPuzzleTable()">检查</button>
+        </div>
+        <div class="container" style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0px; margin: 5px; padding: 5px; overflow: hidden; justify-items: center; align-items: center;">
+            <h3 style="color: wheat; margin: 5px; width: max-content;">
+                状态:<span id="sudokuCheckResult">未检查</span>
+            </h3>
+            <h3 style="color: wheat; margin: 5px; width: max-content;">
+                剩余:<span id="remainedBlockNum">0</span>
+            </h3>
+        </div>
+    </div>
+
+    <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
+        <canvas class="gameCanvas gameArea" id="gameCanvas"></canvas>
+    </div>
+
+    <div class="container">
+        <div class="button-list" style="align-items: center; justify-content: center;">
+            <button type="button" onclick="handleSudokuNumInput(1)" style="margin: 1px;">1</button>
+            <button type="button" onclick="handleSudokuNumInput(2)" style="margin: 1px;">2</button>
+            <button type="button" onclick="handleSudokuNumInput(3)" style="margin: 1px;">3</button>
+            <button type="button" onclick="handleSudokuNumInput(4)" style="margin: 1px;">4</button>
+            <button type="button" onclick="handleSudokuNumInput(5)" style="margin: 1px;">5</button>
+            <button type="button" onclick="handleSudokuNumInput(6)" style="margin: 1px;">6</button>
+            <button type="button" onclick="handleSudokuNumInput(7)" style="margin: 1px;">7</button>
+            <button type="button" onclick="handleSudokuNumInput(8)" style="margin: 1px;">8</button>
+            <button type="button" onclick="handleSudokuNumInput(9)" style="margin: 1px;">9</button>
+            <button type="button" onclick="handleSudokuNumInput(0)" style="margin: 1px;">C</button>
+        </div>
+    </div>
+
+    <footer>
+        <p id="copyright" class="copyright">&copy; <span id="currentYearinCopyright">2025</span> Eric Chan</p>
+    </footer>
+</body>
+
+</html>

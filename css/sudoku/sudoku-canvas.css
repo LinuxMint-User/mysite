@@ -1,0 +1,7 @@
+.gameCanvas {
+    background-color: #bbada0;
+    width: min(80vw, 38vh);
+    aspect-ratio: 1 / 1;
+    border-radius: 5px;
+    touch-action: manipulation; /* 告诉浏览器不需要延迟判断双击 */
+}
