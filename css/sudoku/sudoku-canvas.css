@@ -5,3 +5,11 @@
     border-radius: 5px;
     touch-action: manipulation; /* 告诉浏览器不需要延迟判断双击 */
 }
+
+.numberSelector {
+    display: flex;
+    align-items: center;
+    margin: 0 auto; /* 自动边距实现居中 */
+    max-width: fit-content; /* 宽度适应内容 */
+    overflow-x: auto;
+}
