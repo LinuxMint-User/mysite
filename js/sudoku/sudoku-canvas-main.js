@@ -235,7 +235,7 @@ function checkWholeSudokuTable(cols, rows) {
     // 检查每个宫格是否有重复
     for (let col = 0; col < 3; col++) {
         for (let row = 0; row < 3; row++) {
-            if (check3x3SudokuTable(col, row)) {
+            if (check3x3Table(col, row, sudokuTable)) {
                 return false;
             }
         }
@@ -243,11 +243,11 @@ function checkWholeSudokuTable(cols, rows) {
     return true;
 }
 
-function check3x3SudokuTable(relative_col, relative_row) {
+function check3x3Table(relative_col, relative_row, table) {
     const block3x3 = new Array();
     for (let col = 0; col < 3; col++) {
         for (let row = 0; row < 3; row++) {
-            block3x3.push(sudokuTable[col + relative_col * 3][row + relative_row * 3])
+            block3x3.push(table[col + relative_col * 3][row + relative_row * 3])
         }
     }
     return hasDuplicates(block3x3);
