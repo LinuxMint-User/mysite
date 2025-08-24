@@ -248,9 +248,12 @@ function check3x3Table(relative_col, relative_row, table) {
     for (let col = 0; col < 3; col++) {
         for (let row = 0; row < 3; row++) {
             block3x3.push(table[col + relative_col * 3][row + relative_row * 3])
+            if (hasDuplicates(block3x3)) {
+                return true;
+            }
         }
     }
-    return hasDuplicates(block3x3);
+    return false;
 }
 
 /**
@@ -314,6 +317,10 @@ function generateSudokuPuzzle(solution, holes) {
  * @returns  是否通过检查(true/false)
  */
 function checkWholePuzzleTable(cols, rows) {
+    // 检查是否有未填格子
+    if (countEmptyBlockNum !== 0) {
+        return false;
+    }
     // 检查每行是否有重复
     for (let row = 0; row < rows; row++) {
         if (hasDuplicates(puzzleTable[row])) {
