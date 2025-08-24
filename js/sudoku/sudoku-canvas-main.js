@@ -318,7 +318,7 @@ function generateSudokuPuzzle(solution, holes) {
  */
 function checkWholePuzzleTable(cols, rows) {
     // 检查是否有未填格子
-    if (countEmptyBlockNum !== 0) {
+    if (countEmptyBlockNum(puzzleTable) !== 0) {
         return false;
     }
     // 检查每行是否有重复
