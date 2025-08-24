@@ -156,14 +156,21 @@ function initMarkTable(puzzleTable, sudokuTable) {
         }
     }
 }
-
-function updateMarkTable(puzzleTable, sudokuTable) {
-    let flag = true;
+/**
+ * 更新格子背景颜色标志
+ * @param {number[][]} puzzleTable 谜题数组
+ * @param {number[][]} sudokuTable 终盘数组
+ * @param {boolean} multiSolution 是否为多解模式 (验证全盘通过后使用多解模式)
+ */
+function updateMarkTable(puzzleTable, sudokuTable, multiSolution = false) {
     for (let col = 0; col < sudokuTable.length; col++) {
         for (let row = 0; row < sudokuTable[col].length; row++) {
             if (puzzleTable[col][row] !== sudokuTable[col][row]) {
-                markTable[col][row] = 1;
-                flag = false;
+                if (multiSolution) {
+                    markTable[col][row] = 4;
+                } else {
+                    markTable[col][row] = 1;
+                }
             }
             if (puzzleTable[col][row] === sudokuTable[col][row] && markTable[col][row] !== -1) {
                 markTable[col][row] = 2;
@@ -173,16 +180,17 @@ function updateMarkTable(puzzleTable, sudokuTable) {
             }
         }
     }
-    return flag;
 }
 
 function checkPuzzleTable() {
-    if (!updateMarkTable(puzzleTable, sudokuTable)) {
+    if (!checkWholePuzzleTable(colNum, rowNum)) {
+        updateMarkTable(puzzleTable, sudokuTable);
         sudokuCheckResultIndicator.innerText = "未通过";
         sudokuCheckResultIndicator.style.color = renderingColorByText(sudokuCheckResultIndicator.innerText);
         renderAllBlock(puzzleTable);
     }
-    if (updateMarkTable(puzzleTable, sudokuTable)) {
+    else {
+        updateMarkTable(puzzleTable, sudokuTable, true);
         sudokuCheckResultIndicator.innerText = "通过";
         sudokuCheckResultIndicator.style.color = renderingColorByText(sudokuCheckResultIndicator.innerText);
         renderAllBlock(puzzleTable);
@@ -297,6 +305,36 @@ function generateSudokuPuzzle(solution, holes) {
         }
     }
     return puzzle;
+}
+
+/**
+ * 检查谜题表
+ * @param {number} cols 要检查的列数
+ * @param {number} rows 要检查的行数
+ * @returns  是否通过检查(true/false)
+ */
+function checkWholePuzzleTable(cols, rows) {
+    // 检查每行是否有重复
+    for (let row = 0; row < rows; row++) {
+        if (hasDuplicates(puzzleTable[row])) {
+            return false;
+        }
+    }
+    // 检查每列是否有重复
+    for (let col = 0; col < cols; col++) {
+        if (hasDuplicates(puzzleTable.map(row => row[col]))) {
+            return false;
+        }
+    }
+    // 检查每个宫格是否有重复
+    for (let col = 0; col < 3; col++) {
+        for (let row = 0; row < 3; row++) {
+            if (check3x3Table(col, row, puzzleTable)) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 /**
