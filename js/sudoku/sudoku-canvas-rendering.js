@@ -77,6 +77,9 @@ function renderingBackgroundByCoordinates(col, row, markTable) {
     if (markTable[col][row] === 3) { // 选中
         return "wheat";
     }
+    if (markTable[col][row] === 4) { // 多解
+        return "yellow";
+    }
     return "#ccc0b3"; // 默认背景色
 }
 
