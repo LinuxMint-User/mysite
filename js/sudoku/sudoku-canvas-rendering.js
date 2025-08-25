@@ -189,3 +189,5 @@ function renderHintMsg() {
     ctx.fillText(`${hintMsg2}`, 10, 150);
     ctx.fillText(`${hintMsg3}`, 10, 200);
 }
+
+document.addEventListener('DOMContentLoaded', renderHintMsg);
