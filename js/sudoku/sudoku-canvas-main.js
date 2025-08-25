@@ -6,10 +6,12 @@ var remainedBlockNum = 0;
 const inGame = true;
 const outGame = false;
 var gameStatus = outGame;
+var draftMode = false;
 
 var sudokuTable = new Array(colNum);
 var puzzleTable = new Array();
 var markTable = new Array(colNum);
+var draftTable = new Array(colNum);
 
 var gameLevelSelector = document.getElementById('game-level');
 var gameLevel = gameLevelSelector.value;
@@ -18,6 +20,11 @@ const remainedBlockNumIndicator = document.getElementById('remainedBlockNum');
 const sudokuCheckResultIndicator = document.getElementById('sudokuCheckResult');
 const sudokuCheckButton = document.getElementById('sudokuCheck');
 const newGameButton = document.getElementById('newGameButton');
+const draftLayer = document.getElementById('draftLayer');
+const draftButton = document.getElementById('hide-draftLayer-button');
+const magnifyingGlassButton = document.getElementById('magnifyingGlass');
+const magnifyingGlassNumIndicator = document.getElementById('magnifyingGlassNum');
+var magnifyingGlassNum = 3;
 
 var selectedBlock = {
     col: 0,
@@ -54,14 +61,20 @@ function init() {
     sudokuCheckButton.style.display = 'block';
     newGameButton.innerText = "重开";
     newGameButton.style.display = 'none';
+    draftLayer.classList.remove('expanded');
+    // draftCanvas.style.display = 'none';
+    draftMode = false;
+    updatemagnifyingGlassNumIndicator();
     gameStatus = outGame;
     gameLevelSelector.disabled = true;
     for (let col = 0; col < colNum; col++) {
         sudokuTable[col] = new Array(rowNum);
         markTable[col] = new Array(rowNum);
+        draftTable[col] = new Array(rowNum);
         for (let row = 0; row < rowNum; row++) {
             sudokuTable[col][row] = 0;
             markTable[col][row] = -1;
+            draftTable[col][row] = [];
         }
     }
     generateSudokuTable(9, 9);
@@ -69,8 +82,9 @@ function init() {
     initMarkTable(puzzleTable, sudokuTable);
     updateRemainedBlockNum();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    renderAllBlock(puzzleTable);
+    renderAllBlock(ctx, puzzleTable);
     gameStatus = inGame;
+    updateDraftBoard();
 }
 
 function generateRandom1to9() {
@@ -156,6 +170,7 @@ function initMarkTable(puzzleTable, sudokuTable) {
         }
     }
 }
+
 /**
  * 更新格子背景颜色标志
  * @param {number[][]} puzzleTable 谜题数组
@@ -187,13 +202,15 @@ function checkPuzzleTable() {
         updateMarkTable(puzzleTable, sudokuTable);
         sudokuCheckResultIndicator.innerText = "未通过";
         sudokuCheckResultIndicator.style.color = renderingColorByText(sudokuCheckResultIndicator.innerText);
-        renderAllBlock(puzzleTable);
+        renderAllBlock(ctx, puzzleTable);
+        updatemagnifyingGlassNumIndicator(1, 'checked');
     }
     else {
         updateMarkTable(puzzleTable, sudokuTable, true);
         sudokuCheckResultIndicator.innerText = "通过";
         sudokuCheckResultIndicator.style.color = renderingColorByText(sudokuCheckResultIndicator.innerText);
-        renderAllBlock(puzzleTable);
+        renderAllBlock(ctx, puzzleTable);
+        updatemagnifyingGlassNumIndicator(2, 'checked');
     }
     newGameButton.style.display = 'block';
     sudokuCheckButton.style.display = 'none';
@@ -203,12 +220,27 @@ function checkPuzzleTable() {
 
 function handleSudokuNumInput(num) {
     if (gameStatus) {
-        if (num || num === 0) {
-            puzzleTable[selectedBlock.col][selectedBlock.row] = Number(num);
-            markTable[selectedBlock.col][selectedBlock.row] = 3;
-            renderAllBlock(puzzleTable);
-            markTable[selectedBlock.col][selectedBlock.row] = 0;
-            updateRemainedBlockNum();
+        if (!draftMode) {
+            if (num || num === 0) {
+                puzzleTable[selectedBlock.col][selectedBlock.row] = Number(num);
+                markTable[selectedBlock.col][selectedBlock.row] = 3;
+                renderAllBlock(ctx, puzzleTable);
+                markTable[selectedBlock.col][selectedBlock.row] = 0;
+                updateRemainedBlockNum();
+            }
+        }
+        if (draftMode) {
+            if (num) {
+                if (draftTable[selectedBlock.col][selectedBlock.row].length < 3) {
+                    draftTable[selectedBlock.col][selectedBlock.row][draftTable[selectedBlock.col][selectedBlock.row].length] = Number(num);
+                }
+            }
+            if (num === 0) {
+                if (draftTable[selectedBlock.col][selectedBlock.row].length >= 0) {
+                    draftTable[selectedBlock.col][selectedBlock.row].pop();
+                }
+            }
+            updateDraftBoard();
         }
     }
 }
@@ -411,6 +443,7 @@ function shuffleArray(array) {
 
 // 监听点击事件
 canvas.addEventListener("click", handleClick);
+draftCanvas.addEventListener("click", handleClick);
 
 function getCanvasClickPosition(e, canvas) {
     // 获取 Canvas 的视口位置和实际渲染尺寸
@@ -438,17 +471,56 @@ function handleClick(e) {
             markTable[blockCol][blockRow] = 3;
             selectedBlock.col = blockCol;
             selectedBlock.row = blockRow;
-            renderAllBlock(puzzleTable);
+            renderAllBlock(ctx, puzzleTable);
             markTable[blockCol][blockRow] = originalValue;
         }
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    sudokuCheckButton.style.display = 'none';
-});
-
 // 监听下拉菜单变化
 document.getElementById("game-level").addEventListener("change", function () {
     gameLevel = this.value; // 更新gameLevel变量
 });
+
+function toggleDraftBoard() {
+    if (gameStatus) {
+        draftLayer.classList.toggle('expanded');
+        draftMode = draftMode === false ? true : false;
+        // draftCanvas.style.display = draftCanvas.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function updateDraftBoard() {
+    renderAllDraftBlock(draftCanvasCtx, draftTable);
+}
+
+function updatemagnifyingGlassNumIndicator(delta = 0, origin = '') {
+    if (origin === 'checkdraft') {
+        magnifyingGlassNum -= delta;
+    }
+    if (origin === 'checked') {
+        magnifyingGlassNum += delta;
+    }
+    magnifyingGlassNumIndicator.innerText = magnifyingGlassNum;
+    if (magnifyingGlassNum) {
+        magnifyingGlassButton.style.display = 'block';
+    } else {
+        magnifyingGlassButton.style.display = 'none';
+    }
+}
+
+function adjustDraft() {
+    loop:
+    for (let col = 0; col < colNum; col++) {
+        for (let row = 0; row < rowNum; row++) {
+            if (draftTable[col][row].length > 1) {
+                if (draftTable[col][row].includes(sudokuTable[col][row])) {
+                    draftTable[col][row] = [sudokuTable[col][row]];
+                    break loop;
+                }
+            }
+        }
+    }
+    updateDraftBoard();
+    updatemagnifyingGlassNumIndicator(1, 'checkdraft');
+}
