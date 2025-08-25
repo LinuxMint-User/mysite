@@ -203,7 +203,7 @@ function checkPuzzleTable() {
         sudokuCheckResultIndicator.innerText = "未通过";
         sudokuCheckResultIndicator.style.color = renderingColorByText(sudokuCheckResultIndicator.innerText);
         renderAllBlock(ctx, puzzleTable);
-        updatemagnifyingGlassNumIndicator(1, 'checked');
+        updatemagnifyingGlassNumIndicator(0, 'checked');
     }
     else {
         updateMarkTable(puzzleTable, sudokuTable, true);
