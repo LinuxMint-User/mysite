@@ -58,7 +58,7 @@
 
     <div class="container" style="display: flex; flex-direction: row-reverse;">
         <div class="button-list" style="flex: 1; min-width: fit-content;">
-            <button type="button" id="newGameButton" onclick="init()">新游戏</button>
+            <button type="button" id="newGameButton" onclick="init()">开始</button>
             <button type="button" id="sudokuCheck" onclick="checkPuzzleTable()" style="display: none;">检查</button>
         </div>
         <div class="container" style="flex: 9; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -69,15 +69,28 @@
             <h3 style="color: wheat; margin: 5px; width: max-content;">
                 剩余:<span id="remainedBlockNum">0</span>
             </h3>
+            <h3 style="color: wheat; margin: 5px; width: max-content;">
+                🔍:<span id="magnifyingGlassNum">0</span>
+            </h3>
+        </div>
+        <div class="button-list">
+            
         </div>
     </div>
 
-    <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
+    <div class="container" style="display: flex; justify-content: center; overflow: hidden; position: relative;">
         <canvas class="gameCanvas gameArea" id="gameCanvas"></canvas>
+        <div class="container folded-container overlayer" id="draftLayer" style="opacity: 0.6;">
+            <canvas class="gameCanvas draftArea" id="draftCanvas" style="background-color: transparent;"></canvas>
+        </div>
     </div>
 
     <div class="container">
-        <div class="button-list numberSelector">
+        <div class="button-list numberSelector" style="border-radius: 5px;">
+            <button type="button" id="magnifyingGlass" onclick="adjustDraft()"
+                style="margin: 1px; position: sticky; left: 1px; z-index: 1; box-shadow: -2px 0 5px rgba(0,0,0,0.1); display: none;">🔍</button>
+            <button type="button" id="hide-draftLayer-button" onclick="toggleDraftBoard()"
+                style="margin: 1px; position: sticky; left: 1px; z-index: 1; box-shadow: -2px 0 5px rgba(0,0,0,0.1);">草稿</button>
             <button type="button" onclick="handleSudokuNumInput(1)" style="margin: 1px;">1</button>
             <button type="button" onclick="handleSudokuNumInput(2)" style="margin: 1px;">2</button>
             <button type="button" onclick="handleSudokuNumInput(3)" style="margin: 1px;">3</button>
@@ -87,7 +100,9 @@
             <button type="button" onclick="handleSudokuNumInput(7)" style="margin: 1px;">7</button>
             <button type="button" onclick="handleSudokuNumInput(8)" style="margin: 1px;">8</button>
             <button type="button" onclick="handleSudokuNumInput(9)" style="margin: 1px;">9</button>
-            <button type="button" onclick="handleSudokuNumInput(0)" style="margin: 1px; position: sticky; right: 1px; z-index: 1; box-shadow: -2px 0 5px rgba(0,0,0,0.1);">C</button>
+            <button type="button" onclick="handleSudokuNumInput(0)"
+                style="margin: 1px; position: sticky; right: 1px; z-index: 1; box-shadow: -2px 0 5px rgba(0,0,0,0.1);">清除</button>
+            
         </div>
     </div>
 
