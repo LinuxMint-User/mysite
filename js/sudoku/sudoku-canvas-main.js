@@ -18,7 +18,7 @@ var gameLevel = gameLevelSelector.value;
 
 const remainedBlockNumIndicator = document.getElementById('remainedBlockNum');
 const sudokuCheckResultIndicator = document.getElementById('sudokuCheckResult');
-const sudokuCheckButton = document.getElementById('sudokuCheck');
+// const sudokuCheckButton = document.getElementById('sudokuCheck');
 const newGameButton = document.getElementById('newGameButton');
 const draftLayer = document.getElementById('draftLayer');
 const draftButton = document.getElementById('hide-draftLayer-button');
@@ -56,11 +56,28 @@ function updateRemainedBlockNum() {
 
 function init() {
     resizeCanvas();
+    if (newGameButton.innerText === "重开") {
+        newGameButton.innerText = "开始";
+        sudokuCheckResultIndicator.innerText = "未检查";
+        sudokuCheckResultIndicator.style.color = renderingColorByText("未检查");
+        remainedBlockNumIndicator.innerText = '0';
+        remainedBlockNumIndicator.style.color = 'wheat';
+        draftLayer.classList.remove('expanded');
+        draftMode = false;
+        updatemagnifyingGlassNumIndicator();
+        magnifyingGlassButton.style.display = 'none';
+        gameStatus = outGame;
+        gameLevelSelector.disabled = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draftCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+        renderHintMsg();
+        return;
+    }
     sudokuCheckResultIndicator.innerText = "未检查";
     sudokuCheckResultIndicator.style.color = renderingColorByText("未检查");
-    sudokuCheckButton.style.display = 'block';
+    // sudokuCheckButton.style.display = 'block';
     newGameButton.innerText = "重开";
-    newGameButton.style.display = 'none';
+    // newGameButton.style.display = 'none';
     draftLayer.classList.remove('expanded');
     // draftCanvas.style.display = 'none';
     draftMode = false;
@@ -212,8 +229,8 @@ function checkPuzzleTable() {
         renderAllBlock(ctx, puzzleTable);
         updatemagnifyingGlassNumIndicator(2, 'checked');
     }
-    newGameButton.style.display = 'block';
-    sudokuCheckButton.style.display = 'none';
+    // newGameButton.style.display = 'block';
+    // sudokuCheckButton.style.display = 'none';
     gameStatus = outGame;
     gameLevelSelector.disabled = false;
 }
@@ -227,6 +244,9 @@ function handleSudokuNumInput(num) {
                 renderAllBlock(ctx, puzzleTable);
                 markTable[selectedBlock.col][selectedBlock.row] = 0;
                 updateRemainedBlockNum();
+                if (countEmptyBlockNum(puzzleTable) === 0) {
+                    checkPuzzleTable();
+                }
             }
         }
         if (draftMode) {
