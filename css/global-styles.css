@@ -144,6 +144,12 @@ body {
 	background-color: #ffa600;
 }
 
+.button-list button:disabled {
+	background-color: #666;
+	opacity: 0.6;
+	user-select: none;
+}
+
 input[type="checkbox"]:disabled {
 	content: " ";
 	display: inline-block;
