@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/widgets/control-buttons.css">
     <script src="js/index-script.js" defer></script>
     <script src="js/isMobileDevice.js"></script>
+    <script src="js/pako.min.js"></script>
     <script src="js/2048-Game/2048-canvas-rendering.js" defer></script>
     <script src="js/2048-Game/2048-canvas-main.js" defer></script>
     <script src="js/updateCopyright.js" defer></script>
@@ -56,8 +57,12 @@
     </script>
 
     <div class="container" style="display: flex; flex-direction: row-reverse;">
-        <div class="button-list" style="flex: 1; min-width: fit-content;">
-            <button type="button" id="newGameButton" onclick="multiKey()">新游戏</button>
+        <div class="button-list" style="flex: 1; min-width: fit-content; flex-direction: column;">
+            <button type="button" id="newGameButton" onclick="multiKey('newGameButton')">开始</button>
+            <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')" style="display: none;">上一</button>
+            <button type="button" id="replayButton" onclick="multiKey('replayButton')">回放</button>
+            <button type="button" id="replayButtonNext" onclick="multiKey('replayButtonNext')" style="display: none;">下一</button>
+            <button type="button" id="copyButton" onclick="multiKey('copyButton')" style="display: none;">分享</button>
             <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
         </div>
         <div class="container"
