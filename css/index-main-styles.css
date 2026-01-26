@@ -69,3 +69,12 @@ body {
         /* 固定位置 */
     }
 }
+
+#button-list-0 button.active {
+    background-color: #ff9c00;  /* 比原始色亮20% */
+    color: whitesmoke;  /* 深棕色文字保持对比 */
+    border-color: #e68a00;
+    box-shadow: 0 2px 8px rgba(255, 156, 0, 0.5);
+    font-weight: bold;
+    border-width: 2px;
+}
