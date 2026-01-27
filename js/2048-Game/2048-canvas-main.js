@@ -1,15 +1,18 @@
 // 全局变量
-var currentScore = 0;
-var historyRecord = 0;
-var gameStatus = 0;
-// var historyRecordCookieName = 'histRec2048';
-var currentNumberTable = new Array();
-var mergeTagTable = new Array();
+let currentScore = 0;
+let historyRecord = 0;
+let gameStatus = 0;
+// let historyRecordCookieName = 'histRec2048';
+let currentNumberTable = new Array();
+let mergeTagTable = new Array();
+
+let gameSeed;
+let prng;
 
 const scoreIndicator = document.getElementById('score');
 const statusIndicator = document.getElementById('status');
 const gameLevelSelector = document.getElementById('game-level');
-var gameLevel = gameLevelSelector.value;
+let gameLevel = gameLevelSelector.value;
 
 const controlButtons = document.querySelector('.control-buttons');
 const leftBtn = document.getElementById('leftBtn');
@@ -25,12 +28,15 @@ const copyButton = document.getElementById('copyButton');
 
 const gameArea = document.querySelector('.gameArea');
 
-var gameRecordString = "2048Game|";
-var inputGameRecordString = "";
-var gameRecordStep = 9;
-var gameRecordFrameCount = 0;
-var replayIntervalId = null;
-var PLAY_INTERVAL = 800;
+let gameRecordString = "2048Game|";
+let inputGameRecordString = "";
+const gameRecordStepStartIndex = 0;
+let gameRecordStep = gameRecordStepStartIndex;
+let gameRecordFrameCount = 0;
+let replayIntervalId = null;
+let PLAY_INTERVAL = 800;
+
+let gameRecordStringParts;
 
 /**
  * 更新页面显示的当前分数
@@ -46,8 +52,8 @@ function fetchCurrentScore() {
  * @returns {boolean} - 如果有空格子返回true，否则返回false
  */
 function anySpaceThere(table) {
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
             if (table[i][j] == 0) {
                 return true;
             }
@@ -63,8 +69,8 @@ function anySpaceThere(table) {
  */
 function anySpaceLeft(table) {
     // 遍历游戏面板每个格子
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
             // 检查当前格子非空且不在最左侧
             if (table[i][j] != 0 && i != 0) {
                 // 检查左侧格子是否为空或与当前格子数字相同
@@ -84,8 +90,8 @@ function anySpaceLeft(table) {
  */
 function anySpaceRight(table) {
     // 遍历游戏面板每个格子
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
             // 检查当前格子非空且不在最右侧
             if (table[i][j] != 0 && i != 3) {
                 // 检查右侧格子是否为空或与当前格子数字相同
@@ -105,8 +111,8 @@ function anySpaceRight(table) {
  */
 function anySpaceAbove(table) {
     // 遍历游戏面板每个格子
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
             // 检查当前格子非空且不在最上方
             if (table[i][j] != 0 && j != 0) {
                 // 检查上方格子是否为空或与当前格子数字相同
@@ -126,8 +132,8 @@ function anySpaceAbove(table) {
  */
 function anySpaceBelow(table) {
     // 遍历游戏面板每个格子
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
             // 检查当前格子非空且不在最下方
             if (table[i][j] != 0 && j != 3) {
                 // 检查下方格子是否为空或与当前格子数字相同
@@ -158,7 +164,7 @@ function canMove(table) {
  */
 function anyBlockHorizontal(row, col0, col1, table) {
     // 遍历起始列和结束列之间的所有列
-    for (var col = col0 + 1; col < col1; col++) {
+    for (let col = col0 + 1; col < col1; col++) {
         // 如果发现非空格子则返回true
         if (table[row][col] != 0) {
             return true;
@@ -169,7 +175,7 @@ function anyBlockHorizontal(row, col0, col1, table) {
 }
 
 function anyBlockVertical(col, row0, row1, table) {
-    for (var row = row0 + 1; row < row1; row++) {
+    for (let row = row0 + 1; row < row1; row++) {
         if (table[row][col] != 0) {
             return true;
         }
@@ -178,23 +184,25 @@ function anyBlockVertical(col, row0, row1, table) {
 }
 
 function init() {
+    gameSeed = generateRandomSeed();
+    prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
     copyButton.style.display = 'none';
     replayButton.disabled = true;
-    gameRecordString = "2048Game|";
+    gameRecordString = "2048Game|" + gameSeed + "|";
     currentScore = 0;
     scoreIndicator.innerText = currentScore;
     statusIndicator.innerText = "进行中";
     gameLevelSelector.disabled = true;
     gameStatus = 1;
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         currentNumberTable[i] = new Array();
-        for (var j = 0; j < 4; j++) {
+        for (let j = 0; j < 4; j++) {
             currentNumberTable[i][j] = 0;
         }
     }
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         mergeTagTable[i] = new Array();
-        for (var j = 0; j < 4; j++) {
+        for (let j = 0; j < 4; j++) {
             mergeTagTable[i][j] = 0;
         }
     }
@@ -205,7 +213,7 @@ function init() {
 function replayInit() {
     copyButton.style.display = 'none';
     replayIntervalId = null;
-    gameRecordStep = 9;
+    gameRecordStep = gameRecordStepStartIndex;
     gameRecordFrameCount = 0;
     newGameButton.disabled = true;
     newGameButton.style.display = 'none';
@@ -216,15 +224,15 @@ function replayInit() {
     statusIndicator.innerText = "回放中";
     gameLevelSelector.disabled = true;
     gameStatus = 2;
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         currentNumberTable[i] = new Array();
-        for (var j = 0; j < 4; j++) {
+        for (let j = 0; j < 4; j++) {
             currentNumberTable[i][j] = 0;
         }
     }
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         mergeTagTable[i] = new Array();
-        for (var j = 0; j < 4; j++) {
+        for (let j = 0; j < 4; j++) {
             mergeTagTable[i][j] = 0;
         }
     }
@@ -233,18 +241,22 @@ function replayInit() {
 }
 
 function generateOneNumber() {
+    let rx;
+    let ry;
     if (!anySpaceThere(currentNumberTable)) {
         return false;
     }
     do {
-        var rx = Math.floor(Math.random() * 4);
-        var ry = Math.floor(Math.random() * 4);
+        // rx = Math.floor(Math.random() * 4);
+        // ry = Math.floor(Math.random() * 4);
+        rx = prng.randomInt(4);
+        ry = prng.randomInt(4);
     } while (currentNumberTable[rx][ry] != 0);
     // 调整这里的值以改变难度
-    var rn = Math.random() < gameLevel ? 2 : 4;
+    let rn = prng.random() < gameLevel ? 2 : 4;
     currentNumberTable[rx][ry] = rn;
     renderBlock(rx, ry, renderingBackgroundByNumber(rn), renderingTextByNumber(rn), rn);
-    gameRecordString += "g" + rx + ry + rn;
+    // gameRecordString += "g" + rx + ry + rn;
     return true;
 }
 
@@ -272,16 +284,19 @@ function replayOver() {
     gameLevelSelector.disabled = false;
     replayButtonPrev.style.display = 'none';
     replayButtonNext.style.display = 'none';
-    replayIntervalId = null;
+    if (replayIntervalId !== null) {
+        clearInterval(replayIntervalId);
+        replayIntervalId = null;
+    }
     replayButton.innerText = "播放";
-    gameRecordStep = 9;
+    gameRecordStep = gameRecordStepStartIndex;
     gameRecordFrameCount = 0;
     copyButton.style.display = 'block';
 }
 
 function setMergeTagTableToZero() {
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
             mergeTagTable[i][j] = 0;
         }
     }
@@ -312,12 +327,12 @@ function mvL(table, tag, withAnimation = true) {
     setMergeTagTableToZero();
 
     // 遍历每一列（从第二列开始）
-    for (var y = 0; y < 4; y++) {
-        for (var x = 1; x < 4; x++) {
+    for (let y = 0; y < 4; y++) {
+        for (let x = 1; x < 4; x++) {
             // 只处理非空格子
             if (table[x][y] != 0) {
                 // 检查左侧所有可能的位置
-                for (var k = 0; k < x; k++) {
+                for (let k = 0; k < x; k++) {
                     // 情况1：左侧格子为空且中间无障碍物
                     if (table[k][y] == 0 && !anyBlockVertical(y, k, x, currentNumberTable)) {
                         if (withAnimation) {
@@ -349,7 +364,9 @@ function mvL(table, tag, withAnimation = true) {
             }
         }
     }
-    gameRecordString += "ml";
+    if (gameStatus === 1) {
+        gameRecordString += "ml";
+    }
     return true;
 }
 
@@ -361,10 +378,10 @@ function mvR(table, tag, withAnimation = true) {
         return false;
     }
     setMergeTagTableToZero();
-    for (var y = 0; y < 4; y++) {
-        for (var x = 2; x >= 0; x--) {
+    for (let y = 0; y < 4; y++) {
+        for (let x = 2; x >= 0; x--) {
             if (table[x][y] != 0) {
-                for (var k = 3; k > x; k--) {
+                for (let k = 3; k > x; k--) {
                     if (table[k][y] == 0 && !anyBlockVertical(y, x, k, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, k, y);  // 执行移动动画
@@ -392,7 +409,9 @@ function mvR(table, tag, withAnimation = true) {
             }
         }
     }
-    gameRecordString += "mr";
+    if (gameStatus === 1) {
+        gameRecordString += "mr";
+    }
     return true;
 }
 
@@ -415,16 +434,16 @@ function mvU(table, tag, withAnimation = true) {
     setMergeTagTableToZero();
 
     // 遍历每一行（从第二行开始）
-    for (var x = 0; x < 4; x++) {
-        for (var y = 1; y < 4; y++) {
+    for (let x = 0; x < 4; x++) {
+        for (let y = 1; y < 4; y++) {
             // 只处理非空格子
             if (table[x][y] != 0) {
                 // 检查上方所有可能的位置
-                for (var k = 0; k < y; k++) {
+                for (let k = 0; k < y; k++) {
                     // 情况1：上方格子为空且中间无障碍物
                     if (table[x][k] == 0 && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
                         if (withAnimation) {
-                           moveAnimation(x, y, x, k);  // 执行移动动画 
+                            moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
                         table[x][k] = table[x][y];   // 移动数字
                         table[x][y] = 0;             // 清空原位置
@@ -433,7 +452,7 @@ function mvU(table, tag, withAnimation = true) {
                     // 情况2：上方格子数字相同且中间无障碍物
                     else if (table[x][k] == table[x][y] && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
                         if (withAnimation) {
-                           moveAnimation(x, y, x, k);  // 执行移动动画 
+                            moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
                         // 如果上方格子已经合并过
                         if (tag[x][k] != 0) {
@@ -452,7 +471,9 @@ function mvU(table, tag, withAnimation = true) {
             }
         }
     }
-    gameRecordString += "mu";
+    if (gameStatus === 1) {
+        gameRecordString += "mu";
+    }
     return true;
 }
 
@@ -464,13 +485,13 @@ function mvD(table, tag, withAnimation = true) {
         return false;
     }
     setMergeTagTableToZero();
-    for (var x = 0; x < 4; x++) {
-        for (var y = 2; y >= 0; y--) {
+    for (let x = 0; x < 4; x++) {
+        for (let y = 2; y >= 0; y--) {
             if (table[x][y] != 0) {
-                for (var k = 3; k > y; k--) {
+                for (let k = 3; k > y; k--) {
                     if (table[x][k] == 0 && !anyBlockHorizontal(x, y, k, currentNumberTable)) {
                         if (withAnimation) {
-                           moveAnimation(x, y, x, k);  // 执行移动动画 
+                            moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
                         table[x][k] = table[x][y];
                         table[x][y] = 0;
@@ -478,7 +499,7 @@ function mvD(table, tag, withAnimation = true) {
                     }
                     else if (table[x][k] == table[x][y] && !anyBlockHorizontal(x, y, k, currentNumberTable)) {
                         if (withAnimation) {
-                           moveAnimation(x, y, x, k);  // 执行移动动画 
+                            moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
                         if (tag[x][k] != 0) {
                             table[x][k - 1] = table[x][y];
@@ -495,44 +516,62 @@ function mvD(table, tag, withAnimation = true) {
             }
         }
     }
-    gameRecordString += "md";
+    if (gameStatus === 1) {
+        gameRecordString += "md";
+    }
     return true;
+}
+
+function mvUEvent(withAnimation = true) {
+    if (mvU(currentNumberTable, mergeTagTable, withAnimation)) {
+        generateOneNumber();
+        fetchCurrentScore();
+        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+    }
+}
+
+function mvLEvent(withAnimation = true) {
+    if (mvL(currentNumberTable, mergeTagTable, withAnimation)) {
+        generateOneNumber();
+        fetchCurrentScore();
+        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+    }
+}
+
+function mvDEvent(withAnimation = true) {
+    if (mvD(currentNumberTable, mergeTagTable, withAnimation)) {
+        generateOneNumber();
+        fetchCurrentScore();
+        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+    }
+}
+
+function mvREvent(withAnimation = true) {
+    if (mvR(currentNumberTable, mergeTagTable, withAnimation)) {
+        generateOneNumber();
+        fetchCurrentScore();
+        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+    }
 }
 
 upBtn.addEventListener('click', () => {
     if (gameStatus === 1) {
-        if (mvU(currentNumberTable, mergeTagTable)) {
-            generateOneNumber();
-            fetchCurrentScore();
-            setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-        }
+        mvUEvent();
     }
 });
 leftBtn.addEventListener('click', () => {
     if (gameStatus === 1) {
-        if (mvL(currentNumberTable, mergeTagTable)) {
-            generateOneNumber();
-            fetchCurrentScore();
-            setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-        }
+        mvLEvent();
     }
 });
 downBtn.addEventListener('click', () => {
     if (gameStatus === 1) {
-        if (mvD(currentNumberTable, mergeTagTable)) {
-            generateOneNumber();
-            fetchCurrentScore();
-            setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-        }
+        mvDEvent();
     }
 });
 rightBtn.addEventListener('click', () => {
     if (gameStatus === 1) {
-        if (mvR(currentNumberTable, mergeTagTable)) {
-            generateOneNumber();
-            fetchCurrentScore();
-            setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-        }
+        mvREvent();
     }
 });
 
@@ -547,38 +586,22 @@ document.addEventListener('keydown', function (event) {
     switch (event.key) {
         case 'ArrowLeft':  // 左箭头
             if (gameStatus === 1) {
-                if (mvL(currentNumberTable, mergeTagTable)) {
-                    generateOneNumber();
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvLEvent();
             }
             break;
         case 'ArrowUp':  // 上箭头
             if (gameStatus === 1) {
-                if (mvU(currentNumberTable, mergeTagTable)) {
-                    generateOneNumber();
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvUEvent();
             }
             break;
         case 'ArrowRight':  // 右箭头
             if (gameStatus === 1) {
-                if (mvR(currentNumberTable, mergeTagTable)) {
-                    generateOneNumber();
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvREvent();
             }
             break;
         case 'ArrowDown':  // 下箭头
             if (gameStatus === 1) {
-                if (mvD(currentNumberTable, mergeTagTable)) {
-                    generateOneNumber();
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvDEvent();
             }
             break;
     }
@@ -586,18 +609,18 @@ document.addEventListener('keydown', function (event) {
 
 // 触摸事件
 document.addEventListener('DOMContentLoaded', function () {
-    var startX, startY, moveX, moveY;
+    let startX, startY, moveX, moveY;
 
     gameArea.addEventListener('touchstart', function (event) {
         event.preventDefault();
-        var touch = event.touches[0];
+        let touch = event.touches[0];
         startX = touch.pageX;
         startY = touch.pageY;
     }, { passive: false });
 
     gameArea.addEventListener('touchmove', function (event) {
         event.preventDefault();
-        var touch = event.touches[0];
+        let touch = event.touches[0];
         moveX = touch.pageX - startX;
         moveY = touch.pageY - startY;
     }, { passive: false });
@@ -607,37 +630,21 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Math.abs(moveX) > Math.abs(moveY)) {
             if (moveX < 0) {
                 if (gameStatus === 1) {
-                    if (mvL(currentNumberTable, mergeTagTable)) {
-                        generateOneNumber();
-                        fetchCurrentScore();
-                        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                    }
+                    mvLEvent();
                 }
             } else {
                 if (gameStatus === 1) {
-                    if (mvR(currentNumberTable, mergeTagTable)) {
-                        generateOneNumber();
-                        fetchCurrentScore();
-                        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                    }
+                    mvREvent();
                 }
             }
         } else {
             if (moveY < 0) {
                 if (gameStatus === 1) {
-                    if (mvU(currentNumberTable, mergeTagTable)) {
-                        generateOneNumber();
-                        fetchCurrentScore();
-                        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                    }
+                    mvUEvent();
                 }
             } else {
                 if (gameStatus === 1) {
-                    if (mvD(currentNumberTable, mergeTagTable)) {
-                        generateOneNumber();
-                        fetchCurrentScore();
-                        setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                    }
+                    mvDEvent();
                 }
             }
         }
@@ -696,16 +703,20 @@ function multiKey(channel) {
                 replayButton.innerText = "播放";
                 replayButtonPrev.disabled = false;
             } else if (replayButton.innerText == "播放") {
+                if (gameStatus === 0) {
+                    replayInit();
+                    replayHandler(gameRecordString);
+                }
                 if (replayIntervalId !== null) {
                     return;
                 }
-                replayIntervalId = setInterval(nextStep2, PLAY_INTERVAL);
+                replayIntervalId = setInterval(nextStep, PLAY_INTERVAL);
                 replayButton.innerText = "暂停";
                 replayButtonPrev.disabled = true;
             }
             break;
         case 'replayButtonNext':
-            nextStep2();
+            nextStep();
             break;
         case 'replayButtonPrev':
             prevStep();
@@ -718,60 +729,34 @@ function multiKey(channel) {
 function replayHandler(gameRecordString) {
     if (gameRecordString.indexOf('2048Game|') === 0 && gameRecordString.lastIndexOf('|GAMEOVER') === gameRecordString.length - 9) {
         replayButton.innerText = "播放";
+        gameRecordStringParts = gameRecordString.split('|');
+        gameSeed = parseInt(gameRecordStringParts[1]);
+        prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
+        generateOneNumber();
+        generateOneNumber();
     } else {
         alert("错误的分享格式！");
     }
 }
 
-function nextStep2() {
-    // setTimeout(nextStep, 100);
-    nextStep();
-    nextStep();
-}
 
 function nextStep() {
-    // console.log("gameRS:" + gameRecordStep);
-    if (gameRecordString[gameRecordStep] == 'g') {
-        let rx = Number(gameRecordString[gameRecordStep + 1]);
-        let ry = Number(gameRecordString[gameRecordStep + 2]);
-        let rn = Number(gameRecordString[gameRecordStep + 3]);
-        // console.log("rx:" + rx);
-        // console.log("ry:" + ry);
-        // console.log("rn:" + rn);
-        if (currentNumberTable[rx][ry] !== 0) {
-            alert("replayerr!");
-            return;
-        }
-        currentNumberTable[rx][ry] = rn;
-        renderBlock(rx, ry, renderingBackgroundByNumber(rn), renderingTextByNumber(rn), rn);
-        gameRecordStep += 4;
-    } else if (gameRecordString[gameRecordStep] == 'm') {
-        let dir = gameRecordString[gameRecordStep + 1];
+    if (gameRecordStringParts[2][gameRecordStep] == 'm') {
+
+        let dir = gameRecordStringParts[2][gameRecordStep + 1];
         // console.log("dir:" + dir);
         switch (dir) {
             case 'l':
-                if (mvL(currentNumberTable, mergeTagTable)) {
-                    fetchCurrentScore();
-                    // setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvLEvent();
                 break;
             case 'r':
-                if (mvR(currentNumberTable, mergeTagTable)) {
-                    fetchCurrentScore();
-                    // setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvREvent();
                 break;
             case 'u':
-                if (mvU(currentNumberTable, mergeTagTable)) {
-                    fetchCurrentScore();
-                    // setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvUEvent();
                 break;
             case 'd':
-                if (mvD(currentNumberTable, mergeTagTable)) {
-                    fetchCurrentScore();
-                    // setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvDEvent();
                 break;
 
             default:
@@ -780,7 +765,7 @@ function nextStep() {
         gameRecordStep += 2;
     }
     else {
-        if (gameRecordString[gameRecordStep] === '|') {
+        if (gameRecordStep >= gameRecordStringParts[2].length - 1) {
             replayOver();
         }
         gameRecordStep += 1;
@@ -789,48 +774,21 @@ function nextStep() {
 }
 
 function nextStepWithoutAnimation() {
-    // console.log("gameRS:" + gameRecordStep);
-    if (gameRecordString[gameRecordStep] == 'g') {
-        let rx = Number(gameRecordString[gameRecordStep + 1]);
-        let ry = Number(gameRecordString[gameRecordStep + 2]);
-        let rn = Number(gameRecordString[gameRecordStep + 3]);
-        // console.log("rx:" + rx);
-        // console.log("ry:" + ry);
-        // console.log("rn:" + rn);
-        if (currentNumberTable[rx][ry] !== 0) {
-            alert("replayerr!");
-            return;
-        }
-        currentNumberTable[rx][ry] = rn;
-        // renderBlock(rx, ry, renderingBackgroundByNumber(rn), renderingTextByNumber(rn), rn);
-        gameRecordStep += 4;
-    } else if (gameRecordString[gameRecordStep] == 'm') {
-        let dir = gameRecordString[gameRecordStep + 1];
+    if (gameRecordStringParts[2][gameRecordStep] == 'm') {
+        let dir = gameRecordStringParts[2][gameRecordStep + 1];
         // console.log("dir:" + dir);
         switch (dir) {
             case 'l':
-                if (mvL(currentNumberTable, mergeTagTable, false)) {
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvLEvent(false);
                 break;
             case 'r':
-                if (mvR(currentNumberTable, mergeTagTable, false)) {
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvREvent(false);
                 break;
             case 'u':
-                if (mvU(currentNumberTable, mergeTagTable, false)) {
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvUEvent(false);
                 break;
             case 'd':
-                if (mvD(currentNumberTable, mergeTagTable, false)) {
-                    fetchCurrentScore();
-                    setTimeout(function () { isGameOver(currentNumberTable); }, 400);
-                }
+                mvDEvent(false);
                 break;
 
             default:
@@ -839,7 +797,7 @@ function nextStepWithoutAnimation() {
         gameRecordStep += 2;
     }
     else {
-        if (gameRecordString[gameRecordStep] === '|') {
+        if (gameRecordStep >= gameRecordStringParts[2].length - 1) {
             replayOver();
         }
         gameRecordStep += 1;
@@ -851,12 +809,13 @@ function prevStep() {
     if (gameRecordFrameCount === 0) {
         return;
     }
-    let targetFrameCount = gameRecordFrameCount - 2;
+    let targetFrameCount = gameRecordFrameCount - 1;
     replayInit();
+    replayHandler(gameRecordString);
     for (; gameRecordFrameCount < targetFrameCount;) {
         nextStepWithoutAnimation();
-        renderAllBlock(currentNumberTable);
     }
+    renderAllBlock(currentNumberTable);
 }
 
 // 监听下拉菜单变化
@@ -869,10 +828,10 @@ function compressWithGzip(dataString) {
     // 将字符串转换为Uint8Array
     const textEncoder = new TextEncoder();
     const data = textEncoder.encode(dataString);
-    
+
     // 使用pako进行gzip压缩
     const compressed = pako.gzip(data);
-    
+
     // 将压缩后的Uint8Array转换为Base64字符串
     const base64String = btoa(String.fromCharCode(...compressed));
     return base64String;
@@ -884,24 +843,24 @@ function decompressGzip(compressedBase64) {
     const binaryString = atob(compressedBase64);
     const charData = binaryString.split('').map(char => char.charCodeAt(0));
     const compressedData = new Uint8Array(charData);
-    
+
     // 使用pako解压
     const decompressed = pako.ungzip(compressedData);
-    
+
     // 将解压后的Uint8Array转回字符串
     const textDecoder = new TextDecoder();
     return textDecoder.decode(decompressed);
 }
 
 async function copyToClipboard() {
-  try {
-    await navigator.clipboard.writeText(compressWithGzip(gameRecordString));
-    console.log("文本已成功复制到剪贴板");
-    // 这里可以添加成功提示，如alert或显示一个临时消息
-  } catch (err) {
-    console.error("复制失败: ", err);
-    // 处理复制失败的情况
-  }
+    try {
+        await navigator.clipboard.writeText(compressWithGzip(gameRecordString));
+        console.log("文本已成功复制到剪贴板");
+        // 这里可以添加成功提示，如alert或显示一个临时消息
+    } catch (err) {
+        console.error("复制失败: ", err);
+        // 处理复制失败的情况
+    }
 }
 
 // 绑定到按钮点击事件
