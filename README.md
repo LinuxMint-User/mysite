@@ -1,6 +1,6 @@
 ## This is my web pages
 - Known web page/code defects
-  1. Incomplete mobile adaptation in 2048 page.
+  1. Incomplete mobile adaptation.
   2. Remain to be found
 ## NOTICE
 - For specific modifications, please refer to [changeLogs.md](changeLogs.md) (Chinese Only)
