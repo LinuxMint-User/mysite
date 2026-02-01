@@ -187,7 +187,8 @@ function init() {
     gameSeed = generateRandomSeed();
     prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
     copyButton.style.display = 'none';
-    replayButton.disabled = true;
+    replayButton.innerText = "回放";
+    // replayButton.disabled = true;
     gameRecordString = "2048Game|" + gameSeed + "|";
     currentScore = 0;
     scoreIndicator.innerText = currentScore;
@@ -267,13 +268,15 @@ function isGameOver(table) {
 }
 
 function gameOver() {
-    gameRecordString += "|GAMEOVER";
-    gameStatus = 0;
-    statusIndicator.innerText = "游戏结束";
-    newGameButton.innerText = "开始";
-    gameLevelSelector.disabled = false;
-    replayButton.disabled = false;
-    copyButton.style.display = 'block';
+    if (gameStatus === 1) {
+        gameRecordString += "|GAMEOVER";
+        gameStatus = 0;
+        statusIndicator.innerText = "游戏结束";
+        newGameButton.innerText = "开始";
+        gameLevelSelector.disabled = false;
+        replayButton.disabled = false;
+        copyButton.style.display = 'block';
+    }
 }
 
 function replayOver() {
@@ -291,7 +294,7 @@ function replayOver() {
     replayButton.innerText = "播放";
     gameRecordStep = gameRecordStepStartIndex;
     gameRecordFrameCount = 0;
-    copyButton.style.display = 'block';
+    // copyButton.style.display = 'block';
 }
 
 function setMergeTagTableToZero() {
@@ -683,7 +686,7 @@ function multiKey(channel) {
             break;
         case 'replayButton':
             if (replayButton.innerText == "回放") {
-                if (gameRecordString !== "2048Game|") {
+                if (gameRecordString !== "2048Game|" && gameStatus !== 1) {
                     replayInit();
                     replayHandler(gameRecordString);
                 } else {
@@ -763,11 +766,11 @@ function nextStep() {
                 break;
         }
         gameRecordStep += 2;
-    }
-    else {
-        if (gameRecordStep >= gameRecordStringParts[2].length - 1) {
+        if (gameRecordStep === gameRecordStringParts[2].length) {
             replayOver();
         }
+    }
+    else {
         gameRecordStep += 1;
     }
     gameRecordFrameCount += 1;
@@ -795,11 +798,11 @@ function nextStepWithoutAnimation() {
                 break;
         }
         gameRecordStep += 2;
-    }
-    else {
-        if (gameRecordStep >= gameRecordStringParts[2].length - 1) {
+        if (gameRecordStep === gameRecordStringParts[2].length) {
             replayOver();
         }
+    }
+    else {
         gameRecordStep += 1;
     }
     gameRecordFrameCount += 1;
