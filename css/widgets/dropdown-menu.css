@@ -1,0 +1,151 @@
+/* 菜单容器 */
+.menu-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* 菜单按钮 - 带宽度变化 */
+.menu-button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    background: #cc8500;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.2s ease, 
+                border-radius 0.2s ease, 
+                background 0.2s ease, 
+                color 0.2s ease;
+}
+
+.menu-button:hover {
+    background: #ac7000;
+}
+
+/* 按钮激活状态 - 与菜单同宽，底部直角，背景颜色与菜单一致 */
+.menu-button.active {
+    /* width: 150px; */
+    background: #555555b7;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.menu-button.active:hover {
+    background: #333333b7;
+}
+
+/* 箭头容器 - 优化间距 */
+.arrows-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 20px;
+}
+
+/* 单个箭头样式 */
+.arrow {
+    font-size: 18px;
+    color: wheat;
+    opacity: 0.7;
+}
+
+/* 流水灯动画 */
+@keyframes flowLight {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* 为每个箭头设置不同的动画延迟 */
+.arrow:nth-child(1) {
+    animation: flowLight 1.5s ease-in-out infinite;
+}
+
+.arrow:nth-child(2) {
+    animation: flowLight 1.5s ease-in-out infinite 0.3s;
+}
+
+.arrow:nth-child(3) {
+    animation: flowLight 1.5s ease-in-out infinite 0.6s;
+}
+
+/* 菜单面板 - 快速淡入淡出 */
+.menu-panel {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 150px;
+    background: #555555b7;
+    border-radius: 8px 0 8px 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-5px);
+    transition: opacity 0.15s ease, 
+                visibility 0.15s ease, 
+                transform 0.15s ease;
+    z-index: 1;
+}
+
+.menu-panel.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* 菜单项 */
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border: none;
+    background: #555555b7;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+    color: wheat;
+    transition: background 0.2s;
+}
+
+.menu-item:hover {
+    background: #333333b7;
+}
+
+.menu-item .icon {
+    width: 20px;
+    margin-right: 10px;
+}
+
+.menu-item:disabled {
+    color: #333333b7;
+    background: none;
+}
+
+/* 遮罩 */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    display: none;
+    z-index: 0;
+}
+
+.menu-overlay.active {
+    display: block;
+}

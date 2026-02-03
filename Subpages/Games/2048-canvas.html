@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/2048Game/2048-canvas.css">
     <link rel="stylesheet" href="css/widgets/control-buttons.css">
     <link rel="stylesheet" href="css/widgets/banner.css">
+    <link rel="stylesheet" href="css/widgets/dropdown-menu.css">
     <script src="js/index-script.js" defer></script>
     <script src="js/isMobileDevice.js"></script>
     <script src="js/pako.min.js"></script>
@@ -21,6 +22,7 @@
     <script src="js/2048-Game/2048-canvas-main.js" defer></script>
     <script src="js/updateCopyright.js" defer></script>
     <script src="js/widgets/banner.js" defer></script>
+    <script src="js/widgets/dropdown-menu.js" defer></script>
     <style>
         /* banner.css */
         :root {
@@ -39,19 +41,22 @@
         <span id="banner-content"></span>
     </div>
 
-    <header class="header">
+    <header class="header" style="overflow: unset;">
         <div class="button-list" style="flex: 1; min-width: fit-content;">
             <button type="button" id="backButton" class="back-button">返回</button>
         </div>
         <h2 style="flex: 8;">2048 游戏</h2>
-        <div class="select-wrapper" style="flex: 1; min-width: fit-content;">
-            <select id="game-level" class="custom-select">
-                <option value="0.9">简单</option>
-                <option value="0.8">中等</option>
-                <option value="0.5">极难</option>
-                <option value="0.3">地狱</option>
-            </select>
+        <!-- 菜单容器 -->
+        <div class="menu-wrapper">
+            <button class="menu-button" id="menuButton">☰</button>
+            <div class="menu-panel" id="menuPanel">
+                <button class="menu-item" type="button" id="controlMethodButton" onclick="multiKey('controlMethodButton')">开/关虚拟按键</button>
+                <button class="menu-item" type="button" id="replayButton" onclick="multiKey('replayButton')" disabled>回放上局</button>
+                <button class="menu-item" type="button" id="replayButtonInput" onclick="multiKey('replayButtonInput')">回放其他</button>
+                <button class="menu-item" type="button" id="copyButton" onclick="multiKey('copyButton')" disabled>分享</button>
+            </div>
         </div>
+        <div class="menu-overlay" id="menuOverlay"></div>
     </header>
 
     <script>
@@ -75,34 +80,37 @@
     </script>
 
     <div class="container" style="display: flex; flex-direction: row-reverse;">
-        <div class="button-list" style="flex: 1; min-width: fit-content; flex-direction: column;">
-            <button type="button" id="newGameButton" onclick="multiKey('newGameButton')">开始</button>
-            <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')"
-                style="display: none;">上一</button>
-            <button type="button" id="replayButton" onclick="multiKey('replayButton')">回放</button>
-            <button type="button" id="replayButtonNext" onclick="multiKey('replayButtonNext')"
-                style="display: none;">下一</button>
-            <button type="button" id="copyButton" onclick="multiKey('copyButton')" style="display: none;">分享</button>
-            <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
+        <div class="button-list"
+            style="flex: 1; min-width: fit-content; flex-direction: column; justify-content: center; align-items: center;">
+            <button type="button" id="newGameButton" onclick="multiKey('newGameButton')">开始游戏</button>
         </div>
         <div class="container" style="flex: 8; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
             gap: 0px; margin: 5px; padding: 5px; overflow: hidden; justify-items: center; align-items: center;">
             <h3 style="color: wheat; margin: 5px; width: max-content;">
                 当前得分:<span id="score">0</span>
             </h3>
-            <!-- <h3 style="color: wheat; margin: 5px;">
-                历史最高分:<span id="historyRecord">0</span>
-            </h3> -->
             <h3 style="color: wheat; margin: 5px; width: max-content;">
                 游戏状态:<span id="status">准备中</span>
             </h3>
+            <div style="display: flex; flex-direction: row;">
+                <h3 style="color: wheat; margin: 5px; width: max-content;">
+                    游戏难度:
+                </h3>
+                <div class="select-wrapper" style="min-width: fit-content;">
+                    <select id="game-level" class="custom-select" style="background: #555555;">
+                        <option value="0.9" style="background: inherit;">简单</option>
+                        <option value="0.8" style="background: inherit;">中等</option>
+                        <option value="0.5" style="background: inherit;">极难</option>
+                        <option value="0.3" style="background: inherit;">地狱</option>
+                    </select>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
-        <!-- <div class="gameArea" id="canvas-container"> -->
         <canvas class="gameCanvas gameArea" id="gameCanvas"></canvas>
-        <!-- </div> -->
     </div>
 
     <div id="control-buttons" class="control-buttons" style="display: none;">
@@ -114,6 +122,19 @@
         <button id="leftBtn" class="control-btn">←</button>
         <button id="downBtn" class="control-btn">↓</button>
         <button id="rightBtn" class="control-btn">→</button>
+    </div>
+
+    <div id="replayToolbar" class="container"
+        style="display: flex; flex-direction: row-reverse; max-width: fit-content; z-index: 20; display: none;">
+        <div class="button-list" style="flex: 1; max-width: fit-content; flex-direction: row;">
+            <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')"
+                style="display: none;">上一</button>
+            <button type="button" id="replayButtonControl" onclick="multiKey('replayButtonControl')"
+                style="display: none;">播放</button>
+            <button type="button" id="replayButtonNext" onclick="multiKey('replayButtonNext')"
+                style="display: none;">下一</button>
+            <button type="button" id="replayButtonCancel" onclick="multiKey('replayButtonCancel')">结束回放</button>
+        </div>
     </div>
 
     <footer>
