@@ -4,6 +4,7 @@ const marginX = 5;
 const marginY = 3;
 const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
 const fontSize = 20 * dpr + 'px';
+const blockNumFontSize = 32 * dpr + 'px';
 
 var canvasWidth;
 var canvasHeight;
@@ -94,7 +95,7 @@ function renderBlock(col, row, bgColor, fontColor, num) {
     ctx.fillStyle = bgColor == null ? '#ccc0b3' : bgColor;
     ctx.fillRect(col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX, row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY, ((canvas.width - (marginX * 5)) / 4), ((canvas.height - (marginY * 5)) / 4));
 
-    ctx.font = fontSize + ' Arial, Helvetica, sans-serif';
+    ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
     ctx.fillStyle = fontColor == null ? '#ccc0b3' : fontColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -255,7 +256,7 @@ function animateBlocks(timestamp) {
             ((canvas.height - (marginY * 5)) / 4));
 
         // 绘制方块数字
-        ctx.font = fontSize + ' Arial, Helvetica, sans-serif';
+        ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
         ctx.fillStyle = anim.textColor;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
