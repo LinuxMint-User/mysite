@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/night-mode.css">
     <link rel="stylesheet" href="css/2048Game/2048-canvas.css">
     <link rel="stylesheet" href="css/widgets/control-buttons.css">
+    <link rel="stylesheet" href="css/widgets/banner.css">
     <script src="js/index-script.js" defer></script>
     <script src="js/isMobileDevice.js"></script>
     <script src="js/pako.min.js"></script>
@@ -19,9 +20,25 @@
     <script src="js/2048-Game/2048-canvas-rendering.js" defer></script>
     <script src="js/2048-Game/2048-canvas-main.js" defer></script>
     <script src="js/updateCopyright.js" defer></script>
+    <script src="js/widgets/banner.js" defer></script>
+    <style>
+        /* banner.css */
+        :root {
+            --banner-slide-in-duration: 0.5s;
+            --banner-slide-out-delay: 1.5s;
+            --banner-slide-out-duration: 0.5s;
+            --banner-background-color: #555555;
+            --banner-color: wheat;
+        }
+    </style>
 </head>
 
 <body>
+
+    <div id="banner" class="banner" style="z-index: 11;">
+        <span id="banner-content"></span>
+    </div>
+
     <header class="header">
         <div class="button-list" style="flex: 1; min-width: fit-content;">
             <button type="button" id="backButton" class="back-button">返回</button>
@@ -60,14 +77,15 @@
     <div class="container" style="display: flex; flex-direction: row-reverse;">
         <div class="button-list" style="flex: 1; min-width: fit-content; flex-direction: column;">
             <button type="button" id="newGameButton" onclick="multiKey('newGameButton')">开始</button>
-            <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')" style="display: none;">上一</button>
+            <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')"
+                style="display: none;">上一</button>
             <button type="button" id="replayButton" onclick="multiKey('replayButton')">回放</button>
-            <button type="button" id="replayButtonNext" onclick="multiKey('replayButtonNext')" style="display: none;">下一</button>
+            <button type="button" id="replayButtonNext" onclick="multiKey('replayButtonNext')"
+                style="display: none;">下一</button>
             <button type="button" id="copyButton" onclick="multiKey('copyButton')" style="display: none;">分享</button>
             <!-- <button type="button" id="saveScoreButton" onclick="saveScore()">保存分数</button> -->
         </div>
-        <div class="container"
-            style="flex: 8; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+        <div class="container" style="flex: 8; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
             gap: 0px; margin: 5px; padding: 5px; overflow: hidden; justify-items: center; align-items: center;">
             <h3 style="color: wheat; margin: 5px; width: max-content;">
                 当前得分:<span id="score">0</span>
@@ -83,14 +101,16 @@
 
     <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
         <!-- <div class="gameArea" id="canvas-container"> -->
-            <canvas class="gameCanvas gameArea" id="gameCanvas"></canvas>
+        <canvas class="gameCanvas gameArea" id="gameCanvas"></canvas>
         <!-- </div> -->
     </div>
 
     <div id="control-buttons" class="control-buttons" style="display: none;">
-        <button id="LeftHanded" class="control-btn accessbility" onclick="document.getElementById('control-buttons').style.left = '30%';">🫱</button>
+        <button id="LeftHanded" class="control-btn accessbility"
+            onclick="document.getElementById('control-buttons').style.left = '30%';">🫱</button>
         <button id="upBtn" class="control-btn">↑</button>
-        <button id="RightHanded" class="control-btn accessbility" onclick="document.getElementById('control-buttons').style.left = '70%';">🫲</button>
+        <button id="RightHanded" class="control-btn accessbility"
+            onclick="document.getElementById('control-buttons').style.left = '70%';">🫲</button>
         <button id="leftBtn" class="control-btn">←</button>
         <button id="downBtn" class="control-btn">↓</button>
         <button id="rightBtn" class="control-btn">→</button>

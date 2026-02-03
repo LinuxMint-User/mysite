@@ -2,7 +2,6 @@
 let currentScore = 0;
 let historyRecord = 0;
 let gameStatus = 0;
-// let historyRecordCookieName = 'histRec2048';
 let currentNumberTable = new Array();
 let mergeTagTable = new Array();
 
@@ -37,6 +36,9 @@ let replayIntervalId = null;
 let PLAY_INTERVAL = 800;
 
 let gameRecordStringParts;
+
+//variable in banner.js
+setBannerTimeout = 2500;
 
 /**
  * 更新页面显示的当前分数
@@ -188,7 +190,6 @@ function init() {
     prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
     copyButton.style.display = 'none';
     replayButton.innerText = "回放";
-    // replayButton.disabled = true;
     gameRecordString = "2048Game|" + gameSeed + "|" + gameLevel + "|";
     currentScore = 0;
     scoreIndicator.innerText = currentScore;
@@ -861,11 +862,9 @@ function decompressGzip(compressedBase64) {
 async function copyToClipboard() {
     try {
         await navigator.clipboard.writeText(compressWithGzip(gameRecordString));
-        console.log("文本已成功复制到剪贴板");
-        // 这里可以添加成功提示，如alert或显示一个临时消息
+        callBanner("文本已成功复制到剪贴板");
     } catch (err) {
-        console.error("复制失败: ", err);
-        // 处理复制失败的情况
+        callBanner("复制失败: ", err);
     }
 }
 

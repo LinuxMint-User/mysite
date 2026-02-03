@@ -116,7 +116,7 @@
 <body>
 
     <div id="banner" class="banner" style="z-index: 11;">
-        <span>请注意性能开销与循环体</span>
+        <span id="banner-content"></span>
     </div>
 
     <div class="header">
@@ -184,8 +184,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
 
     <script>
-        // alert("请注意性能开销与难以结束的循环体");
-
         var editor;
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs' } });
         require(['vs/editor/editor.main'], function () {
@@ -209,6 +207,7 @@
                     });
                 });
             });
+            callBanner("请注意性能开销与循环体");
         });
 
         function oppreview() {
