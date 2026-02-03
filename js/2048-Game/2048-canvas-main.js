@@ -2,7 +2,6 @@
 let currentScore = 0;
 let historyRecord = 0;
 let gameStatus = 0;
-// let historyRecordCookieName = 'histRec2048';
 let currentNumberTable = new Array();
 let mergeTagTable = new Array();
 
@@ -12,7 +11,7 @@ let prng;
 const scoreIndicator = document.getElementById('score');
 const statusIndicator = document.getElementById('status');
 const gameLevelSelector = document.getElementById('game-level');
-let gameLevel = gameLevelSelector.value;
+let gameLevel = parseFloat(gameLevelSelector.value);
 
 const controlButtons = document.querySelector('.control-buttons');
 const leftBtn = document.getElementById('leftBtn');
@@ -37,6 +36,9 @@ let replayIntervalId = null;
 let PLAY_INTERVAL = 800;
 
 let gameRecordStringParts;
+
+//variable in banner.js
+setBannerTimeout = 2500;
 
 /**
  * 更新页面显示的当前分数
@@ -188,8 +190,7 @@ function init() {
     prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
     copyButton.style.display = 'none';
     replayButton.innerText = "回放";
-    // replayButton.disabled = true;
-    gameRecordString = "2048Game|" + gameSeed + "|";
+    gameRecordString = "2048Game|" + gameSeed + "|" + gameLevel + "|";
     currentScore = 0;
     scoreIndicator.innerText = currentScore;
     statusIndicator.innerText = "进行中";
@@ -254,7 +255,7 @@ function generateOneNumber() {
         ry = prng.randomInt(4);
     } while (currentNumberTable[rx][ry] != 0);
     // 调整这里的值以改变难度
-    let rn = prng.random() < gameLevel ? 2 : 4;
+    let rn = prng.random() < parseFloat(gameLevel) ? 2 : 4;
     currentNumberTable[rx][ry] = rn;
     renderBlock(rx, ry, renderingBackgroundByNumber(rn), renderingTextByNumber(rn), rn);
     // gameRecordString += "g" + rx + ry + rn;
@@ -280,21 +281,22 @@ function gameOver() {
 }
 
 function replayOver() {
-    gameStatus = 0;
-    statusIndicator.innerText = "回放结束";
-    newGameButton.disabled = false;
-    newGameButton.style.display = 'block';
-    gameLevelSelector.disabled = false;
-    replayButtonPrev.style.display = 'none';
-    replayButtonNext.style.display = 'none';
-    if (replayIntervalId !== null) {
-        clearInterval(replayIntervalId);
-        replayIntervalId = null;
+    if (gameStatus === 2) {
+        gameStatus = 0;
+        statusIndicator.innerText = "回放结束";
+        newGameButton.disabled = false;
+        newGameButton.style.display = 'block';
+        gameLevelSelector.disabled = false;
+        replayButtonPrev.style.display = 'none';
+        replayButtonNext.style.display = 'none';
+        if (replayIntervalId !== null) {
+            clearInterval(replayIntervalId);
+            replayIntervalId = null;
+        }
+        replayButton.innerText = "播放";
+        gameRecordStep = gameRecordStepStartIndex;
+        gameRecordFrameCount = 0;
     }
-    replayButton.innerText = "播放";
-    gameRecordStep = gameRecordStepStartIndex;
-    gameRecordFrameCount = 0;
-    // copyButton.style.display = 'block';
 }
 
 function setMergeTagTableToZero() {
@@ -734,6 +736,8 @@ function replayHandler(gameRecordString) {
         replayButton.innerText = "播放";
         gameRecordStringParts = gameRecordString.split('|');
         gameSeed = parseInt(gameRecordStringParts[1]);
+        gameLevel = parseFloat(gameRecordStringParts[2]);
+        gameLevelSelector.value = gameRecordStringParts[2];
         prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
         generateOneNumber();
         generateOneNumber();
@@ -744,9 +748,9 @@ function replayHandler(gameRecordString) {
 
 
 function nextStep() {
-    if (gameRecordStringParts[2][gameRecordStep] == 'm') {
+    if (gameRecordStringParts[3][gameRecordStep] == 'm') {
 
-        let dir = gameRecordStringParts[2][gameRecordStep + 1];
+        let dir = gameRecordStringParts[3][gameRecordStep + 1];
         // console.log("dir:" + dir);
         switch (dir) {
             case 'l':
@@ -766,7 +770,7 @@ function nextStep() {
                 break;
         }
         gameRecordStep += 2;
-        if (gameRecordStep === gameRecordStringParts[2].length) {
+        if (gameRecordStep === gameRecordStringParts[3].length) {
             replayOver();
         }
     }
@@ -777,8 +781,8 @@ function nextStep() {
 }
 
 function nextStepWithoutAnimation() {
-    if (gameRecordStringParts[2][gameRecordStep] == 'm') {
-        let dir = gameRecordStringParts[2][gameRecordStep + 1];
+    if (gameRecordStringParts[3][gameRecordStep] == 'm') {
+        let dir = gameRecordStringParts[3][gameRecordStep + 1];
         // console.log("dir:" + dir);
         switch (dir) {
             case 'l':
@@ -798,7 +802,7 @@ function nextStepWithoutAnimation() {
                 break;
         }
         gameRecordStep += 2;
-        if (gameRecordStep === gameRecordStringParts[2].length) {
+        if (gameRecordStep === gameRecordStringParts[3].length) {
             replayOver();
         }
     }
@@ -823,7 +827,7 @@ function prevStep() {
 
 // 监听下拉菜单变化
 gameLevelSelector.addEventListener("change", function () {
-    gameLevel = this.value; // 更新gameLevel变量
+    gameLevel = parseFloat(this.value); // 更新gameLevel变量
 });
 
 // 压缩函数 (返回Base64字符串，方便分享)
@@ -858,11 +862,9 @@ function decompressGzip(compressedBase64) {
 async function copyToClipboard() {
     try {
         await navigator.clipboard.writeText(compressWithGzip(gameRecordString));
-        console.log("文本已成功复制到剪贴板");
-        // 这里可以添加成功提示，如alert或显示一个临时消息
+        callBanner("文本已成功复制到剪贴板");
     } catch (err) {
-        console.error("复制失败: ", err);
-        // 处理复制失败的情况
+        callBanner("复制失败: ", err);
     }
 }
 

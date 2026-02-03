@@ -1,17 +1,26 @@
 /* banner.css */
+:root {
+  --banner-slide-in-duration: 1s;
+  --banner-slide-out-delay: 3s;
+  --banner-slide-out-duration: 1s;
+  --banner-background-color: #ff4d00;
+  --banner-color: white;
+}
+
 .banner {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     max-height: min-content;
-    background-color: #ff4d00;
-    color: white;
+    background-color: var(--banner-background-color);
+    color: var(--banner-color);
     text-align: center;
     padding: 10px 0;
     display: none;
     /* 初始时隐藏 */
-    animation: slideIn 1s forwards, slideOut 1s 3s forwards;
+    animation: slideIn var(--banner-slide-in-duration) forwards, 
+               slideOut var(--banner-slide-out-duration) var(--banner-slide-out-delay) forwards;
 }
 
 @keyframes slideIn {

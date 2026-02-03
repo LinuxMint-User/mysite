@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dropArea.querySelector('p').textContent = file.name;
         dropArea.classList.add('highlight');
         
-        call_banner("正在解析 APK 文件");
+        callBanner("正在解析 APK 文件");
         
         try {
             // 读取文件为ArrayBuffer
@@ -85,19 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (e.data.error) {
             console.error('Worker解析错误:', e.data.error);
-            call_banner('解析失败: ' + e.data.error);
+            callBanner('解析失败: ' + e.data.error);
             resetUI();
             return;
         }
 
         const { result, extraInfo } = e.data;
         updateUIWithResult(result, extraInfo);
-        call_banner("APK 文件解析完成");
+        callBanner("APK 文件解析完成");
     };
 
     apkWorker.onerror = function(e) {
         console.error('Worker解析错误:', e);
-        call_banner('解析失败: ' + e.message);
+        callBanner('解析失败: ' + e.message);
         resetUI();
     };
 
@@ -235,19 +235,3 @@ document.addEventListener('DOMContentLoaded', () => {
         permissionContent.appendChild(noPerms);
     }
 });
-
-function call_banner(text) {
-    var banner = document.getElementById('banner');
-    var bannerContent = document.getElementById('banner-content');
-
-    // 设置横幅内容
-    bannerContent.textContent = text;
-
-    // 显示横幅
-    banner.style.display = 'block';
-
-    // 5秒后隐藏横幅
-    setTimeout(function () {
-        banner.style.display = 'none';
-    }, 5000);
-}
