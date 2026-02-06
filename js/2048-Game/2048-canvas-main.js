@@ -27,6 +27,8 @@ const replayButtonPrev = document.getElementById('replayButtonPrev');
 const replayButtonControl = document.getElementById('replayButtonControl');
 const copyButton = document.getElementById('copyButton');
 const replayToolbar = document.getElementById('replayToolbar');
+const replayInputBox = document.getElementById('replayInputBox');
+const replayInputBoxFinishButton = document.getElementById('replayInputBoxFinishButton');
 
 const gameArea = document.querySelector('.gameArea');
 
@@ -664,13 +666,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // 初次加载激活游戏
 document.addEventListener('DOMContentLoaded', function () {
-    // multiKey();
     resizeCanvas();
-    ctx.font = fontSize + ' Arial, Helvetica, sans-serif';
-    ctx.fillText('多选框切换难度，开始后:', 5, canvasHeight * cellSize * 0.12);
-    ctx.fillText('    按键:显示控制按键', 5, canvasHeight * cellSize * 0.22);
-    ctx.fillText('    滑动:隐藏控制按键', 5, canvasHeight * cellSize * 0.32);
-    ctx.fillText('回放:回放选择的某轮游戏', 5, canvasHeight * cellSize * 0.42);
+    initRendering();
 });
 
 function multiKey(channel) {
@@ -697,13 +694,7 @@ function multiKey(channel) {
             break;
         case 'replayButtonInput':
             if (replayButtonInput.innerText == "回放其他") {
-                inputGameRecordString = prompt("输入分享的字符串", "");
-                if (inputGameRecordString !== null && inputGameRecordString.trim() !== "") {
-                    gameRecordString = decompressGzip(inputGameRecordString);
-                    replayInit();
-                    replayHandler(gameRecordString);
-                } else {
-                }
+                document.getElementById('popup').classList.remove('popup-hidden');
             }
             break;
         case 'controlMethodButton':
@@ -746,6 +737,17 @@ function multiKey(channel) {
                 callBanner("已手动结束当前回放");
             }
             break;
+        case 'replayInputBoxFinishButton':
+            inputGameRecordString = replayInputBox.value.trim();
+            if (inputGameRecordString !== null && inputGameRecordString.trim() !== "") {
+                togglePopup();
+                gameRecordString = decompressGzip(inputGameRecordString);
+                replayInit();
+                replayHandler(gameRecordString);
+            } else {
+                callBanner("请输入正确的回放代码");
+            }
+            break;
         default:
             break;
     }
@@ -772,7 +774,6 @@ function nextStep() {
     if (gameRecordStringParts[3][gameRecordStep] == 'm') {
 
         let dir = gameRecordStringParts[3][gameRecordStep + 1];
-        // console.log("dir:" + dir);
         switch (dir) {
             case 'l':
                 mvLEvent();

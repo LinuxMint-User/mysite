@@ -1,7 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const marginX = 5;
-const marginY = 3;
+const marginX = 12;
+const marginY = marginX;
 const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
 const fontSize = 20 * dpr + 'px';
 const blockNumFontSize = 32 * dpr + 'px';
@@ -11,6 +11,8 @@ var canvasHeight;
 var cellSize = Math.floor((canvas.width - marginX * 2) / 4);
 
 let lastTimestamp = null;
+
+const voidBlockColor = '#ccc0b3';
 
 /**
  * 调整Canvas分辨率以适应高分屏
@@ -45,7 +47,9 @@ function resizeCanvas(render = false) {
  * 这样设计是为了确保文字在不同背景色上都有良好的可读性
  */
 function renderingTextByNumber(number) {
-    if (number <= 4) {
+    if (number === 0) {
+        return voidBlockColor;
+    } else if (number <= 4) {
         return "#776e65";  // 深灰色，适合浅色背景
     }
     return "white";  // 白色，适合深色背景
@@ -62,6 +66,8 @@ function renderingTextByNumber(number) {
  */
 function renderingBackgroundByNumber(number) {
     switch (number) {
+        case 0:
+            return voidBlockColor;
         case 2:
             return "#FCE4D6";  // 浅米色
         case 4:
@@ -92,11 +98,11 @@ function renderingBackgroundByNumber(number) {
 }
 
 function renderBlock(col, row, bgColor, fontColor, num) {
-    ctx.fillStyle = bgColor == null ? '#ccc0b3' : bgColor;
+    ctx.fillStyle = bgColor;
     ctx.fillRect(col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX, row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY, ((canvas.width - (marginX * 5)) / 4), ((canvas.height - (marginY * 5)) / 4));
 
     ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
-    ctx.fillStyle = fontColor == null ? '#ccc0b3' : fontColor;
+    ctx.fillStyle = fontColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(num == 0 ? '' : num, Math.floor(col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX + ((canvas.width - (marginX * 5)) / 4) / 2), Math.floor(row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY + ((canvas.height - (marginY * 5)) / 4) / 2));
@@ -274,8 +280,34 @@ function animateBlocks(timestamp) {
         lastTimestamp = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         renderAllBlock(currentNumberTable);
-        
+
     }
+}
+
+function multiLineTextRendering(font, fontColor, content, startX, startY, lineHeight) {
+    // 字体优先级：自定义字体 > 自定义大小+默认字体族 > 默认大小(适配DPR)+默认字体族
+    ctx.font = font === null ? (fontSize === null ? (20 * (dpr === null ? (window.devicePixelRatio || 1) : dpr) + 'px') : fontSize + ' Arial, Helvetica, sans-serif') : font;
+    // ctx.fillStyle = fontColor === null ? 'black' : fontColor;
+
+    for (let row = 0; row < content.length; row++) {
+        if (fontColor !== null || fontColor !== '') {
+            if (Array.isArray(fontColor)) {
+                ctx.fillStyle = fontColor[row];
+            } else {
+                ctx.fillStyle = fontColor;
+            }
+        } else {
+            ctx.fillStyle = 'black';
+        }
+        ctx.fillText(content[row], startX, startY + lineHeight * (row + 1) * (dpr === null ? (window.devicePixelRatio || 1) : dpr));
+    }
+}
+
+function initRendering() {
+    let font = fontSize + ' Arial, Helvetica, sans-serif';
+    let fontColor = 'black';
+    let content = ['单击多选框可选择游戏难度', '更多功能单击右上角菜单查看'];
+    multiLineTextRendering(font, fontColor, content, canvasWidth + cellSize / 2, canvasHeight, (cellSize / 2));
 }
 
 window.addEventListener('resize', function () {
