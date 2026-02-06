@@ -308,5 +308,5 @@ footer a {
 }
 
 .global-hidden {
-	display: hidden;
+	display: none !important;
 }

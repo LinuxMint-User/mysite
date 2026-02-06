@@ -218,14 +218,14 @@ function init() {
 }
 
 function replayInit() {
-    replayToolbar.style.display = 'block';
+    replayToolbar.classList.remove('global-hidden');
     replayIntervalId = null;
     gameRecordStep = gameRecordStepStartIndex;
     gameRecordFrameCount = 0;
     newGameButton.innerText = "开始游戏";
-    replayButtonPrev.style.display = 'block';
-    replayButtonNext.style.display = 'block';
-    replayButtonControl.style.display = 'block';
+    replayButtonPrev.classList.remove('global-hidden');
+    replayButtonNext.classList.remove('global-hidden');
+    replayButtonControl.classList.remove('global-hidden');
     currentScore = 0;
     scoreIndicator.innerText = currentScore;
     statusIndicator.innerText = "回放中";
@@ -291,10 +291,10 @@ function replayOver() {
         statusIndicator.innerText = "回放结束";
         newGameButton.disabled = false;
         gameLevelSelector.disabled = false;
-        replayButtonPrev.style.display = 'none';
-        replayButtonNext.style.display = 'none';
-        replayButtonControl.style.display = 'none';
-        replayToolbar.style.display = 'none';
+        replayButtonPrev.classList.add('global-hidden');
+        replayButtonNext.classList.add('global-hidden');
+        replayButtonControl.classList.add('global-hidden');
+        replayToolbar.classList.add('global-hidden');
         if (replayIntervalId !== null) {
             clearInterval(replayIntervalId);
             replayIntervalId = null;
@@ -698,10 +698,10 @@ function multiKey(channel) {
             }
             break;
         case 'controlMethodButton':
-            if (controlButtons.style.display === 'none') {
-                controlButtons.style.display = 'grid';
-            } else if (controlButtons.style.display === 'grid') {
-                controlButtons.style.display = 'none';
+            if (controlButtons.classList.contains('global-hidden')) {
+                controlButtons.classList.remove('global-hidden');
+            } else {
+                controlButtons.classList.add('global-hidden');
             }
             break;
         case 'replayButtonControl':
