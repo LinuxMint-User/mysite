@@ -223,9 +223,6 @@ function replayInit() {
     gameRecordStep = gameRecordStepStartIndex;
     gameRecordFrameCount = 0;
     newGameButton.innerText = "开始游戏";
-    replayButtonPrev.classList.remove('global-hidden');
-    replayButtonNext.classList.remove('global-hidden');
-    replayButtonControl.classList.remove('global-hidden');
     currentScore = 0;
     scoreIndicator.innerText = currentScore;
     statusIndicator.innerText = "回放中";
@@ -291,9 +288,6 @@ function replayOver() {
         statusIndicator.innerText = "回放结束";
         newGameButton.disabled = false;
         gameLevelSelector.disabled = false;
-        replayButtonPrev.classList.add('global-hidden');
-        replayButtonNext.classList.add('global-hidden');
-        replayButtonControl.classList.add('global-hidden');
         replayToolbar.classList.add('global-hidden');
         if (replayIntervalId !== null) {
             clearInterval(replayIntervalId);
