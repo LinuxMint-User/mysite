@@ -211,7 +211,7 @@ footer a {
 	border-radius: 5px;
 	/* margin-bottom: 10px; */
 	resize: none;
-	background-color: #888;
+	background-color: #aaa;
 	caret-color: wheat;
 	color: black;
 }
@@ -223,10 +223,20 @@ footer a {
 }
 
 .textbox::selection {
-	background-color: #888;
+	background-color: #aaa;
 	/* 选中文字的背景颜色 */
 	color: white;
 	/* 选中文字的颜色 */
+}
+
+.textbox:disabled {
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-drag: none;
+	/* background-color: #333; */
+	opacity: 0.6;
+	border: none;
+	cursor: not-allowed;
 }
 
 .custom-select {

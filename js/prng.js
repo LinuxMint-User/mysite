@@ -1,6 +1,6 @@
 /**
  * 伪随机数生成器模块 (函数式实现)
- * 提供确定性随机数生成，支持种子控制
+ * 提供确定性随机数生成，支持种子控制和调用计数
  */
 
 // ==================== 核心PRNG实现 ====================
@@ -13,20 +13,27 @@ function createLCG(seed) {
     // 参数来自 Numerical Recipes
     const a = 1664525;
     const c = 1013904223;
-    const m = Math.pow(2, 32);
+    // const m = Math.pow(2, 32);
     
     let state = seed ? hashSeed(seed) : generateRandomSeed();
+    state = state >>> 0; // 确保是 32 位无符号整数
     
     // 确保状态不为0
     if (state === 0) state = 1;
+    
+    // 调用计数器
+    let callCount = 0;
     
     /**
      * 生成0到1之间的随机浮点数
      * @returns {number} 0到1之间的随机浮点数
      */
     function random() {
-        state = (a * state + c) % m;
-        return state / m;
+        callCount++;
+        // 修复的核心：使用Math.imul确保32位整数乘法
+        state = (Math.imul(a, state) + c) | 0;
+        state = state >>> 0;  // 转换为无符号整数
+        return state / 0x100000000;  // 使用十六进制表示2^32
     }
     
     /**
@@ -35,6 +42,7 @@ function createLCG(seed) {
      * @returns {number} 0到max-1之间的随机整数
      */
     function randomInt(max) {
+        callCount++;
         return Math.floor(random() * max);
     }
     
@@ -45,6 +53,7 @@ function createLCG(seed) {
      * @returns {number} min到max之间的随机整数
      */
     function randomRange(min, max) {
+        callCount++;
         return min + randomInt(max - min + 1);
     }
     
@@ -55,6 +64,7 @@ function createLCG(seed) {
      */
     function choice(array) {
         if (!array || array.length === 0) return null;
+        callCount++;
         return array[randomInt(array.length)];
     }
     
@@ -64,6 +74,15 @@ function createLCG(seed) {
     function reset() {
         state = seed ? hashSeed(seed) : generateRandomSeed();
         if (state === 0) state = 1;
+    }
+    
+    /**
+     * 完全重置生成器（状态和调用计数）
+     * 建议在需要重新开始随机序列时使用
+     */
+    function fullReset() {
+        reset();           // 重置内部状态
+        resetCallCount();  // 重置调用计数
     }
     
     /**
@@ -82,14 +101,32 @@ function createLCG(seed) {
         return state;
     }
     
+    /**
+     * 获取调用次数
+     * @returns {number} 调用次数
+     */
+    function getCallCount() {
+        return callCount;
+    }
+    
+    /**
+     * 重置调用次数
+     */
+    function resetCallCount() {
+        callCount = 0;
+    }
+    
     return {
         random,
         randomInt,
         randomRange,
         choice,
         reset,
+        fullReset,
         getSeed,
-        getState
+        getState,
+        getCallCount,
+        resetCallCount
     };
 }
 
@@ -108,10 +145,14 @@ function createXorshift(seed) {
     if (z === 0) z = 521288629;
     if (w === 0) w = 88675123;
     
+    // 调用计数器
+    let callCount = 0;
+    
     /**
      * Xorshift128算法生成随机数
      */
     function random() {
+        callCount++;
         const t = x ^ (x << 11);
         x = y;
         y = z;
@@ -124,6 +165,7 @@ function createXorshift(seed) {
      * 生成0到max-1之间的随机整数
      */
     function randomInt(max) {
+        callCount++;
         return Math.floor(random() * max);
     }
     
@@ -131,6 +173,7 @@ function createXorshift(seed) {
      * 生成min到max之间的随机整数
      */
     function randomRange(min, max) {
+        callCount++;
         return min + randomInt(max - min + 1);
     }
     
@@ -139,6 +182,7 @@ function createXorshift(seed) {
      */
     function choice(array) {
         if (!array || array.length === 0) return null;
+        callCount++;
         return array[randomInt(array.length)];
     }
     
@@ -157,6 +201,15 @@ function createXorshift(seed) {
         if (w === 0) w = 88675123;
     }
     
+    /**
+     * 完全重置生成器（状态和调用计数）
+     * 建议在需要重新开始随机序列时使用
+     */
+    function fullReset() {
+        reset();           // 重置内部状态
+        resetCallCount();  // 重置调用计数
+    }
+    
     function getSeed() {
         return seed;
     }
@@ -165,14 +218,32 @@ function createXorshift(seed) {
         return { x, y, z, w };
     }
     
+    /**
+     * 获取调用次数
+     * @returns {number} 调用次数
+     */
+    function getCallCount() {
+        return callCount;
+    }
+    
+    /**
+     * 重置调用次数
+     */
+    function resetCallCount() {
+        callCount = 0;
+    }
+    
     return {
         random,
         randomInt,
         randomRange,
         choice,
         reset,
+        fullReset,
         getSeed,
-        getState
+        getState,
+        getCallCount,
+        resetCallCount
     };
 }
 
@@ -286,6 +357,31 @@ function choice(array) {
     return getDefaultPRNG().choice(array);
 }
 
+// ==================== 新增调用计数便捷函数 ====================
+
+/**
+ * 获取当前默认PRNG的调用次数
+ * @returns {number} 调用次数
+ */
+function getCallCount() {
+    return getDefaultPRNG().getCallCount();
+}
+
+/**
+ * 重置当前默认PRNG的调用次数
+ */
+function resetCallCount() {
+    getDefaultPRNG().resetCallCount();
+}
+
+/**
+ * 完全重置当前默认PRNG（状态和调用计数）
+ * 建议在需要重新开始随机序列时使用
+ */
+function fullReset() {
+    getDefaultPRNG().fullReset();
+}
+
 // ==================== 测试函数 ====================
 
 /**
@@ -300,8 +396,8 @@ function testDeterminism() {
     const lcg1 = createSeededRandom(seed1, 'lcg');
     const lcg2 = createSeededRandom(seed1, 'lcg');
     
-    const lcgResults1 = [lgc1.random(), lcg1.random(), lcg1.random()];
-    const lcgResults2 = [lgc2.random(), lcg2.random(), lcg2.random()];
+    const lcgResults1 = [lcg1.random(), lcg1.random(), lcg1.random()];
+    const lcgResults2 = [lcg2.random(), lcg2.random(), lcg2.random()];
     
     console.log('实例1结果:', lcgResults1.map(n => n.toFixed(5)));
     console.log('实例2结果:', lcgResults2.map(n => n.toFixed(5)));
@@ -338,6 +434,46 @@ function testDeterminism() {
     console.log('randomInt(10):', randomInt(10));
     console.log('randomRange(5, 15):', randomRange(5, 15));
     console.log('choice([1,2,3,4,5]):', choice([1,2,3,4,5]));
+    
+    // 测试调用计数和完全重置功能
+    console.log('\n5. 测试调用计数和完全重置功能:');
+    const testPrng = createSeededRandom(111, 'xorshift');
+    console.log('初始调用次数:', testPrng.getCallCount());
+    testPrng.random();
+    testPrng.randomInt(10);
+    testPrng.choice([1,2,3]);
+    console.log('3次调用后次数:', testPrng.getCallCount());
+    
+    // 测试完全重置
+    console.log('测试完全重置...');
+    testPrng.fullReset();
+    console.log('完全重置后调用次数:', testPrng.getCallCount());
+    console.log('完全重置后第一次调用:', testPrng.random().toFixed(5));
+    console.log('完全重置后调用次数:', testPrng.getCallCount());
+    
+    // 测试部分重置
+    console.log('\n6. 测试部分重置:');
+    testPrng.random();
+    testPrng.randomInt(5);
+    console.log('两次调用后次数:', testPrng.getCallCount());
+    testPrng.resetCallCount(); // 只重置计数
+    console.log('仅重置计数后:', testPrng.getCallCount());
+    console.log('继续调用:', testPrng.random().toFixed(5)); // 这里会得到reset之前的状态序列
+    
+    // 对比完全重置的效果
+    console.log('\n7. 对比完全重置 vs 部分重置:');
+    const prng1 = createSeededRandom(555, 'lcg');
+    const prng2 = createSeededRandom(555, 'lcg');
+    
+    prng1.random(); prng1.random();
+    console.log('PRNG1调用2次后:', prng1.random().toFixed(5), '调用次数:', prng1.getCallCount());
+    
+    prng2.random(); prng2.random();
+    prng2.fullReset(); // 完全重置
+    console.log('PRNG2调用2次后完全重置:', prng2.random().toFixed(5), '调用次数:', prng2.getCallCount());
+    
+    // 它们应该不同，因为prng2被重置了
+    console.log('两者第三次调用是否相同:', prng1.random().toFixed(5) === prng2.random().toFixed(5));
 }
 
 // ==================== 导出模块 ====================
@@ -357,6 +493,9 @@ if (typeof module !== 'undefined' && module.exports) {
         randomInt,
         randomRange,
         choice,
+        getCallCount,
+        resetCallCount,
+        fullReset,
         testDeterminism
     };
 } else if (typeof define !== 'undefined' && define.amd) {
@@ -374,6 +513,9 @@ if (typeof module !== 'undefined' && module.exports) {
             randomInt,
             randomRange,
             choice,
+            getCallCount,
+            resetCallCount,
+            fullReset,
             testDeterminism
         };
     });
@@ -391,6 +533,9 @@ if (typeof module !== 'undefined' && module.exports) {
         randomInt,
         randomRange,
         choice,
+        getCallCount,
+        resetCallCount,
+        fullReset,
         testDeterminism
     };
 }
