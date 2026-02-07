@@ -41,7 +41,7 @@ let PLAY_INTERVAL = 800;
 
 let gameRecordStringParts;
 
-//variable in banner.js this must be loaded after banner.js
+//variable in banner.js
 setBannerTimeout = 2000;
 
 /**
