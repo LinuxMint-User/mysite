@@ -9,7 +9,9 @@ const bannerContent = document.getElementById('banner-content');
 let bannerTimeout;
 
 // can be changed as needed
-let setBannerTimeout = 5000;
+if (typeof setBannerTimeout === 'undefined') {
+    var setBannerTimeout = 5000;
+}
 
 function callBanner(text) {
     // 检查必要的DOM元素是否存在

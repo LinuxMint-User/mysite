@@ -1,6 +1,5 @@
 // 全局变量
 let currentScore = 0;
-let historyRecord = 0;
 let gameStatus = 0;
 let currentNumberTable = new Array();
 let mergeTagTable = new Array();
@@ -11,7 +10,7 @@ let prng;
 const scoreIndicator = document.getElementById('score');
 const statusIndicator = document.getElementById('status');
 const gameLevelSelector = document.getElementById('game-level');
-let gameLevel = parseFloat(gameLevelSelector.value);
+let gameLevel = Number(gameLevelSelector.value);
 
 const controlButtons = document.querySelector('.control-buttons');
 const leftBtn = document.getElementById('leftBtn');
@@ -42,14 +41,14 @@ let PLAY_INTERVAL = 800;
 
 let gameRecordStringParts;
 
-//variable in banner.js
-setBannerTimeout = 2500;
+//variable in banner.js this must be loaded after banner.js
+setBannerTimeout = 2000;
 
 /**
  * 更新页面显示的当前分数
  * 从全局变量currentScore获取值并显示在ID为'score'的元素上
  */
-function fetchCurrentScore() {
+function updateScoreIndicator() {
     scoreIndicator.innerText = currentScore;
 }
 
@@ -61,7 +60,7 @@ function fetchCurrentScore() {
 function anySpaceThere(table) {
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
-            if (table[i][j] == 0) {
+            if (table[i][j] === 0) {
                 return true;
             }
         }
@@ -81,7 +80,7 @@ function anySpaceLeft(table) {
             // 检查当前格子非空且不在最左侧
             if (table[i][j] != 0 && i != 0) {
                 // 检查左侧格子是否为空或与当前格子数字相同
-                if (table[i - 1][j] == 0 || table[i - 1][j] == table[i][j]) {
+                if (table[i - 1][j] === 0 || table[i - 1][j] === table[i][j]) {
                     return true;
                 }
             }
@@ -102,7 +101,7 @@ function anySpaceRight(table) {
             // 检查当前格子非空且不在最右侧
             if (table[i][j] != 0 && i != 3) {
                 // 检查右侧格子是否为空或与当前格子数字相同
-                if (table[i + 1][j] == 0 || table[i + 1][j] == table[i][j]) {
+                if (table[i + 1][j] === 0 || table[i + 1][j] === table[i][j]) {
                     return true;
                 }
             }
@@ -123,7 +122,7 @@ function anySpaceAbove(table) {
             // 检查当前格子非空且不在最上方
             if (table[i][j] != 0 && j != 0) {
                 // 检查上方格子是否为空或与当前格子数字相同
-                if (table[i][j - 1] == 0 || table[i][j - 1] == table[i][j]) {
+                if (table[i][j - 1] === 0 || table[i][j - 1] === table[i][j]) {
                     return true;
                 }
             }
@@ -144,7 +143,7 @@ function anySpaceBelow(table) {
             // 检查当前格子非空且不在最下方
             if (table[i][j] != 0 && j != 3) {
                 // 检查下方格子是否为空或与当前格子数字相同
-                if (table[i][j + 1] == 0 || table[i][j + 1] == table[i][j]) {
+                if (table[i][j + 1] === 0 || table[i][j + 1] === table[i][j]) {
                     return true;
                 }
             }
@@ -214,7 +213,7 @@ function init() {
         }
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    renderAllBlock(currentNumberTable);
+    renderAllBlocks(currentNumberTable, true);
 }
 
 function replayInit() {
@@ -241,26 +240,37 @@ function replayInit() {
         }
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    renderAllBlock(currentNumberTable);
+    renderAllBlocks(currentNumberTable, true);
+}
+
+function getEmptyBlocks(currentNumberTable) {
+    let emptyBlocks = [];
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (currentNumberTable[i][j] === 0) {
+                emptyBlocks.push({ x: i, y: j });
+            }
+        }
+    }
+    return emptyBlocks;
 }
 
 function generateOneNumber() {
-    let rx;
-    let ry;
+    let index;
+    let emptyBlocks = [];
+    let randomNumber = 0;
+
     if (!anySpaceThere(currentNumberTable)) {
         return false;
     }
-    do {
-        // rx = Math.floor(Math.random() * 4);
-        // ry = Math.floor(Math.random() * 4);
-        rx = prng.randomInt(4);
-        ry = prng.randomInt(4);
-    } while (currentNumberTable[rx][ry] != 0);
-    // 调整这里的值以改变难度
-    let rn = prng.random() < parseFloat(gameLevel) ? 2 : 4;
-    currentNumberTable[rx][ry] = rn;
-    renderBlock(rx, ry, renderingBackgroundByNumber(rn), renderingTextByNumber(rn), rn);
-    // gameRecordString += "g" + rx + ry + rn;
+
+    emptyBlocks = getEmptyBlocks(currentNumberTable);
+
+    index = prng.randomInt(emptyBlocks.length);
+    randomNumber = prng.random() < Number(gameLevel) ? 2 : 4; // 调整这里的值以改变难度
+
+    currentNumberTable[emptyBlocks[index].x][emptyBlocks[index].y] = randomNumber;
+    renderBlock(emptyBlocks[index].x, emptyBlocks[index].y, renderingBackgroundByNumber(randomNumber), renderingTextByNumber(randomNumber), randomNumber, true);
     return true;
 }
 
@@ -338,7 +348,7 @@ function mvL(table, tag, withAnimation = true) {
                 // 检查左侧所有可能的位置
                 for (let k = 0; k < x; k++) {
                     // 情况1：左侧格子为空且中间无障碍物
-                    if (table[k][y] == 0 && !anyBlockVertical(y, k, x, currentNumberTable)) {
+                    if (table[k][y] === 0 && !anyBlockVertical(y, k, x, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, k, y);  // 执行移动动画
                         }
@@ -347,7 +357,7 @@ function mvL(table, tag, withAnimation = true) {
                         break;
                     }
                     // 情况2：左侧格子数字相同且中间无障碍物
-                    else if (table[k][y] == table[x][y] && !anyBlockVertical(y, k, x, currentNumberTable)) {
+                    else if (table[k][y] === table[x][y] && !anyBlockVertical(y, k, x, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, k, y);  // 执行移动动画
                         }
@@ -369,7 +379,7 @@ function mvL(table, tag, withAnimation = true) {
         }
     }
     if (gameStatus === 1) {
-        gameRecordString += "ml";
+        gameRecordString += "l";
     }
     return true;
 }
@@ -386,7 +396,7 @@ function mvR(table, tag, withAnimation = true) {
         for (let x = 2; x >= 0; x--) {
             if (table[x][y] != 0) {
                 for (let k = 3; k > x; k--) {
-                    if (table[k][y] == 0 && !anyBlockVertical(y, x, k, currentNumberTable)) {
+                    if (table[k][y] === 0 && !anyBlockVertical(y, x, k, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, k, y);  // 执行移动动画
                         }
@@ -394,7 +404,7 @@ function mvR(table, tag, withAnimation = true) {
                         table[x][y] = 0;
                         break;
                     }
-                    else if (table[k][y] == table[x][y] && !anyBlockVertical(y, x, k, currentNumberTable)) {
+                    else if (table[k][y] === table[x][y] && !anyBlockVertical(y, x, k, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, k, y);  // 执行移动动画
                         }
@@ -414,7 +424,7 @@ function mvR(table, tag, withAnimation = true) {
         }
     }
     if (gameStatus === 1) {
-        gameRecordString += "mr";
+        gameRecordString += "r";
     }
     return true;
 }
@@ -445,7 +455,7 @@ function mvU(table, tag, withAnimation = true) {
                 // 检查上方所有可能的位置
                 for (let k = 0; k < y; k++) {
                     // 情况1：上方格子为空且中间无障碍物
-                    if (table[x][k] == 0 && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
+                    if (table[x][k] === 0 && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
@@ -454,7 +464,7 @@ function mvU(table, tag, withAnimation = true) {
                         break;
                     }
                     // 情况2：上方格子数字相同且中间无障碍物
-                    else if (table[x][k] == table[x][y] && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
+                    else if (table[x][k] === table[x][y] && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
@@ -476,7 +486,7 @@ function mvU(table, tag, withAnimation = true) {
         }
     }
     if (gameStatus === 1) {
-        gameRecordString += "mu";
+        gameRecordString += "u";
     }
     return true;
 }
@@ -493,7 +503,7 @@ function mvD(table, tag, withAnimation = true) {
         for (let y = 2; y >= 0; y--) {
             if (table[x][y] != 0) {
                 for (let k = 3; k > y; k--) {
-                    if (table[x][k] == 0 && !anyBlockHorizontal(x, y, k, currentNumberTable)) {
+                    if (table[x][k] === 0 && !anyBlockHorizontal(x, y, k, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
@@ -501,7 +511,7 @@ function mvD(table, tag, withAnimation = true) {
                         table[x][y] = 0;
                         break;
                     }
-                    else if (table[x][k] == table[x][y] && !anyBlockHorizontal(x, y, k, currentNumberTable)) {
+                    else if (table[x][k] === table[x][y] && !anyBlockHorizontal(x, y, k, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, x, k);  // 执行移动动画 
                         }
@@ -521,42 +531,55 @@ function mvD(table, tag, withAnimation = true) {
         }
     }
     if (gameStatus === 1) {
-        gameRecordString += "md";
+        gameRecordString += "d";
     }
     return true;
 }
 
 function mvUEvent(withAnimation = true) {
+    if (isAnimating) {
+        // console.warn("动画进行中，忽略输入");
+        return;
+    }
     if (mvU(currentNumberTable, mergeTagTable, withAnimation)) {
-        setTimeout(function () { generateOneNumber(); }, 300);
-        fetchCurrentScore();
+        generateOneNumber();
+        updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
     }
 }
 
 function mvLEvent(withAnimation = true) {
+    if (isAnimating) {
+        // console.warn("动画进行中，忽略输入");
+        return;
+    }
     if (mvL(currentNumberTable, mergeTagTable, withAnimation)) {
-        // generateOneNumber();
-        setTimeout(function () { generateOneNumber(); }, 300);
-        fetchCurrentScore();
+        generateOneNumber();
+        updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
     }
 }
 
 function mvDEvent(withAnimation = true) {
+    if (isAnimating) {
+        // console.warn("动画进行中，忽略输入");
+        return;
+    }
     if (mvD(currentNumberTable, mergeTagTable, withAnimation)) {
-        // generateOneNumber();
-        setTimeout(function () { generateOneNumber(); }, 300);
-        fetchCurrentScore();
+        generateOneNumber();
+        updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
     }
 }
 
 function mvREvent(withAnimation = true) {
+    if (isAnimating) {
+        // console.warn("动画进行中，忽略输入");
+        return;
+    }
     if (mvR(currentNumberTable, mergeTagTable, withAnimation)) {
-        // generateOneNumber();
-        setTimeout(function () { generateOneNumber(); }, 300);
-        fetchCurrentScore();
+        generateOneNumber();
+        updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
     }
 }
@@ -581,12 +604,6 @@ rightBtn.addEventListener('click', () => {
         mvREvent();
     }
 });
-
-// if (isMobileDevice()) {
-//     controlButtons.style.display = 'grid';
-// } else {
-//     controlButtons.style.display = 'none';
-// }
 
 // 键盘事件
 document.addEventListener('keydown', function (event) {
@@ -679,7 +696,7 @@ function multiKey(channel) {
             }
             break;
         case 'replayButton':
-            if (replayButton.innerText == "回放上局") {
+            if (replayButton.innerText === "回放上局") {
                 if (gameRecordString !== "2048Game|" && gameStatus === 0) {
                     replayInit();
                     replayHandler(gameRecordString);
@@ -687,7 +704,7 @@ function multiKey(channel) {
             }
             break;
         case 'replayButtonInput':
-            if (replayButtonInput.innerText == "回放其他") {
+            if (replayButtonInput.innerText === "回放其他") {
                 document.getElementById('popup').classList.remove('popup-hidden');
             }
             break;
@@ -699,13 +716,13 @@ function multiKey(channel) {
             }
             break;
         case 'replayButtonControl':
-            if (replayButtonControl.innerText == "暂停") {
+            if (replayButtonControl.innerText === "暂停") {
                 clearInterval(replayIntervalId);
                 replayIntervalId = null;
                 replayButtonControl.innerText = "播放";
                 replayButtonPrev.disabled = false;
                 newGameButton.disabled = false;
-            } else if (replayButtonControl.innerText == "播放") {
+            } else if (replayButtonControl.innerText === "播放") {
                 if (gameStatus === 0) {
                     replayInit();
                     replayHandler(gameRecordString);
@@ -751,8 +768,8 @@ function replayHandler(gameRecordString) {
     if (gameRecordString.indexOf('2048Game|') === 0 && gameRecordString.lastIndexOf('|GAMEOVER') === gameRecordString.length - 9) {
         replayButtonControl.innerText = "播放";
         gameRecordStringParts = gameRecordString.split('|');
-        gameSeed = parseInt(gameRecordStringParts[1]);
-        gameLevel = parseFloat(gameRecordStringParts[2]);
+        gameSeed = Number(gameRecordStringParts[1]);
+        gameLevel = Number(gameRecordStringParts[2]);
         gameLevelSelector.value = gameRecordStringParts[2];
         prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
         generateOneNumber();
@@ -764,66 +781,28 @@ function replayHandler(gameRecordString) {
 }
 
 
-function nextStep() {
-    if (gameRecordStringParts[3][gameRecordStep] == 'm') {
+function nextStep(withAnimation = true) {
+    let dir = gameRecordStringParts[3][gameRecordStep];
+    switch (dir) {
+        case 'l':
+            mvLEvent(withAnimation);
+            break;
+        case 'r':
+            mvREvent(withAnimation);
+            break;
+        case 'u':
+            mvUEvent(withAnimation);
+            break;
+        case 'd':
+            mvDEvent(withAnimation);
+            break;
 
-        let dir = gameRecordStringParts[3][gameRecordStep + 1];
-        switch (dir) {
-            case 'l':
-                mvLEvent();
-                break;
-            case 'r':
-                mvREvent();
-                break;
-            case 'u':
-                mvUEvent();
-                break;
-            case 'd':
-                mvDEvent();
-                break;
-
-            default:
-                break;
-        }
-        gameRecordStep += 2;
-        if (gameRecordStep === gameRecordStringParts[3].length) {
-            replayOver();
-        }
+        default:
+            break;
     }
-    else {
-        gameRecordStep += 1;
-    }
-    gameRecordFrameCount += 1;
-}
-
-function nextStepWithoutAnimation() {
-    if (gameRecordStringParts[3][gameRecordStep] == 'm') {
-        let dir = gameRecordStringParts[3][gameRecordStep + 1];
-        // console.log("dir:" + dir);
-        switch (dir) {
-            case 'l':
-                mvLEvent(false);
-                break;
-            case 'r':
-                mvREvent(false);
-                break;
-            case 'u':
-                mvUEvent(false);
-                break;
-            case 'd':
-                mvDEvent(false);
-                break;
-
-            default:
-                break;
-        }
-        gameRecordStep += 2;
-        if (gameRecordStep === gameRecordStringParts[3].length) {
-            replayOver();
-        }
-    }
-    else {
-        gameRecordStep += 1;
+    gameRecordStep += 1;
+    if (gameRecordStep === gameRecordStringParts[3].length) {
+        replayOver();
     }
     gameRecordFrameCount += 1;
 }
@@ -836,14 +815,14 @@ function prevStep() {
     replayInit();
     replayHandler(gameRecordString);
     for (; gameRecordFrameCount < targetFrameCount;) {
-        nextStepWithoutAnimation();
+        nextStep(false);
     }
-    renderAllBlock(currentNumberTable);
+    renderAllBlocks(currentNumberTable, true);
 }
 
 // 监听下拉菜单变化
 gameLevelSelector.addEventListener("change", function () {
-    gameLevel = parseFloat(this.value); // 更新gameLevel变量
+    gameLevel = Number(this.value); // 更新gameLevel变量
 });
 
 // 压缩函数 (返回Base64字符串，方便分享)

@@ -1,8 +1,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const marginX = 12;
-const marginY = marginX;
 const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
+const marginX = 8 * dpr;
+const marginY = marginX;
 const fontSize = 20 * dpr + 'px';
 const blockNumFontSize = 32 * dpr + 'px';
 
@@ -11,6 +11,14 @@ var canvasHeight;
 var cellSize = Math.floor((canvas.width - marginX * 2) / 4);
 
 let lastTimestamp = null;
+let animationQueue = [];
+let isAnimating = false;
+
+const ANIMATION_TYPE = {
+    MOVE: 'move',
+    RENDER_BLOCK: 'render_block',
+    RENDER_ALL: 'render_all'
+};
 
 const voidBlockColor = '#ccc0b3';
 
@@ -34,7 +42,13 @@ function resizeCanvas(render = false) {
 
     // 重新绘制内容
     if (render) {
-        renderAllBlock(currentNumberTable);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (gameStatus !== 0) {
+            renderAllBlocks(currentNumberTable);
+        } else {
+            initRendering();
+        }
+        
     }
 }
 
@@ -97,22 +111,78 @@ function renderingBackgroundByNumber(number) {
     }
 }
 
-function renderBlock(col, row, bgColor, fontColor, num) {
+function renderBlock(col, row, bgColor, fontColor, num, queue = false) {
+    // 如果不需要加入队列，直接渲染
+    if (!queue) {
+        _renderBlockDirectly(col, row, bgColor, fontColor, num);
+        return;
+    }
+
+    // 加入动画队列
+    animationQueue.push({
+        type: ANIMATION_TYPE.RENDER_BLOCK,
+        col: col,
+        row: row,
+        bgColor: bgColor,
+        fontColor: fontColor,
+        num: num,
+        progress: 0
+    });
+
+    // 启动动画循环
+    if (!isAnimating) {
+        isAnimating = true;
+        requestAnimationFrame(animateBlocks);
+    }
+}
+
+// 直接渲染的辅助函数
+function _renderBlockDirectly(col, row, bgColor, fontColor, num) {
     ctx.fillStyle = bgColor;
-    ctx.fillRect(col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX, row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY, ((canvas.width - (marginX * 5)) / 4), ((canvas.height - (marginY * 5)) / 4));
+    ctx.fillRect(
+        col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX,
+        row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY,
+        ((canvas.width - (marginX * 5)) / 4),
+        ((canvas.height - (marginY * 5)) / 4)
+    );
 
     ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
     ctx.fillStyle = fontColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(num == 0 ? '' : num, Math.floor(col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX + ((canvas.width - (marginX * 5)) / 4) / 2), Math.floor(row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY + ((canvas.height - (marginY * 5)) / 4) / 2));
+    ctx.fillText(
+        num === 0 ? '' : num,
+        Math.floor(col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX + ((canvas.width - (marginX * 5)) / 4) / 2),
+        Math.floor(row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY + ((canvas.height - (marginY * 5)) / 4) / 2)
+    );
 }
 
-function renderAllBlock(table) {
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            renderBlock(i, j, renderingBackgroundByNumber(table[i][j]), renderingTextByNumber(table[i][j]), table[i][j]);
+function renderAllBlocks(table, queue = false) {
+    // 如果不需要加入队列，直接渲染
+    if (!queue) {
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                _renderBlockDirectly(i, j,
+                    renderingBackgroundByNumber(table[i][j]),
+                    renderingTextByNumber(table[i][j]),
+                    table[i][j]
+                );
+            }
         }
+        return;
+    }
+
+    // 加入动画队列
+    animationQueue.push({
+        type: ANIMATION_TYPE.RENDER_ALL,
+        table: JSON.parse(JSON.stringify(table)), // 深拷贝表格数据
+        progress: 0
+    });
+
+    // 启动动画循环
+    if (!isAnimating) {
+        isAnimating = true;
+        requestAnimationFrame(animateBlocks);
     }
 }
 
@@ -152,9 +222,6 @@ function renderStaticBlocksWithBorders(table) {
     }
 }
 
-let animationQueue = [];
-let isAnimating = false;
-
 /**
  * 处理方块移动动画
  * @param {number} fx - 起始位置的x坐标(列索引)
@@ -185,6 +252,7 @@ function moveAnimation(fx, fy, tx, ty) {
 
     // 将动画信息加入队列
     animationQueue.push({
+        type: ANIMATION_TYPE.MOVE,
         x: startX,
         y: startY,
         targetX: endX,
@@ -229,7 +297,6 @@ function animateBlocks(timestamp) {
     // 清空画布并渲染静态方块
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     renderStaticBlocksWithBorders(currentNumberTable);
-    // renderAllBlock(currentNumberTable);
 
     // 处理动画队列
     for (let i = 0; i < animationQueue.length; i++) {
@@ -237,38 +304,69 @@ function animateBlocks(timestamp) {
         // 更新动画进度(基于时间差)
         anim.progress += deltaTime / 200;
 
-        // 检查动画是否完成
-        if (anim.progress >= 1) {
-            animationQueue.splice(i, 1);
-            i--;
-            continue;
+        switch (anim.type) {
+            case ANIMATION_TYPE.MOVE:
+                // 检查动画是否完成
+                if (anim.progress >= 1) {
+                    animationQueue.splice(i, 1);
+                    i--;
+                    continue;
+                }
+
+                // 计算当前动画位置(线性插值)
+                const currentX = anim.x + (anim.targetX - anim.x) * anim.progress;
+                const currentY = anim.y + (anim.targetY - anim.y) * anim.progress;
+
+                // 绘制方块背景
+                ctx.fillStyle = anim.bgColor;
+                ctx.fillRect(currentX, currentY,
+                    ((canvas.width - (marginX * 5)) / 4),
+                    ((canvas.height - (marginY * 5)) / 4));
+
+                // 绘制方块数字
+                ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
+                ctx.fillStyle = anim.textColor;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(anim.number,
+                    currentX + ((canvas.width - (marginX * 5)) / 4) / 2,
+                    currentY + ((canvas.height - (marginY * 5)) / 4) / 2);
+                break;
+            case ANIMATION_TYPE.RENDER_BLOCK:
+                // 渲染单个方块动画（可以添加淡入效果）
+                if (anim.progress >= 1) {
+                    // 动画完成，直接渲染最终状态
+                    _renderBlockDirectly(anim.col, anim.row, anim.bgColor, anim.fontColor, anim.num);
+                    animationQueue.splice(i, 1);
+                    i--;
+                } else {
+                    // 可以添加淡入效果或其他动画
+                    _renderBlockWithAnimation(anim);
+                }
+                break;
+
+            case ANIMATION_TYPE.RENDER_ALL:
+                // 渲染整个面板动画
+                if (anim.progress >= 1) {
+                    // 动画完成，直接渲染最终状态
+                    for (let i = 0; i < 4; i++) {
+                        for (let j = 0; j < 4; j++) {
+                            _renderBlockDirectly(i, j,
+                                renderingBackgroundByNumber(anim.table[i][j]),
+                                renderingTextByNumber(anim.table[i][j]),
+                                anim.table[i][j]
+                            );
+                        }
+                    }
+                    animationQueue.splice(i, 1);
+                    i--;
+                } else {
+                    // 可以添加整体淡入效果
+                    _renderAllWithAnimation(anim);
+                }
+                break;
         }
 
-        // 计算当前动画位置(线性插值)
-        const currentX = anim.x + (anim.targetX - anim.x) * anim.progress;
-        const currentY = anim.y + (anim.targetY - anim.y) * anim.progress;
-
-        // 绘制方块边框
-        // ctx.strokeStyle = 'black';
-        // ctx.lineWidth = 0.7;
-        // ctx.strokeRect(currentX, currentY,
-        //     ((canvas.width - (marginX * 5)) / 4),
-        //     ((canvas.height - (marginY * 5)) / 4));
-
-        // 绘制方块背景
-        ctx.fillStyle = anim.bgColor;
-        ctx.fillRect(currentX, currentY,
-            ((canvas.width - (marginX * 5)) / 4),
-            ((canvas.height - (marginY * 5)) / 4));
-
-        // 绘制方块数字
-        ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
-        ctx.fillStyle = anim.textColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(anim.number,
-            currentX + ((canvas.width - (marginX * 5)) / 4) / 2,
-            currentY + ((canvas.height - (marginY * 5)) / 4) / 2);
     }
 
     // 决定是否继续动画循环
@@ -279,9 +377,34 @@ function animateBlocks(timestamp) {
         isAnimating = false;
         lastTimestamp = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        renderAllBlock(currentNumberTable);
+        renderAllBlocks(currentNumberTable, false);
 
     }
+}
+
+// 带动画效果的方块渲染
+function _renderBlockWithAnimation(anim) {
+    // 简单的淡入效果
+    const alpha = anim.progress;
+    ctx.globalAlpha = alpha;
+    _renderBlockDirectly(anim.col, anim.row, anim.bgColor, anim.fontColor, anim.num);
+    ctx.globalAlpha = 1;
+}
+
+// 带动画效果的整体渲染
+function _renderAllWithAnimation(anim) {
+    const alpha = anim.progress;
+    ctx.globalAlpha = alpha;
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            _renderBlockDirectly(i, j, 
+                renderingBackgroundByNumber(anim.table[i][j]), 
+                renderingTextByNumber(anim.table[i][j]), 
+                anim.table[i][j]
+            );
+        }
+    }
+    ctx.globalAlpha = 1;
 }
 
 function multiLineTextRendering(font, fontColor, content, startX, startY, lineHeight) {
@@ -311,7 +434,5 @@ function initRendering() {
 }
 
 window.addEventListener('resize', function () {
-    if (gameStatus == 1) {
-        resizeCanvas(1);
-    }
+    resizeCanvas(1);
 });
