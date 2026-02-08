@@ -24,7 +24,8 @@ const replayButtonInput = document.getElementById('replayButtonInput');
 const replayButtonNext = document.getElementById('replayButtonNext');
 const replayButtonPrev = document.getElementById('replayButtonPrev');
 const replayButtonControl = document.getElementById('replayButtonControl');
-const copyButton = document.getElementById('copyButton');
+const shareButton = document.getElementById('shareButton');
+const shareLinkButton = document.getElementById('shareLinkButton');
 const replayToolbar = document.getElementById('replayToolbar');
 const replayInputBox = document.getElementById('replayInputBox');
 const replayInputBoxFinishButton = document.getElementById('replayInputBoxFinishButton');
@@ -43,6 +44,12 @@ let gameRecordStringParts;
 
 //variable in banner.js
 setBannerTimeout = 2000;
+
+// 获取当前页面的基础URL（去掉查询参数和哈希）
+const currentUrl = new URL(window.location.href);
+const baseURL = currentUrl.origin + currentUrl.pathname;
+let shareLinkPrefix = baseURL + '?replayCode=';
+let replayCode = '';
 
 /**
  * 更新页面显示的当前分数
@@ -288,7 +295,8 @@ function gameOver() {
         newGameButton.innerText = "开始游戏";
         gameLevelSelector.disabled = false;
         replayButton.disabled = false;
-        copyButton.disabled = false;
+        shareButton.disabled = false;
+        shareLinkButton.disabled = false;
     }
 }
 
@@ -347,7 +355,7 @@ function mvL(table, tag, withAnimation = true) {
             if (table[x][y] != 0) {
                 // 检查左侧所有可能的位置
                 for (let k = 0; k < x; k++) {
-                    // 情况1：左侧格子为空且中间无障碍物
+                    // 情况1: 左侧格子为空且中间无障碍物
                     if (table[k][y] === 0 && !anyBlockVertical(y, k, x, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, k, y);  // 执行移动动画
@@ -356,7 +364,7 @@ function mvL(table, tag, withAnimation = true) {
                         table[x][y] = 0;            // 清空原位置
                         break;
                     }
-                    // 情况2：左侧格子数字相同且中间无障碍物
+                    // 情况2: 左侧格子数字相同且中间无障碍物
                     else if (table[k][y] === table[x][y] && !anyBlockVertical(y, k, x, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, k, y);  // 执行移动动画
@@ -454,7 +462,7 @@ function mvU(table, tag, withAnimation = true) {
             if (table[x][y] != 0) {
                 // 检查上方所有可能的位置
                 for (let k = 0; k < y; k++) {
-                    // 情况1：上方格子为空且中间无障碍物
+                    // 情况1: 上方格子为空且中间无障碍物
                     if (table[x][k] === 0 && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, x, k);  // 执行移动动画 
@@ -463,7 +471,7 @@ function mvU(table, tag, withAnimation = true) {
                         table[x][y] = 0;             // 清空原位置
                         break;
                     }
-                    // 情况2：上方格子数字相同且中间无障碍物
+                    // 情况2: 上方格子数字相同且中间无障碍物
                     else if (table[x][k] === table[x][y] && !anyBlockHorizontal(x, k, y, currentNumberTable)) {
                         if (withAnimation) {
                             moveAnimation(x, y, x, k);  // 执行移动动画 
@@ -536,8 +544,8 @@ function mvD(table, tag, withAnimation = true) {
     return true;
 }
 
-function mvUEvent(withAnimation = true) {
-    if (isAnimating) {
+function mvUEvent(withAnimation = true, replayRewindMode = false) {
+    if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
         return;
     }
@@ -548,8 +556,8 @@ function mvUEvent(withAnimation = true) {
     }
 }
 
-function mvLEvent(withAnimation = true) {
-    if (isAnimating) {
+function mvLEvent(withAnimation = true, replayRewindMode = false) {
+    if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
         return;
     }
@@ -560,8 +568,8 @@ function mvLEvent(withAnimation = true) {
     }
 }
 
-function mvDEvent(withAnimation = true) {
-    if (isAnimating) {
+function mvDEvent(withAnimation = true, replayRewindMode = false) {
+    if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
         return;
     }
@@ -572,8 +580,8 @@ function mvDEvent(withAnimation = true) {
     }
 }
 
-function mvREvent(withAnimation = true) {
-    if (isAnimating) {
+function mvREvent(withAnimation = true, replayRewindMode = false) {
+    if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
         return;
     }
@@ -750,14 +758,26 @@ function multiKey(channel) {
             break;
         case 'replayInputBoxFinishButton':
             inputGameRecordString = replayInputBox.value.trim();
-            if (inputGameRecordString !== null && inputGameRecordString.trim() !== "") {
+            if (inputGameRecordString !== "") {
+                try {
+                    gameRecordString = decompressGzip(inputGameRecordString);
+                } catch (error) {
+                    callBanner("请输入正确的回放代码");
+                    break;
+                }
                 togglePopup();
-                gameRecordString = decompressGzip(inputGameRecordString);
+                replayInputBox.value = '';
                 replayInit();
                 replayHandler(gameRecordString);
             } else {
-                callBanner("请输入正确的回放代码");
+                callBanner("请输入回放代码");
             }
+            break;
+        case 'shareButton':
+            copyToClipboard();
+            break;
+        case 'shareLinkButton':
+            copyToClipboard(shareLinkPrefix);
             break;
         default:
             break;
@@ -775,26 +795,26 @@ function replayHandler(gameRecordString) {
         generateOneNumber();
         generateOneNumber();
     } else {
-        alert("错误的分享格式！");
+        callBanner("回放代码格式错误！");
         replayOver();
     }
 }
 
 
-function nextStep(withAnimation = true) {
+function nextStep(withAnimation = true, replayRewindMode = false) {
     let dir = gameRecordStringParts[3][gameRecordStep];
     switch (dir) {
         case 'l':
-            mvLEvent(withAnimation);
+            mvLEvent(withAnimation, replayRewindMode);
             break;
         case 'r':
-            mvREvent(withAnimation);
+            mvREvent(withAnimation, replayRewindMode);
             break;
         case 'u':
-            mvUEvent(withAnimation);
+            mvUEvent(withAnimation, replayRewindMode);
             break;
         case 'd':
-            mvDEvent(withAnimation);
+            mvDEvent(withAnimation, replayRewindMode);
             break;
 
         default:
@@ -815,7 +835,7 @@ function prevStep() {
     replayInit();
     replayHandler(gameRecordString);
     for (; gameRecordFrameCount < targetFrameCount;) {
-        nextStep(false);
+        nextStep(false, true);
     }
     renderAllBlocks(currentNumberTable, true);
 }
@@ -839,29 +859,116 @@ function compressWithGzip(dataString) {
     return base64String;
 }
 
-// 解压函数
+// Base64验证函数
+function validateBase64(str) {
+    if (typeof str !== 'string') {
+        return { isValid: false, error: 'validateBase64: 输入必须是字符串' };
+    }
+
+    if (str.trim().length === 0) {
+        return { isValid: false, error: 'validateBase64: 输入字符串不能为空' };
+    }
+
+    // 处理可能的data URL前缀
+    let base64Str = str;
+    if (str.includes(',')) {
+        base64Str = str.split(',')[1];
+    }
+
+    // Base64基本验证
+    const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+    if (!base64Regex.test(base64Str)) {
+        return { isValid: false, error: 'validateBase64: 无效的Base64格式' };
+    }
+
+    // 长度必须是4的倍数
+    if (base64Str.length % 4 !== 0) {
+        return { isValid: false, error: 'validateBase64: Base64字符串长度必须是4的倍数' };
+    }
+
+    // 尝试解码验证
+    try {
+        atob(base64Str);
+        return { isValid: true };
+    } catch (error) {
+        return { isValid: false, error: 'validateBase64: 无效的Base64编码' };
+    }
+}
+
+// 增强的解压函数
 function decompressGzip(compressedBase64) {
+    // 验证Base64格式
+    const validation = validateBase64(compressedBase64);
+    if (!validation.isValid) {
+        throw new Error(`decompressGzip: Base64格式错误: ${validation.error}`);
+    }
+
+    // 提取Base64数据（移除可能的data URL前缀）
+    let cleanBase64 = compressedBase64;
+    if (compressedBase64.includes(',')) {
+        cleanBase64 = compressedBase64.split(',')[1];
+    }
+
     // 将Base64字符串转回Uint8Array
-    const binaryString = atob(compressedBase64);
+    const binaryString = atob(cleanBase64);
     const charData = binaryString.split('').map(char => char.charCodeAt(0));
     const compressedData = new Uint8Array(charData);
 
-    // 使用pako解压
-    const decompressed = pako.ungzip(compressedData);
+    // 验证是否为有效的gzip格式
+    if (compressedData.length < 10) {
+        throw new Error('decompressGzip: 无效的gzip格式: 数据过短');
+    }
 
-    // 将解压后的Uint8Array转回字符串
-    const textDecoder = new TextDecoder();
-    return textDecoder.decode(decompressed);
+    // 检查gzip头部标识（0x1F 0x8B）
+    if (compressedData[0] !== 0x1F || compressedData[1] !== 0x8B) {
+        throw new Error('decompressGzip: 无效的gzip格式: 文件头标识错误');
+    }
+
+    // 检查压缩方法（应为8表示DEFLATE）
+    if (compressedData[2] !== 8) {
+        throw new Error('decompressGzip: 不支持的压缩格式: 仅支持DEFLATE压缩');
+    }
+
+    // 使用pako解压
+    try {
+        const decompressed = pako.ungzip(compressedData);
+
+        if (!decompressed || decompressed.length === 0) {
+            throw new Error('decompressGzip: 解压后数据为空');
+        }
+
+        // 将解压后的Uint8Array转回字符串
+        const textDecoder = new TextDecoder();
+        return textDecoder.decode(decompressed);
+    } catch (decompressionError) {
+        throw new Error(`decompressGzip: gzip解压失败: ${decompressionError.message}`);
+    }
 }
 
-async function copyToClipboard() {
+async function copyToClipboard(prefix = '') {
     try {
-        await navigator.clipboard.writeText(compressWithGzip(gameRecordString));
+        await navigator.clipboard.writeText(prefix + encodeURIComponent(compressWithGzip(gameRecordString)));
         callBanner("文本已成功复制到剪贴板");
     } catch (err) {
         callBanner("复制失败: ", err);
     }
 }
 
-// 绑定到按钮点击事件
-copyButton.addEventListener('click', copyToClipboard);
+document.addEventListener('DOMContentLoaded', function () {
+    replayCode = new URLSearchParams(window.location.search).get('replayCode');
+    if (replayCode !== null) {
+        inputGameRecordString = decodeURIComponent(replayCode).trim();
+        if (inputGameRecordString !== "") {
+            try {
+                gameRecordString = decompressGzip(inputGameRecordString);
+            } catch (error) {
+                callBanner("检测到链接中无效的回放代码");
+                return;
+            }
+            replayInit();
+            replayHandler(gameRecordString);
+        } else {
+            callBanner("检测到链接中无效的回放代码");
+        }
+    }
+});

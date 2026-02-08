@@ -58,8 +58,10 @@
                     disabled>回放上局</button>
                 <button class="menu-item" type="button" id="replayButtonInput"
                     onclick="multiKey('replayButtonInput')">回放其他</button>
-                <button class="menu-item" type="button" id="copyButton" onclick="multiKey('copyButton')"
-                    disabled>分享</button>
+                <button class="menu-item" type="button" id="shareButton" onclick="multiKey('shareButton')"
+                    disabled>分享回放代码</button>
+                <button class="menu-item" type="button" id="shareLinkButton" onclick="multiKey('shareLinkButton')"
+                    disabled>分享回放链接</button>
             </div>
         </div>
         <div class="menu-overlay" id="menuOverlay"></div>
@@ -68,7 +70,7 @@
     <script>
         document.getElementById('backButton').addEventListener('click', function () {
             // 从 URL 中获取 'from' 参数
-            var fromPage = new URLSearchParams(window.location.search).get('from');
+            let fromPage = new URLSearchParams(window.location.search).get('from');
             // 如果 'from' 参数是 'index'
             if (fromPage === 'index') {
                 // 判断浏览器历史记录中是否有可返回的页面
