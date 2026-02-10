@@ -53,15 +53,16 @@
             <button class="menu-button" id="menuButton">☰</button>
             <div class="menu-panel" id="menuPanel">
                 <button class="menu-item" type="button" id="controlMethodButton"
-                    onclick="multiKey('controlMethodButton')">开/关虚拟按键</button>
+                    onclick="multiKey('controlMethodButton')" data-function="toggleVirtualButtons"
+                    data-status="none">开/关虚拟按键</button>
                 <button class="menu-item" type="button" id="replayButton" onclick="multiKey('replayButton')"
-                    disabled>回放上局</button>
-                <button class="menu-item" type="button" id="replayButtonInput"
-                    onclick="multiKey('replayButtonInput')">回放其他</button>
+                    data-function="replayButton" data-status="none" disabled>回放上局</button>
+                <button class="menu-item" type="button" id="replayButtonInput" onclick="multiKey('replayButtonInput')"
+                    data-function="replayButtonInput" data-status="none">回放其他</button>
                 <button class="menu-item" type="button" id="shareButton" onclick="multiKey('shareButton')"
-                    disabled>分享回放代码</button>
+                    data-function="shareButton" data-status="none" disabled>分享回放代码</button>
                 <button class="menu-item" type="button" id="shareLinkButton" onclick="multiKey('shareLinkButton')"
-                    disabled>分享回放链接</button>
+                    data-function="shareLinkButton" data-status="none" disabled>分享回放链接</button>
             </div>
         </div>
         <div class="menu-overlay" id="menuOverlay"></div>
@@ -90,19 +91,22 @@
     <div class="container" style="display: flex; flex-direction: row-reverse;">
         <div class="button-list"
             style="flex: 1; min-width: fit-content; flex-direction: column; justify-content: center; align-items: center;">
-            <button type="button" id="newGameButton" onclick="multiKey('newGameButton')">开始游戏</button>
+            <button type="button" id="newGameButton" onclick="multiKey('newGameButton')" data-function="newGameButton"
+                data-status="startGame">开始游戏</button>
+            <button type="button" class="global-hidden" id="replayButtonCancel" onclick="multiKey('replayButtonCancel')"
+                data-function="replayButtonCancel" data-status="none">结束回放</button>
         </div>
         <div class="container" style="flex: 8; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
             gap: 0px; margin: 5px; padding: 5px; overflow: hidden; justify-items: center; align-items: center;">
             <h3 style="color: wheat; margin: 5px; width: max-content;">
-                当前得分:<span id="score">0</span>
+                得分:<span id="score">0</span>
             </h3>
-            <h3 style="color: wheat; margin: 5px; width: max-content;">
+            <h3 style="color: wheat; margin: 5px; width: max-content;" class="global-hidden">
                 游戏状态:<span id="status">准备中</span>
             </h3>
             <div style="display: flex; flex-direction: row;">
                 <h3 style="color: wheat; margin: 5px; width: max-content;">
-                    游戏难度:
+                    难度:
                 </h3>
                 <div class="select-wrapper" style="min-width: fit-content;">
                     <select id="game-level" class="custom-select" style="background: #555555;">
@@ -133,12 +137,15 @@
     </div>
 
     <div id="replayToolbar" class="container global-hidden"
-        style="display: flex; flex-direction: row-reverse; max-width: fit-content; z-index: 20;">
+        style="display: flex; flex-direction: column; max-width: fit-content; z-index: 20;">
+        <progress id="replayProgressBar"></progress>
         <div class="button-list" style="flex: 1; max-width: fit-content; flex-direction: row;">
-            <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')">上一</button>
-            <button type="button" id="replayButtonControl" onclick="multiKey('replayButtonControl')">播放</button>
-            <button type="button" id="replayButtonNext" onclick="multiKey('replayButtonNext')">下一</button>
-            <button type="button" id="replayButtonCancel" onclick="multiKey('replayButtonCancel')">结束回放</button>
+            <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')"
+                data-function="replayButtonPrev" data-status="prevStep">上一</button>
+            <button type="button" id="replayButtonControl" onclick="multiKey('replayButtonControl')"
+                data-function="replayButtonControl" data-status="play">播放</button>
+            <button type="button" id="replayButtonNext" onclick="multiKey('replayButtonNext')"
+                data-function="replayButtonNext" data-status="nextStep">下一</button>
         </div>
     </div>
 
@@ -159,7 +166,8 @@
                 <div class="button-list"
                     style="flex: 1; min-width: fit-content; flex-direction: column; justify-content: center; align-items: center;">
                     <button type="button" id="replayInputBoxFinishButton"
-                        onclick="multiKey('replayInputBoxFinishButton')">确认</button>
+                        onclick="multiKey('replayInputBoxFinishButton')" data-function="replayInputBoxFinishButton"
+                        data-status="none">确认</button>
                 </div>
 
             </div>
