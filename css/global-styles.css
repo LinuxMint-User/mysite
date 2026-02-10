@@ -317,6 +317,58 @@ footer a {
 	padding-bottom: 15px;
 }
 
+/* progress基础样式 */
+progress {
+	width: 100%;
+	height: 10px;
+	border: none;
+	background-color: transparent;
+	appearance: none;
+	/* 清除默认外观 */
+	border-radius: 5px;
+	margin-bottom: 5px;
+}
+
+/* 轨道样式 - 可操作部分的背景 */
+progress::-webkit-progress-bar {
+	background-color: #666;
+	/* 中灰色，介于#333和#888之间 */
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) inset;
+}
+
+/* 进度条已填充部分 - 使用橙色 */
+progress::-webkit-progress-value {
+	background-color: #cc8500;
+	/* 主色调橙色 */
+	border-radius: 5px;
+	transition: width 0.3s ease;
+	/* 平滑过渡效果 */
+}
+
+/* 进度条悬停效果 - 增强可点击感 */
+progress:hover::-webkit-progress-value {
+	background-color: #e69900;
+	/* 悬停时稍亮一些 */
+	box-shadow: 0 0 5px rgba(204, 133, 0, 0.5);
+}
+
+/* Firefox浏览器支持 */
+progress::-moz-progress-bar {
+	background-color: #cc8500;
+	border-radius: 5px;
+}
+
+/* Firefox轨道样式 */
+progress::-moz-progress-bar {
+	border-radius: 5px;
+}
+
+/* 为Firefox设置背景轨道 */
+progress {
+	background-color: #666;
+}
+
 .global-hidden {
 	display: none !important;
 }

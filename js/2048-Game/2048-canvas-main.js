@@ -24,11 +24,13 @@ const replayButtonInput = document.getElementById('replayButtonInput');
 const replayButtonNext = document.getElementById('replayButtonNext');
 const replayButtonPrev = document.getElementById('replayButtonPrev');
 const replayButtonControl = document.getElementById('replayButtonControl');
+const replayButtonCancel = document.getElementById('replayButtonCancel');
 const shareButton = document.getElementById('shareButton');
 const shareLinkButton = document.getElementById('shareLinkButton');
 const replayToolbar = document.getElementById('replayToolbar');
 const replayInputBox = document.getElementById('replayInputBox');
 const replayInputBoxFinishButton = document.getElementById('replayInputBoxFinishButton');
+const replayProgressBar = document.getElementById('replayProgressBar');
 
 const gameArea = document.querySelector('.gameArea');
 
@@ -41,6 +43,7 @@ let replayIntervalId = null;
 let PLAY_INTERVAL = 800;
 
 let gameRecordStringParts;
+let isProcessingNextStep = false;
 
 //variable in banner.js
 setBannerTimeout = 2000;
@@ -56,7 +59,7 @@ let replayCode = '';
  * 从全局变量currentScore获取值并显示在ID为'score'的元素上
  */
 function updateScoreIndicator() {
-    scoreIndicator.innerText = currentScore;
+    scoreIndicator.textContent = currentScore;
 }
 
 /**
@@ -199,13 +202,14 @@ function anyBlockVertical(col, row0, row1, table) {
 function init() {
     gameSeed = generateRandomSeed();
     prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
-    replayButtonControl.innerText = "播放";
-    replayToolbar.display = 'none';
     gameRecordString = "2048Game|" + gameSeed + "|" + gameLevel + "|";
     currentScore = 0;
-    scoreIndicator.innerText = currentScore;
-    statusIndicator.innerText = "进行中";
+    scoreIndicator.textContent = currentScore;
+    statusIndicator.textContent = "进行中";
     gameLevelSelector.disabled = true;
+    replayButton.disabled = true;
+    shareButton.disabled = true;
+    shareLinkButton.disabled = true;
     gameStatus = 1;
     for (let i = 0; i < 4; i++) {
         currentNumberTable[i] = new Array();
@@ -225,14 +229,18 @@ function init() {
 
 function replayInit() {
     replayToolbar.classList.remove('global-hidden');
+    replayButtonCancel.classList.remove('global-hidden');
+    newGameButton.classList.add('global-hidden');
     replayIntervalId = null;
     gameRecordStep = gameRecordStepStartIndex;
     gameRecordFrameCount = 0;
-    newGameButton.innerText = "开始游戏";
     currentScore = 0;
-    scoreIndicator.innerText = currentScore;
-    statusIndicator.innerText = "回放中";
+    scoreIndicator.textContent = currentScore;
+    statusIndicator.textContent = "回放中";
     gameLevelSelector.disabled = true;
+    replayButton.disabled = true;
+    shareButton.disabled = true;
+    shareLinkButton.disabled = true;
     gameStatus = 2;
     for (let i = 0; i < 4; i++) {
         currentNumberTable[i] = new Array();
@@ -291,8 +299,8 @@ function gameOver() {
     if (gameStatus === 1) {
         gameRecordString += "|GAMEOVER";
         gameStatus = 0;
-        statusIndicator.innerText = "游戏结束";
-        newGameButton.innerText = "开始游戏";
+        statusIndicator.textContent = "游戏结束";
+        updateButtonStatus(newGameButton, 'startGame');
         gameLevelSelector.disabled = false;
         replayButton.disabled = false;
         shareButton.disabled = false;
@@ -300,19 +308,25 @@ function gameOver() {
     }
 }
 
-function replayOver() {
+function replayOver(replayToolbarOff = true) {
     if (gameStatus === 2) {
-        gameStatus = 0;
-        statusIndicator.innerText = "回放结束";
-        newGameButton.disabled = false;
-        gameLevelSelector.disabled = false;
-        replayToolbar.classList.add('global-hidden');
+        statusIndicator.textContent = "回放结束";
+        updateButtonStatus(replayButtonControl, 'play');
+        replayButtonPrev.disabled = false;
         if (replayIntervalId !== null) {
             clearInterval(replayIntervalId);
             replayIntervalId = null;
         }
-        gameRecordStep = gameRecordStepStartIndex;
-        gameRecordFrameCount = 0;
+        if (replayToolbarOff) {
+            gameStatus = 0;
+            newGameButton.disabled = false;
+            gameLevelSelector.disabled = false;
+            replayToolbar.classList.add('global-hidden');
+            replayButtonCancel.classList.add('global-hidden');
+            newGameButton.classList.remove('global-hidden');
+            gameRecordStep = gameRecordStepStartIndex;
+            gameRecordFrameCount = 0;
+        }
     }
 }
 
@@ -547,49 +561,57 @@ function mvD(table, tag, withAnimation = true) {
 function mvUEvent(withAnimation = true, replayRewindMode = false) {
     if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
-        return;
+        return false;
     }
     if (mvU(currentNumberTable, mergeTagTable, withAnimation)) {
         generateOneNumber();
         updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+        return true;
     }
+    return false;
 }
 
 function mvLEvent(withAnimation = true, replayRewindMode = false) {
     if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
-        return;
+        return false;
     }
     if (mvL(currentNumberTable, mergeTagTable, withAnimation)) {
         generateOneNumber();
         updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+        return true;
     }
+    return false;
 }
 
 function mvDEvent(withAnimation = true, replayRewindMode = false) {
     if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
-        return;
+        return false;
     }
     if (mvD(currentNumberTable, mergeTagTable, withAnimation)) {
         generateOneNumber();
         updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+        return true;
     }
+    return false;
 }
 
 function mvREvent(withAnimation = true, replayRewindMode = false) {
     if (isAnimating && !replayRewindMode) {
         // console.warn("动画进行中，忽略输入");
-        return;
+        return false;
     }
     if (mvR(currentNumberTable, mergeTagTable, withAnimation)) {
         generateOneNumber();
         updateScoreIndicator();
         setTimeout(function () { isGameOver(currentNumberTable); }, 400);
+        return true;
     }
+    return false;
 }
 
 upBtn.addEventListener('click', () => {
@@ -692,19 +714,19 @@ document.addEventListener('DOMContentLoaded', function () {
 function multiKey(channel) {
     switch (channel) {
         case 'newGameButton':
-            if (newGameButton.innerText === "开始游戏" && gameStatus !== 1) {
+            if (newGameButton.dataset.status === 'startGame' && gameStatus !== 1) {
                 if (gameStatus === 2) {
                     replayOver();
                 }
                 newGame();
-                newGameButton.innerText = "结束游戏";
-            } else if (newGameButton.innerText === "结束游戏" && gameStatus === 1) {
+                updateButtonStatus(newGameButton, 'endGame');
+            } else if (newGameButton.dataset.status === 'endGame' && gameStatus === 1) {
                 gameOver();
                 callBanner("已手动结束本局游戏");
             }
             break;
         case 'replayButton':
-            if (replayButton.innerText === "回放上局") {
+            if (replayButton.dataset.function === 'replayButton') {
                 if (gameRecordString !== "2048Game|" && gameStatus === 0) {
                     replayInit();
                     replayHandler(gameRecordString);
@@ -712,7 +734,7 @@ function multiKey(channel) {
             }
             break;
         case 'replayButtonInput':
-            if (replayButtonInput.innerText === "回放其他") {
+            if (replayButtonInput.dataset.function === 'replayButtonInput') {
                 document.getElementById('popup').classList.remove('popup-hidden');
             }
             break;
@@ -724,13 +746,13 @@ function multiKey(channel) {
             }
             break;
         case 'replayButtonControl':
-            if (replayButtonControl.innerText === "暂停") {
+            if (replayButtonControl.dataset.status === 'pause') {
                 clearInterval(replayIntervalId);
                 replayIntervalId = null;
-                replayButtonControl.innerText = "播放";
+                updateButtonStatus(replayButtonControl, 'play');
                 replayButtonPrev.disabled = false;
                 newGameButton.disabled = false;
-            } else if (replayButtonControl.innerText === "播放") {
+            } else if (replayButtonControl.dataset.status === 'play') {
                 if (gameStatus === 0) {
                     replayInit();
                     replayHandler(gameRecordString);
@@ -739,13 +761,18 @@ function multiKey(channel) {
                     return;
                 }
                 replayIntervalId = setInterval(nextStep, PLAY_INTERVAL);
-                replayButtonControl.innerText = "暂停";
+                updateButtonStatus(replayButtonControl, 'pause');
                 replayButtonPrev.disabled = true;
                 newGameButton.disabled = true;
             }
             break;
         case 'replayButtonNext':
-            nextStep();
+            if (replayButtonNext.dataset.status === 'replay') {
+                beginStep();
+                updateButtonStatus(replayButtonNext, 'nextStep');
+            } else {
+                nextStep();
+            }
             break;
         case 'replayButtonPrev':
             prevStep();
@@ -785,59 +812,114 @@ function multiKey(channel) {
 }
 
 function replayHandler(gameRecordString) {
-    if (gameRecordString.indexOf('2048Game|') === 0 && gameRecordString.lastIndexOf('|GAMEOVER') === gameRecordString.length - 9) {
-        replayButtonControl.innerText = "播放";
-        gameRecordStringParts = gameRecordString.split('|');
-        gameSeed = Number(gameRecordStringParts[1]);
-        gameLevel = Number(gameRecordStringParts[2]);
-        gameLevelSelector.value = gameRecordStringParts[2];
-        prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
-        generateOneNumber();
-        generateOneNumber();
-    } else {
-        callBanner("回放代码格式错误！");
-        replayOver();
+    if (gameStatus === 2) {
+        if (gameRecordString.indexOf('2048Game|') === 0 && gameRecordString.lastIndexOf('|GAMEOVER') === gameRecordString.length - 9) {
+            updateButtonStatus(replayButtonControl, 'play');
+            gameRecordStringParts = gameRecordString.split('|');
+            gameSeed = Number(gameRecordStringParts[1]);
+            gameLevel = Number(gameRecordStringParts[2]);
+            replayProgressBar.max = gameRecordStringParts[3].length === 0 ? 1 : gameRecordStringParts[3].length;
+            gameLevelSelector.value = gameRecordStringParts[2];
+            prng = SeededRandom.createSeededRandom(gameSeed, 'xorshift');
+            generateOneNumber();
+            generateOneNumber();
+        } else {
+            callBanner("回放代码格式错误！");
+            replayOver();
+        }
     }
 }
 
 
 function nextStep(withAnimation = true, replayRewindMode = false) {
-    let dir = gameRecordStringParts[3][gameRecordStep];
-    switch (dir) {
-        case 'l':
-            mvLEvent(withAnimation, replayRewindMode);
-            break;
-        case 'r':
-            mvREvent(withAnimation, replayRewindMode);
-            break;
-        case 'u':
-            mvUEvent(withAnimation, replayRewindMode);
-            break;
-        case 'd':
-            mvDEvent(withAnimation, replayRewindMode);
-            break;
+    if (gameStatus === 2) {
+        if (isProcessingNextStep) {
+            return;
+        }
+        isProcessingNextStep = true;
 
-        default:
-            break;
+        let dir = gameRecordStringParts[3][gameRecordStep];
+        let moved;
+        switch (dir) {
+            case 'l':
+                moved = mvLEvent(withAnimation, replayRewindMode);
+                break;
+            case 'r':
+                moved = mvREvent(withAnimation, replayRewindMode);
+                break;
+            case 'u':
+                moved = mvUEvent(withAnimation, replayRewindMode);
+                break;
+            case 'd':
+                moved = mvDEvent(withAnimation, replayRewindMode);
+                break;
+
+            default:
+                break;
+        }
+        if (moved) {
+            gameRecordStep += 1;
+            gameRecordFrameCount += 1;
+            replayProgressBar.value = gameRecordStep;
+        }
+
+        if (gameRecordStep === gameRecordStringParts[3].length) {
+            replayProgressBar.value = replayProgressBar.max;
+            replayOver(false);
+            callBanner('已回放至最后');
+            updateButtonStatus(replayButtonNext, 'replay');
+            isProcessingNextStep = false;
+            return;
+        }
+
+        isProcessingNextStep = false;
     }
-    gameRecordStep += 1;
-    if (gameRecordStep === gameRecordStringParts[3].length) {
-        replayOver();
-    }
-    gameRecordFrameCount += 1;
 }
 
 function prevStep() {
-    if (gameRecordFrameCount === 0) {
-        return;
+    if (gameStatus === 2) {
+        replayProgressBar.value = 0;
+        if (gameRecordFrameCount === 0) {
+            callBanner('已回放至开头');
+            return;
+        }
+        if (gameRecordStep === gameRecordStringParts[3].length) {
+            updateButtonStatus(replayButtonNext, 'nextStep');
+        }
+        let targetFrameCount = gameRecordFrameCount - 1;
+        replayInit();
+        replayHandler(gameRecordString);
+        for (; gameRecordFrameCount < targetFrameCount;) {
+            nextStep(false, true);
+        }
+        renderAllBlocks(currentNumberTable, true);
     }
-    let targetFrameCount = gameRecordFrameCount - 1;
-    replayInit();
-    replayHandler(gameRecordString);
-    for (; gameRecordFrameCount < targetFrameCount;) {
-        nextStep(false, true);
+}
+
+function endStep() {
+    if (gameStatus === 2) {
+        replayProgressBar.value = 0;
+        let targetFrameCount = gameRecordStringParts[3].length;
+        replayInit();
+        replayHandler(gameRecordString);
+        for (; gameRecordFrameCount < targetFrameCount;) {
+            nextStep(false, true);
+        }
+        renderAllBlocks(currentNumberTable, true);
     }
-    renderAllBlocks(currentNumberTable, true);
+}
+
+function beginStep() {
+    if (gameStatus === 2) {
+        replayProgressBar.value = 0;
+        let targetFrameCount = 0;
+        replayInit();
+        replayHandler(gameRecordString);
+        for (; gameRecordFrameCount < targetFrameCount;) {
+            nextStep(false, true);
+        }
+        renderAllBlocks(currentNumberTable, true);
+    }
 }
 
 // 监听下拉菜单变化

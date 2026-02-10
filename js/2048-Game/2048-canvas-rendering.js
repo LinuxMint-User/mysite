@@ -4,11 +4,11 @@ const dpr = window.devicePixelRatio || 1;  // 获取设备像素比
 const marginX = 8 * dpr;
 const marginY = marginX;
 const fontSize = 20 * dpr + 'px';
+const initMessagefontSize = 20 * dpr + 'px';
 const blockNumFontSize = 32 * dpr + 'px';
 
-var canvasWidth;
-var canvasHeight;
-var cellSize = Math.floor((canvas.width - marginX * 2) / 4);
+let blockSize = ((canvas.width - (marginX * 5)) / 4);
+let canvasTextLineHeight = (blockSize / (2 * dpr));
 
 let lastTimestamp = null;
 let animationQueue = [];
@@ -21,6 +21,24 @@ const ANIMATION_TYPE = {
 };
 
 const voidBlockColor = '#ccc0b3';
+
+const buttonTextMap = {
+    newGameButton: {
+        startGame: '开始游戏',
+        endGame: '结束游戏'
+    },
+    replayButtonControl: {
+        play: '播放',
+        pause: '暂停'
+    },
+    replayButtonNext: {
+        nextStep: '下一',
+        replay: '重播'
+    },
+    replayButtonPrev: {
+        prevStep: '上一'
+    }
+};
 
 /**
  * 调整Canvas分辨率以适应高分屏
@@ -37,8 +55,8 @@ function resizeCanvas(render = false) {
     canvas.width = displayWidth * dpr;
     canvas.height = displayHeight * dpr;
 
-    canvasWidth = Math.floor(canvas.width / cellSize);
-    canvasHeight = Math.floor(canvas.height / cellSize);
+    blockSize = ((canvas.width - (marginX * 5)) / 4);
+    canvasTextLineHeight = (blockSize / (2 * dpr));
 
     // 重新绘制内容
     if (render) {
@@ -48,7 +66,7 @@ function resizeCanvas(render = false) {
         } else {
             initRendering();
         }
-        
+
     }
 }
 
@@ -140,20 +158,23 @@ function renderBlock(col, row, bgColor, fontColor, num, queue = false) {
 function _renderBlockDirectly(col, row, bgColor, fontColor, num) {
     ctx.fillStyle = bgColor;
     ctx.fillRect(
-        col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX,
-        row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY,
-        ((canvas.width - (marginX * 5)) / 4),
-        ((canvas.height - (marginY * 5)) / 4)
+        col * blockSize + (col + 1) * marginX,
+        row * blockSize + (row + 1) * marginY,
+        blockSize,
+        blockSize
     );
 
     ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
+
+    autoCanvasTextSize(String(num), blockSize, 5);
+
     ctx.fillStyle = fontColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(
         num === 0 ? '' : num,
-        Math.floor(col * ((canvas.width - (marginX * 5)) / 4) + (col + 1) * marginX + ((canvas.width - (marginX * 5)) / 4) / 2),
-        Math.floor(row * ((canvas.height - (marginY * 5)) / 4) + (row + 1) * marginY + ((canvas.height - (marginY * 5)) / 4) / 2)
+        Math.floor(col * blockSize + (col + 1) * marginX + blockSize / 2),
+        Math.floor(row * blockSize + (row + 1) * marginY + blockSize / 2)
     );
 }
 
@@ -240,10 +261,10 @@ function moveAnimation(fx, fy, tx, ty) {
     if (currentNumberTable[fx][fy] === 0) return;
 
     // 计算起始和结束的屏幕坐标
-    const startX = fx * ((canvas.width - (marginX * 5)) / 4) + (fx + 1) * marginX;
-    const startY = fy * ((canvas.height - (marginY * 5)) / 4) + (fy + 1) * marginY;
-    const endX = tx * ((canvas.width - (marginX * 5)) / 4) + (tx + 1) * marginX;
-    const endY = ty * ((canvas.height - (marginY * 5)) / 4) + (ty + 1) * marginY;
+    const startX = fx * blockSize + (fx + 1) * marginX;
+    const startY = fy * blockSize + (fy + 1) * marginY;
+    const endX = tx * blockSize + (tx + 1) * marginX;
+    const endY = ty * blockSize + (ty + 1) * marginY;
 
     // 获取数字块的属性
     const number = currentNumberTable[fx][fy];
@@ -291,7 +312,7 @@ function moveAnimation(fx, fy, tx, ty) {
 function animateBlocks(timestamp) {
     // 初始化时间戳和计算时间差
     if (!lastTimestamp) lastTimestamp = timestamp;
-    const deltaTime = timestamp - lastTimestamp;
+    const deltaTime = Math.min(timestamp - lastTimestamp, 100);
     lastTimestamp = timestamp;
 
     // 清空画布并渲染静态方块
@@ -320,17 +341,20 @@ function animateBlocks(timestamp) {
                 // 绘制方块背景
                 ctx.fillStyle = anim.bgColor;
                 ctx.fillRect(currentX, currentY,
-                    ((canvas.width - (marginX * 5)) / 4),
-                    ((canvas.height - (marginY * 5)) / 4));
+                    blockSize,
+                    blockSize);
 
                 // 绘制方块数字
                 ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
+
+                autoCanvasTextSize(String((anim.number)), blockSize, 5);
+
                 ctx.fillStyle = anim.textColor;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(anim.number,
-                    currentX + ((canvas.width - (marginX * 5)) / 4) / 2,
-                    currentY + ((canvas.height - (marginY * 5)) / 4) / 2);
+                    currentX + blockSize / 2,
+                    currentY + blockSize / 2);
                 break;
             case ANIMATION_TYPE.RENDER_BLOCK:
                 // 渲染单个方块动画（可以添加淡入效果）
@@ -397,9 +421,9 @@ function _renderAllWithAnimation(anim) {
     ctx.globalAlpha = alpha;
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
-            _renderBlockDirectly(i, j, 
-                renderingBackgroundByNumber(anim.table[i][j]), 
-                renderingTextByNumber(anim.table[i][j]), 
+            _renderBlockDirectly(i, j,
+                renderingBackgroundByNumber(anim.table[i][j]),
+                renderingTextByNumber(anim.table[i][j]),
                 anim.table[i][j]
             );
         }
@@ -407,10 +431,29 @@ function _renderAllWithAnimation(anim) {
     ctx.globalAlpha = 1;
 }
 
-function multiLineTextRendering(font, fontColor, content, startX, startY, lineHeight) {
+function multiLineTextRendering(font, fontColor, content, startX, startY, lineHeight, AutoFontSize = false, AutoLineWrap = false) {
+
     // 字体优先级：自定义字体 > 自定义大小+默认字体族 > 默认大小(适配DPR)+默认字体族
     ctx.font = font === null ? (fontSize === null ? (20 * (dpr === null ? (window.devicePixelRatio || 1) : dpr) + 'px') : fontSize + ' Arial, Helvetica, sans-serif') : font;
-    // ctx.fillStyle = fontColor === null ? 'black' : fontColor;
+
+    if (AutoLineWrap) {
+        let row = 0;
+        let substringIndex = 0;
+        while (row < content.length) {
+            if (ctx.measureText(content[row]).width >= canvas.width - startX * 2) {
+                substringIndex = content[row].length - 1;
+                while (ctx.measureText(content[row].substring(0, substringIndex)).width >= canvas.width - startX * 2) {
+                    substringIndex -= 1;
+                }
+                if (substringIndex === 0) {
+                    substringIndex = 1;
+                }
+                content.splice(row, 1, content[row].substring(0, substringIndex), content[row].substring(substringIndex));
+            } else {
+                row += 1;
+            }
+        }
+    }
 
     for (let row = 0; row < content.length; row++) {
         if (fontColor !== null || fontColor !== '') {
@@ -422,7 +465,25 @@ function multiLineTextRendering(font, fontColor, content, startX, startY, lineHe
         } else {
             ctx.fillStyle = 'black';
         }
+        if (AutoFontSize) {
+            autoCanvasTextSize(content[row], canvas.width, marginX);
+        }
         ctx.fillText(content[row], startX, startY + lineHeight * (row + 1) * (dpr === null ? (window.devicePixelRatio || 1) : dpr));
+    }
+}
+
+function autoCanvasTextSize(text, maxWidth, marginX = 0) {
+    let fontSize;
+    let fontFamily;
+    let currentFont = ctx.font;
+    let fontParts = currentFont.match(/(\d+)px\s+(.+)/);
+    if (fontParts) {
+        fontSize = Number(fontParts[1]);
+        fontFamily = fontParts[2];
+    }
+    while (ctx.measureText(text).width >= maxWidth - marginX * 2) {
+        fontSize -= 1;
+        ctx.font = `${fontSize}px ${fontFamily}`;
     }
 }
 
@@ -430,7 +491,26 @@ function initRendering() {
     let font = fontSize + ' Arial, Helvetica, sans-serif';
     let fontColor = 'black';
     let content = ['单击多选框可选择游戏难度', '更多功能单击右上角菜单查看'];
-    multiLineTextRendering(font, fontColor, content, canvasWidth + cellSize / 2, canvasHeight, (cellSize / 2));
+    multiLineTextRendering(font, fontColor, content, marginX, marginY, canvasTextLineHeight, false, true);
+}
+
+function updateButtonUI(button) {
+    const func = button.dataset.function;
+    const status = button.dataset.status;
+
+    if (buttonTextMap[String(func)] && buttonTextMap[String(func)][String(status)]) {
+        button.textContent = buttonTextMap[String(func)][String(status)];
+    }
+}
+
+function updateAllButtonsUI() {
+  const buttons = document.querySelectorAll('[data-function]');
+  buttons.forEach(updateButtonUI);
+}
+
+function updateButtonStatus(button, status = 'none') {
+    button.dataset.status = status;
+    updateButtonUI(button);
 }
 
 window.addEventListener('resize', function () {
