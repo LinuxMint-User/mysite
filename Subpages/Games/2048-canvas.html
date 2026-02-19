@@ -55,10 +55,10 @@
                 <button class="menu-item" type="button" id="controlMethodButton"
                     onclick="multiKey('controlMethodButton')" data-function="toggleVirtualButtons"
                     data-status="none">开/关虚拟按键</button>
-                <button class="menu-item" type="button" id="replayButton" onclick="multiKey('replayButton')"
-                    data-function="replayButton" data-status="none" disabled>回放上局</button>
-                <button class="menu-item" type="button" id="replayButtonInput" onclick="multiKey('replayButtonInput')"
-                    data-function="replayButtonInput" data-status="none">回放其他</button>
+                <button class="menu-item" type="button" id="replayLastButton" onclick="multiKey('replayLastButton')"
+                    data-function="replayLastButton" data-status="none" disabled>回放上局</button>
+                <button class="menu-item" type="button" id="replayOtherButton" onclick="multiKey('replayOtherButton')"
+                    data-function="replayOtherButton" data-status="none">回放其他</button>
                 <button class="menu-item" type="button" id="shareButton" onclick="multiKey('shareButton')"
                     data-function="shareButton" data-status="none" disabled>分享回放代码</button>
                 <button class="menu-item" type="button" id="shareLinkButton" onclick="multiKey('shareLinkButton')"
@@ -122,7 +122,7 @@
     </div>
 
     <div class="container" style="display: flex; justify-content: center; overflow: hidden;">
-        <canvas class="gameCanvas gameArea" id="gameCanvas"></canvas>
+        <canvas id="gameCanvas" class="gameCanvas"></canvas>
     </div>
 
     <div id="control-buttons" class="control-buttons global-hidden">
@@ -138,7 +138,12 @@
 
     <div id="replayToolbar" class="container global-hidden"
         style="display: flex; flex-direction: column; max-width: fit-content; z-index: 20;">
-        <progress id="replayProgressBar"></progress>
+        <div style="display: flex; flex-direction: row; align-items: center;">
+            <span id="replayProgressBarCurrentStep" class="replayProgressIndicator"></span>
+            <progress id="replayProgressBar"></progress>
+            <span id="replayProgressBarRemainingSteps" class="replayProgressIndicator"></span>
+        </div>
+
         <div class="button-list" style="flex: 1; max-width: fit-content; flex-direction: row;">
             <button type="button" id="replayButtonPrev" onclick="multiKey('replayButtonPrev')"
                 data-function="replayButtonPrev" data-status="prevStep">上一</button>

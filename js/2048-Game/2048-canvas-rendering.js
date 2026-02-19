@@ -6,6 +6,7 @@ const marginY = marginX;
 const fontSize = 20 * dpr + 'px';
 const initMessagefontSize = 20 * dpr + 'px';
 const blockNumFontSize = 32 * dpr + 'px';
+const fontFamily = 'Arial, Helvetica, sans-serif';
 
 let blockSize = ((canvas.width - (marginX * 5)) / 4);
 let canvasTextLineHeight = (blockSize / (2 * dpr));
@@ -14,13 +15,46 @@ let lastTimestamp = null;
 let animationQueue = [];
 let isAnimating = false;
 
-const ANIMATION_TYPE = {
-    MOVE: 'move',
-    RENDER_BLOCK: 'render_block',
-    RENDER_ALL: 'render_all'
+const renderingType = {
+    singleBlock: 'singleBlock',
+    singleBlockDirect: 'singleBlockDirect',
+    allBlocks: 'allBlocks',
+    allBlocksDirect: 'allBlocksDirect'
+};
+
+const animationType = {
+    move: 'move',
+    renderBlock: 'renderBlock',
+    renderAll: 'renderAll'
+};
+const animationTime = {
+    move: 200,
+    renderBlock: 200,
+    renderAll: 200
 };
 
 const voidBlockColor = '#ccc0b3';
+const blockTextColor = {
+    voidBlock: voidBlockColor,
+    lightBgBlock: '#776e65',
+    darkBgBlock: 'white'
+};
+const blockBgColor = {
+    0: voidBlockColor,
+    2: '#FCE4D6',  // 浅米色
+    4: '#EEDC94',  // 浅黄色
+    8: '#FDB863',  // 橙色
+    16: '#FD8D3C',  // 深橙色
+    32: '#F16713',  // 红橙色
+    64: '#D94810',  // 深红橙色
+    128: '#A63603',  // 砖红色
+    256: '#8F270E',  // 深砖红色
+    512: '#69221B',  // 红棕色
+    1024: '#4C1628',  // 深紫红色
+    2048: '#2F073F',  // 深紫色
+    4096: '#18003F',  // 深蓝紫色
+    8192: '#0C002B'  // 接近黑色的深蓝色
+};
 
 const buttonTextMap = {
     newGameButton: {
@@ -61,8 +95,8 @@ function resizeCanvas(render = false) {
     // 重新绘制内容
     if (render) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (gameStatus !== 0) {
-            renderAllBlocks(currentNumberTable);
+        if (gameStatus !== gameStatusEnum.idle) {
+            renderAllBlocksDirectly(currentNumberTable);
         } else {
             initRendering();
         }
@@ -78,13 +112,13 @@ function resizeCanvas(render = false) {
  * 当数字小于等于4时返回深灰色(#776e65)，其他情况返回白色(white)
  * 这样设计是为了确保文字在不同背景色上都有良好的可读性
  */
-function renderingTextByNumber(number) {
+function getNumberColor(number) {
     if (number === 0) {
-        return voidBlockColor;
+        return blockTextColor.voidBlock;
     } else if (number <= 4) {
-        return "#776e65";  // 深灰色，适合浅色背景
+        return blockTextColor.lightBgBlock;  // 深灰色，适合浅色背景
     }
-    return "white";  // 白色，适合深色背景
+    return blockTextColor.darkBgBlock;  // 白色，适合深色背景
 }
 
 /**
@@ -96,49 +130,66 @@ function renderingTextByNumber(number) {
  * 颜色从浅到深渐变，对应数字从小到大
  * 确保每个数字块都有独特的视觉标识
  */
-function renderingBackgroundByNumber(number) {
+function getNumberBgColor(number) {
     switch (number) {
         case 0:
-            return voidBlockColor;
+            return blockBgColor[number];
         case 2:
-            return "#FCE4D6";  // 浅米色
+            return blockBgColor[number];
         case 4:
-            return "#EEDC94";  // 浅黄色
+            return blockBgColor[number];
         case 8:
-            return "#FDB863";  // 橙色
+            return blockBgColor[number];
         case 16:
-            return "#FD8D3C";  // 深橙色
+            return blockBgColor[number];
         case 32:
-            return "#F16713";  // 红橙色
+            return blockBgColor[number];
         case 64:
-            return "#D94810";  // 深红橙色
+            return blockBgColor[number];
         case 128:
-            return "#A63603";  // 砖红色
+            return blockBgColor[number];
         case 256:
-            return "#8F270E";  // 深砖红色
+            return blockBgColor[number];
         case 512:
-            return "#69221B";  // 红棕色
+            return blockBgColor[number];
         case 1024:
-            return "#4C1628";  // 深紫红色
+            return blockBgColor[number];
         case 2048:
-            return "#2F073F";  // 深紫色
+            return blockBgColor[number];
         case 4096:
-            return "#18003F";  // 深蓝紫色
+            return blockBgColor[number];
         case 8192:
-            return "#0C002B";  // 接近黑色的深蓝色
+            return blockBgColor[number];
+        default:
+            return blockBgColor[8192];
     }
 }
 
-function renderBlock(col, row, bgColor, fontColor, num, queue = false) {
-    // 如果不需要加入队列，直接渲染
-    if (!queue) {
-        _renderBlockDirectly(col, row, bgColor, fontColor, num);
-        return;
-    }
+// 直接渲染的辅助函数
+function renderBlockDirectly(col, row, bgColor, fontColor, num) {
+    const startX = col * blockSize + (col + 1) * marginX;
+    const startY = row * blockSize + (row + 1) * marginY;
 
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(startX, startY, blockSize, blockSize);
+
+    ctx.font = blockNumFontSize + ' ' + fontFamily;
+    autoCanvasTextSize(ctx, String(num), blockSize, marginX);
+
+    ctx.fillStyle = fontColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(
+        num === 0 ? '' : num,
+        Math.floor(startX + blockSize / 2),
+        Math.floor(startY + blockSize / 2)
+    );
+}
+
+function renderBlockAnimated(col, row, bgColor, fontColor, num) {
     // 加入动画队列
     animationQueue.push({
-        type: ANIMATION_TYPE.RENDER_BLOCK,
+        type: animationType.renderBlock,
         col: col,
         row: row,
         bgColor: bgColor,
@@ -154,48 +205,22 @@ function renderBlock(col, row, bgColor, fontColor, num, queue = false) {
     }
 }
 
-// 直接渲染的辅助函数
-function _renderBlockDirectly(col, row, bgColor, fontColor, num) {
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(
-        col * blockSize + (col + 1) * marginX,
-        row * blockSize + (row + 1) * marginY,
-        blockSize,
-        blockSize
-    );
-
-    ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
-
-    autoCanvasTextSize(String(num), blockSize, 5);
-
-    ctx.fillStyle = fontColor;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(
-        num === 0 ? '' : num,
-        Math.floor(col * blockSize + (col + 1) * marginX + blockSize / 2),
-        Math.floor(row * blockSize + (row + 1) * marginY + blockSize / 2)
-    );
+function renderAllBlocksDirectly(table) {
+    for (let row = 0; row < table.length; row++) {
+        for (let col = 0; col < table[row].length; col++) {
+            renderBlockDirectly(col, row,
+                getNumberBgColor(table[row][col]),
+                getNumberColor(table[row][col]),
+                table[row][col]
+            );
+        }
+    }
 }
 
-function renderAllBlocks(table, queue = false) {
-    // 如果不需要加入队列，直接渲染
-    if (!queue) {
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                _renderBlockDirectly(i, j,
-                    renderingBackgroundByNumber(table[i][j]),
-                    renderingTextByNumber(table[i][j]),
-                    table[i][j]
-                );
-            }
-        }
-        return;
-    }
-
+function renderAllBlocksAnimated(table) {
     // 加入动画队列
     animationQueue.push({
-        type: ANIMATION_TYPE.RENDER_ALL,
+        type: animationType.renderAll,
         table: JSON.parse(JSON.stringify(table)), // 深拷贝表格数据
         progress: 0
     });
@@ -217,27 +242,26 @@ function renderAllBlocks(table, queue = false) {
  * 4. 如果在移动中，则只渲染该位置的边框(作为占位符)
  */
 function renderStaticBlocksWithBorders(table) {
-    // 遍历4x4游戏面板
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-
+    // 遍历游戏面板
+    for (let row = 0; row < table.length; row++) {
+        for (let col = 0; col < table[row].length; col++) {
             // 检查当前格子是否在动画队列中(作为起点或终点)
             let isMoving = animationQueue.some(anim =>
-                (anim.fromX === i && anim.fromY === j) ||
-                (anim.toX === i && anim.toY === j)
+                (anim.fromCol === col && anim.fromRow === row) ||
+                (anim.toCol === col && anim.toRow === row)
             );
 
             if (!isMoving) {
                 // 渲染完整的方块(背景+数字)
-                renderBlock(i, j,
-                    renderingBackgroundByNumber(table[i][j]),
-                    renderingTextByNumber(table[i][j]),
-                    table[i][j]
+                renderBlockDirectly(col, row,
+                    getNumberBgColor(table[row][col]),
+                    getNumberColor(table[row][col]),
+                    table[row][col]
                 );
             } else {
-                renderBlock(i, j,
-                    renderingBackgroundByNumber(0),
-                    renderingTextByNumber(0), 0);
+                renderBlockDirectly(col, row,
+                    getNumberBgColor(0),
+                    getNumberColor(0), 0);
             }
         }
     }
@@ -245,10 +269,11 @@ function renderStaticBlocksWithBorders(table) {
 
 /**
  * 处理方块移动动画
- * @param {number} fx - 起始位置的x坐标(列索引)
- * @param {number} fy - 起始位置的y坐标(行索引) 
- * @param {number} tx - 目标位置的x坐标(列索引)
- * @param {number} ty - 目标位置的y坐标(行索引)
+ * @param {number} fcol - 起始位置的列索引
+ * @param {number} frow - 起始位置的行索引
+ * @param {number} tcol - 目标位置的列索引
+ * @param {number} trow - 目标位置的行索引
+ * @param {array} table - 要检测的游戏矩阵
  * 
  * 1. 检查起始位置是否有数字块(为0则直接返回)
  * 2. 计算起始和目标的屏幕坐标位置
@@ -256,24 +281,24 @@ function renderStaticBlocksWithBorders(table) {
  * 4. 将动画信息加入队列
  * 5. 如果没有正在进行的动画，则启动动画
  */
-function moveAnimation(fx, fy, tx, ty) {
+function moveAnimation(fcol, frow, tcol, trow, table) {
     // 检查起始位置是否为空
-    if (currentNumberTable[fx][fy] === 0) return;
+    if (table[frow][fcol] === 0) return;
 
     // 计算起始和结束的屏幕坐标
-    const startX = fx * blockSize + (fx + 1) * marginX;
-    const startY = fy * blockSize + (fy + 1) * marginY;
-    const endX = tx * blockSize + (tx + 1) * marginX;
-    const endY = ty * blockSize + (ty + 1) * marginY;
+    const startX = fcol * blockSize + (fcol + 1) * marginX;
+    const startY = frow * blockSize + (frow + 1) * marginY;
+    const endX = tcol * blockSize + (tcol + 1) * marginX;
+    const endY = trow * blockSize + (trow + 1) * marginY;
 
     // 获取数字块的属性
-    const number = currentNumberTable[fx][fy];
-    const bgColor = renderingBackgroundByNumber(number);
-    const textColor = renderingTextByNumber(number);
+    const number = table[frow][fcol];
+    const bgColor = getNumberBgColor(number);
+    const textColor = getNumberColor(number);
 
     // 将动画信息加入队列
     animationQueue.push({
-        type: ANIMATION_TYPE.MOVE,
+        type: animationType.move,
         x: startX,
         y: startY,
         targetX: endX,
@@ -282,10 +307,10 @@ function moveAnimation(fx, fy, tx, ty) {
         number: number,
         bgColor: bgColor,
         textColor: textColor,
-        fromX: fx,    // 起始列索引
-        fromY: fy,    // 起始行索引
-        toX: tx,      // 目标列索引
-        toY: ty       // 目标行索引
+        fromCol: fcol,    // 起始列索引
+        fromRow: frow,    // 起始行索引
+        toCol: tcol,      // 目标列索引
+        toRow: trow       // 目标行索引
     });
 
     // 如果没有正在进行的动画，则启动动画
@@ -294,7 +319,6 @@ function moveAnimation(fx, fy, tx, ty) {
         requestAnimationFrame(animateBlocks);
     }
 }
-
 
 /**
  * 执行动画帧渲染
@@ -317,16 +341,15 @@ function animateBlocks(timestamp) {
 
     // 清空画布并渲染静态方块
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // console.log('animateBlocks calling');
     renderStaticBlocksWithBorders(currentNumberTable);
 
     // 处理动画队列
     for (let i = 0; i < animationQueue.length; i++) {
         const anim = animationQueue[i];
-        // 更新动画进度(基于时间差)
-        anim.progress += deltaTime / 200;
 
         switch (anim.type) {
-            case ANIMATION_TYPE.MOVE:
+            case animationType.move:
                 // 检查动画是否完成
                 if (anim.progress >= 1) {
                     animationQueue.splice(i, 1);
@@ -340,54 +363,51 @@ function animateBlocks(timestamp) {
 
                 // 绘制方块背景
                 ctx.fillStyle = anim.bgColor;
-                ctx.fillRect(currentX, currentY,
-                    blockSize,
-                    blockSize);
+                ctx.fillRect(currentX, currentY, blockSize, blockSize);
 
                 // 绘制方块数字
-                ctx.font = blockNumFontSize + ' Arial, Helvetica, sans-serif';
+                ctx.font = blockNumFontSize + ' ' + fontFamily;
 
-                autoCanvasTextSize(String((anim.number)), blockSize, 5);
+                autoCanvasTextSize(ctx, String((anim.number)), blockSize, marginX);
 
                 ctx.fillStyle = anim.textColor;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillText(anim.number,
-                    currentX + blockSize / 2,
-                    currentY + blockSize / 2);
+                ctx.fillText(anim.number, currentX + blockSize / 2, currentY + blockSize / 2);
+
+                // 更新动画进度(基于时间差)
+                anim.progress += deltaTime / animationTime.move;
                 break;
-            case ANIMATION_TYPE.RENDER_BLOCK:
+
+            case animationType.renderBlock:
                 // 渲染单个方块动画（可以添加淡入效果）
                 if (anim.progress >= 1) {
                     // 动画完成，直接渲染最终状态
-                    _renderBlockDirectly(anim.col, anim.row, anim.bgColor, anim.fontColor, anim.num);
+                    renderBlockDirectly(anim.col, anim.row, anim.bgColor, anim.fontColor, anim.num);
                     animationQueue.splice(i, 1);
                     i--;
                 } else {
                     // 可以添加淡入效果或其他动画
-                    _renderBlockWithAnimation(anim);
+                    renderBlockAnimEffect(anim);
                 }
+
+                // 更新动画进度(基于时间差)
+                anim.progress += deltaTime / animationTime.renderBlock;
                 break;
 
-            case ANIMATION_TYPE.RENDER_ALL:
+            case animationType.renderAll:
                 // 渲染整个面板动画
                 if (anim.progress >= 1) {
-                    // 动画完成，直接渲染最终状态
-                    for (let i = 0; i < 4; i++) {
-                        for (let j = 0; j < 4; j++) {
-                            _renderBlockDirectly(i, j,
-                                renderingBackgroundByNumber(anim.table[i][j]),
-                                renderingTextByNumber(anim.table[i][j]),
-                                anim.table[i][j]
-                            );
-                        }
-                    }
+                    renderAllBlocksDirectly(anim.table);
                     animationQueue.splice(i, 1);
                     i--;
                 } else {
                     // 可以添加整体淡入效果
-                    _renderAllWithAnimation(anim);
+                    renderAllAnimEffect(anim);
                 }
+
+                // 更新动画进度(基于时间差)
+                anim.progress += deltaTime / animationTime.renderAll;
                 break;
         }
 
@@ -401,78 +421,73 @@ function animateBlocks(timestamp) {
         isAnimating = false;
         lastTimestamp = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        renderAllBlocks(currentNumberTable, false);
+        renderAllBlocksDirectly(currentNumberTable);
 
     }
 }
 
 // 带动画效果的方块渲染
-function _renderBlockWithAnimation(anim) {
+function renderBlockAnimEffect(anim) {
     // 简单的淡入效果
     const alpha = anim.progress;
     ctx.globalAlpha = alpha;
-    _renderBlockDirectly(anim.col, anim.row, anim.bgColor, anim.fontColor, anim.num);
+    renderBlockDirectly(anim.col, anim.row, anim.bgColor, anim.fontColor, anim.num);
     ctx.globalAlpha = 1;
 }
 
 // 带动画效果的整体渲染
-function _renderAllWithAnimation(anim) {
+function renderAllAnimEffect(anim) {
     const alpha = anim.progress;
     ctx.globalAlpha = alpha;
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            _renderBlockDirectly(i, j,
-                renderingBackgroundByNumber(anim.table[i][j]),
-                renderingTextByNumber(anim.table[i][j]),
-                anim.table[i][j]
-            );
-        }
-    }
+    renderAllBlocksDirectly(anim.table);
     ctx.globalAlpha = 1;
 }
 
-function multiLineTextRendering(font, fontColor, content, startX, startY, lineHeight, AutoFontSize = false, AutoLineWrap = false) {
+function multiLineTextRendering(renderingData = {
+    fontConfig: { font: null, fontColor: 'black' }, content: [''], coordinates: { startX, startY },
+    lineHeight: 0, autoConfig: { AutoFontSize: false, AutoLineWrap: false }
+}) {
 
     // 字体优先级：自定义字体 > 自定义大小+默认字体族 > 默认大小(适配DPR)+默认字体族
-    ctx.font = font === null ? (fontSize === null ? (20 * (dpr === null ? (window.devicePixelRatio || 1) : dpr) + 'px') : fontSize + ' Arial, Helvetica, sans-serif') : font;
+    ctx.font = renderingData.fontConfig.font === null ? (fontSize === null ? (20 * (dpr === null ? (window.devicePixelRatio || 1) : dpr) + 'px') : fontSize + ' ' + fontFamily) : renderingData.fontConfig.font;
 
-    if (AutoLineWrap) {
+    if (renderingData.autoConfig.AutoLineWrap) {
         let row = 0;
         let substringIndex = 0;
-        while (row < content.length) {
-            if (ctx.measureText(content[row]).width >= canvas.width - startX * 2) {
-                substringIndex = content[row].length - 1;
-                while (ctx.measureText(content[row].substring(0, substringIndex)).width >= canvas.width - startX * 2) {
+        while (row < renderingData.content.length) {
+            if (ctx.measureText(renderingData.content[row]).width >= canvas.width - renderingData.coordinates.startX * 2) {
+                substringIndex = renderingData.content[row].length - 1;
+                while (ctx.measureText(renderingData.content[row].substring(0, substringIndex)).width >= canvas.width - renderingData.coordinates.startX * 2) {
                     substringIndex -= 1;
                 }
                 if (substringIndex === 0) {
                     substringIndex = 1;
                 }
-                content.splice(row, 1, content[row].substring(0, substringIndex), content[row].substring(substringIndex));
+                renderingData.content.splice(row, 1, renderingData.content[row].substring(0, substringIndex), renderingData.content[row].substring(substringIndex));
             } else {
                 row += 1;
             }
         }
     }
 
-    for (let row = 0; row < content.length; row++) {
-        if (fontColor !== null || fontColor !== '') {
-            if (Array.isArray(fontColor)) {
-                ctx.fillStyle = fontColor[row];
+    for (let row = 0; row < renderingData.content.length; row++) {
+        if (renderingData.fontConfig.fontColor !== null || renderingData.fontConfig.fontColor !== '') {
+            if (Array.isArray(renderingData.fontConfig.fontColor)) {
+                ctx.fillStyle = renderingData.fontConfig.fontColor[row];
             } else {
-                ctx.fillStyle = fontColor;
+                ctx.fillStyle = renderingData.fontConfig.fontColor;
             }
         } else {
             ctx.fillStyle = 'black';
         }
-        if (AutoFontSize) {
-            autoCanvasTextSize(content[row], canvas.width, marginX);
+        if (renderingData.autoConfig.AutoFontSize) {
+            autoCanvasTextSize(ctx, renderingData.content[row], canvas.width, renderingData.coordinates.startX);
         }
-        ctx.fillText(content[row], startX, startY + lineHeight * (row + 1) * (dpr === null ? (window.devicePixelRatio || 1) : dpr));
+        ctx.fillText(renderingData.content[row], renderingData.coordinates.startX, renderingData.coordinates.startY + renderingData.lineHeight * (row + 1) * (dpr === null ? (window.devicePixelRatio || 1) : dpr));
     }
 }
 
-function autoCanvasTextSize(text, maxWidth, marginX = 0) {
+function autoCanvasTextSize(ctx, text, maxWidth, marginX = 0) {
     let fontSize;
     let fontFamily;
     let currentFont = ctx.font;
@@ -488,10 +503,14 @@ function autoCanvasTextSize(text, maxWidth, marginX = 0) {
 }
 
 function initRendering() {
-    let font = fontSize + ' Arial, Helvetica, sans-serif';
-    let fontColor = 'black';
-    let content = ['单击多选框可选择游戏难度', '更多功能单击右上角菜单查看'];
-    multiLineTextRendering(font, fontColor, content, marginX, marginY, canvasTextLineHeight, false, true);
+    const font = fontSize + ' ' + fontFamily;
+    const fontColor = 'black';
+    const fontConfig = { font: font, fontColor: fontColor };
+    const coordinates = { startX: marginX, startY: marginY };
+    const content = ['单击多选框可选择游戏难度', '更多功能单击右上角菜单查看'];
+    const autoConfig = { AutoFontSize: false, AutoLineWrap: true };
+    const renderingData = { fontConfig: fontConfig, content: content, coordinates: coordinates, lineHeight: canvasTextLineHeight, autoConfig: autoConfig };
+    multiLineTextRendering(renderingData);
 }
 
 function updateButtonUI(button) {
@@ -504,13 +523,34 @@ function updateButtonUI(button) {
 }
 
 function updateAllButtonsUI() {
-  const buttons = document.querySelectorAll('[data-function]');
-  buttons.forEach(updateButtonUI);
+    const buttons = document.querySelectorAll('[data-function]');
+    buttons.forEach(updateButtonUI);
 }
 
 function updateButtonStatus(button, status = 'none') {
     button.dataset.status = status;
     updateButtonUI(button);
+}
+
+function renderingHandler(renderingData = { type: null, row: null, col: null, num: null, table: null }) {
+    if (renderingData.type !== null) {
+        switch (renderingData.type) {
+            case renderingType.singleBlock:
+                renderBlockAnimated(renderingData.col, renderingData.row, getNumberBgColor(renderingData.num), getNumberColor(renderingData.num), renderingData.num);
+                break;
+            case renderingType.singleBlockDirect:
+                renderBlockDirectly(renderingData.col, renderingData.row, getNumberBgColor(renderingData.num), getNumberColor(renderingData.num), renderingData.num);
+                break;
+            case renderingType.allBlocks:
+                renderAllBlocksAnimated(renderingData.table);
+                break;
+            case renderingType.allBlocksDirect:
+                renderAllBlocksDirectly(renderingData.table);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 window.addEventListener('resize', function () {
