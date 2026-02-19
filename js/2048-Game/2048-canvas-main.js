@@ -128,7 +128,7 @@ function anySpaceRight(table) {
     for (let row = 0; row < table.length; row++) {
         for (let col = 0; col < table[row].length; col++) {
             // 检查当前格子非空且不在最右侧
-            if (table[row][col] != 0 && col != 3) {
+            if (table[row][col] != 0 && col != table[row].length - 1) {
                 // 检查右侧格子是否为空或与当前格子数字相同
                 if (table[row][col + 1] === 0 || table[row][col + 1] === table[row][col]) {
                     return true;
@@ -172,7 +172,7 @@ function anySpaceBelow(table) {
     for (let row = 0; row < table.length; row++) {
         for (let col = 0; col < table[row].length; col++) {
             // 检查当前格子非空且不在最下方
-            if (table[row][col] != 0 && row != 3) {
+            if (table[row][col] != 0 && row != table.length - 1) {
                 // 检查下方格子是否为空或与当前格子数字相同
                 if (table[row + 1][col] === 0 || table[row + 1][col] === table[row][col]) {
                     return true;
